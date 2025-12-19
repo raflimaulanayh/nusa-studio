@@ -1,18 +1,26 @@
 export const MENU = [
   {
-    label: 'Beranda',
+    label: 'Home',
     url: '/'
   },
   {
-    label: 'Tentang Kami',
-    url: '/tentang-kami'
+    label: 'Work',
+    url: '/work'
   },
   {
-    label: 'Mitra',
-    url: '/mitra'
+    label: 'Services',
+    url: '/services'
   },
   {
-    label: 'Artikel',
-    url: '/article'
+    label: 'Pricing',
+    url: '/#pricing'
+  },
+  {
+    label: 'Insights',
+    url: '/articles'
+  },
+  {
+    label: 'Contact',
+    url: '/contact'
   }
 ]

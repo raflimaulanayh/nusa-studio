@@ -6,10 +6,11 @@ import { Fragment } from 'react'
 import { useSplashStore } from '@/hooks/useSplashStore'
 
 import { StickyChatbot } from '@/components/atoms/ui/sticky-chatbot'
+import { SplashScreen } from '@/components/organisms/splash-screen/splash-screen'
 
 const Navbar = dynamic(() => import('@/components/organisms/navbar').then((mod) => mod.Navbar), {
   ssr: false,
-  loading: () => <div className="sticky top-0 h-23 w-full bg-slate-50" />
+  loading: () => null
 })
 
 const Footer = dynamic(() => import('@/components/organisms/footer').then((mod) => mod.Footer), {
@@ -24,7 +25,7 @@ interface GeneralLayoutProps {
 export const GeneralLayout = ({ children, className }: GeneralLayoutProps) => {
   const isDone = useSplashStore((s) => s.isDone)
 
-  if (!isDone) return null
+  if (!isDone) return <SplashScreen />
 
   return (
     <Fragment>

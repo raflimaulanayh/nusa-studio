@@ -6,7 +6,7 @@ interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
 }
 export const InputGroup = ({ label, className = '', ...props }: InputProps) => (
   <div className={`space-y-2 ${className}`}>
-    <label className="block text-sm font-bold text-slate-800">{label}</label>
+    <label className="block text-sm font-semibold text-slate-800">{label}</label>
     <input
       {...props}
       className="w-full rounded-md border border-slate-300 px-4 py-3 text-slate-700 transition-all placeholder:text-slate-400 focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none"
@@ -19,7 +19,7 @@ interface TextareaProps extends React.TextareaHTMLAttributes<HTMLTextAreaElement
 }
 export const TextareaGroup = ({ label, className = '', ...props }: TextareaProps) => (
   <div className={`space-y-2 ${className}`}>
-    <label className="block text-sm font-bold text-slate-800">{label}</label>
+    <label className="block text-sm font-semibold text-slate-800">{label}</label>
     <textarea
       {...props}
       className="min-h-[120px] w-full resize-none rounded-md border border-slate-300 px-4 py-3 text-slate-700 transition-all placeholder:text-slate-400 focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none"
@@ -34,7 +34,7 @@ interface SelectProps extends React.SelectHTMLAttributes<HTMLSelectElement> {
 }
 export const SelectGroup = ({ label, options, placeholder = 'Pilih', ...props }: SelectProps) => (
   <div className="space-y-2">
-    <label className="block text-sm font-bold text-slate-800">{label}</label>
+    <label className="block text-sm font-semibold text-slate-800">{label}</label>
     <div className="relative">
       <select
         {...props}

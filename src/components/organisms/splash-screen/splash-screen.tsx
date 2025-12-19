@@ -1,212 +1,122 @@
 'use client'
 
-import { motion, AnimatePresence } from 'framer-motion'
-import { useEffect, useState } from 'react'
+import { gsap } from 'gsap'
+import { useEffect, useState, useRef } from 'react'
 
 import { useSplashStore } from '@/hooks/useSplashStore'
 
 export const SplashScreen = () => {
-  const MIN_DURATION = 2500
-  const [show, setShow] = useState(true)
-  const [minimumTimePassed, setMinimumTimePassed] = useState(false)
-
+  const [isMounted, setIsMounted] = useState(false)
+  const [isVisible, setIsVisible] = useState(true)
+  const containerRef = useRef<HTMLDivElement>(null)
+  const logoSymbolRef = useRef<SVGPathElement>(null)
+  const logoTextRef = useRef<HTMLDivElement>(null)
+  const subtitleRef = useRef<HTMLParagraphElement>(null)
+  const lettersRef = useRef<(HTMLSpanElement | null)[]>([])
   const finish = useSplashStore((s) => s.finish)
 
+  // Hydration-safe mounting
   useEffect(() => {
-    const timer = setTimeout(() => setMinimumTimePassed(true), MIN_DURATION)
+    setIsMounted(true)
+  }, [])
 
-    const handleLoaded = () => {
-      if (minimumTimePassed) setShow(false)
-    }
+  useEffect(() => {
+    if (!isMounted) return
 
-    window.addEventListener('load', handleLoaded)
+    const container = containerRef.current
+    const symbol = logoSymbolRef.current
+    const subtitle = subtitleRef.current
+    const letters = lettersRef.current
+
+    if (!container || !symbol || !subtitle) return
+
+    const tl = gsap.timeline()
+
+    // Animate Enter
+    tl
+      // Symbol (Star) pop in with rotation
+      .fromTo(
+        symbol,
+        { opacity: 0, scale: 0, rotate: -45, transformOrigin: 'center center' },
+        { opacity: 1, scale: 1, rotate: 0, duration: 1.2, ease: 'elastic.out(1, 0.5)' }
+      )
+      // NCS Letters stagger in
+      .fromTo(
+        letters,
+        { y: 40, opacity: 0, rotateX: -90 },
+        {
+          y: 0,
+          opacity: 1,
+          rotateX: 0,
+          stagger: 0.1,
+          duration: 0.8,
+          ease: 'power3.out'
+        },
+        '-=0.8'
+      )
+      // Subtitle fade up
+      .fromTo(subtitle, { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.6, ease: 'power2.out' }, '-=0.4')
+      // Hold
+      .to({}, { duration: 1.0 })
+      // Exit - Fade Out
+      .to(container, {
+        opacity: 0,
+        duration: 0.8,
+        ease: 'power2.inOut',
+        onComplete: () => {
+          setIsVisible(false)
+          finish()
+        }
+      })
 
     return () => {
-      clearTimeout(timer)
-      window.removeEventListener('load', handleLoaded)
+      tl.kill()
     }
-  }, [minimumTimePassed])
+  }, [isMounted, finish])
 
-  useEffect(() => {
-    if (minimumTimePassed && document.readyState === 'complete') {
-      setShow(false)
-    }
-  }, [minimumTimePassed])
+  // Don't render anything before hydration or after animation
+  if (!isMounted || !isVisible) return null
 
   return (
-    <AnimatePresence
-      onExitComplete={() => {
-        finish()
-      }}
-    >
-      {show && (
-        <motion.div
-          className="fixed inset-0 z-100 flex flex-col items-center justify-center overflow-hidden bg-linear-to-br from-white via-blue-50/30 to-white font-bold"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{
-            opacity: 0,
-            scale: 1.1,
-            transition: { duration: 0.5, ease: 'easeInOut' }
-          }}
+    <div ref={containerRef} className="fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-white">
+      <div className="mb-4 -ml-2 flex items-center">
+        <svg
+          width="55"
+          height="55"
+          viewBox="0 0 55 55"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+          className="h-16 w-16 md:h-20 md:w-20"
         >
-          <motion.div
-            className="absolute inset-0 opacity-10"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 0.1 }}
-            transition={{ duration: 1 }}
-          >
-            <motion.div
-              className="absolute top-1/4 left-1/4 h-96 w-96 rounded-full bg-blue-400 blur-3xl"
-              animate={{
-                scale: [1, 1.2, 1],
-                x: [0, 50, 0],
-                y: [0, 30, 0]
-              }}
-              transition={{
-                duration: 8,
-                repeat: Infinity,
-                ease: 'easeInOut'
-              }}
-            />
-            <motion.div
-              className="absolute right-1/4 bottom-1/4 h-96 w-96 rounded-full bg-cyan-400 blur-3xl"
-              animate={{
-                scale: [1, 1.3, 1],
-                x: [0, -50, 0],
-                y: [0, -30, 0]
-              }}
-              transition={{
-                duration: 10,
-                repeat: Infinity,
-                ease: 'easeInOut'
-              }}
-            />
-          </motion.div>
+          <path
+            ref={logoSymbolRef}
+            d="M54.4534 17.6962C54.4534 17.6962 39.0067 24.4169 30.5415 20.3414C22.0764 16.266 17.6963 1.54424e-05 17.6963 1.54424e-05C17.6963 1.54424e-05 22.1564 14.85 18.2731 22.916C14.3898 30.982 0.000117282 36.7571 0.000117282 36.7571C0.000117282 36.7571 14.4322 30.2674 22.8945 34.3415C31.3569 38.4156 36.7572 54.4533 36.7572 54.4533C36.7572 54.4533 31.0131 39.2561 35.0023 30.9701C38.9915 22.684 54.4534 17.6962 54.4534 17.6962Z"
+            fill="#1E98D4"
+          />
+        </svg>
 
-          <motion.div
-            className="relative"
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.6, ease: 'easeOut' }}
-            exit={{
-              opacity: 0,
-              scale: 0.9,
-              y: -20,
-              transition: { duration: 0.5, ease: 'easeInOut' }
-            }}
-          >
-            <motion.div
-              className="absolute inset-0 rounded-full bg-blue-400 opacity-20 blur-2xl"
-              animate={{
-                scale: [1, 1.3, 1],
-                opacity: [0.2, 0.3, 0.2]
+        <div
+          ref={logoTextRef}
+          className="perspectives-1000 flex gap-1 font-serif text-5xl font-semibold tracking-tight text-primary md:text-7xl"
+        >
+          {['N', 'C', 'S'].map((char, i) => (
+            <span
+              key={i}
+              ref={(el) => {
+                lettersRef.current[i] = el
               }}
-              transition={{
-                duration: 3,
-                repeat: Infinity,
-                ease: 'easeInOut'
-              }}
-            />
+              className="transform-style-3d inline-block origin-bottom"
+            >
+              {char}
+            </span>
+          ))}
+        </div>
+      </div>
 
-            <svg width="300" height="160" viewBox="0 0 220 140" xmlns="http://www.w3.org/2000/svg">
-              <motion.text
-                x="50%"
-                y="45%"
-                textAnchor="middle"
-                fontSize="42"
-                fontWeight="700"
-                fill="#113561"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{
-                  opacity: 0,
-                  y: -10,
-                  transition: { duration: 0.4, ease: 'easeOut' }
-                }}
-                transition={{ delay: 0.2, duration: 0.6, ease: 'easeOut' }}
-              >
-                Nusa <tspan fill="#1E98D4">Studio</tspan>
-              </motion.text>
-
-              <motion.path
-                d="M20 90 C 70 130, 150 130, 200 90"
-                stroke="url(#nusaGradient)"
-                strokeWidth="6"
-                fill="none"
-                strokeLinecap="round"
-                initial={{ pathLength: 0, opacity: 0 }}
-                animate={{ pathLength: 1, opacity: 1 }}
-                exit={{
-                  opacity: 0,
-                  pathLength: 0,
-                  transition: { duration: 0.4, ease: 'easeInOut' }
-                }}
-                transition={{
-                  duration: 1.2,
-                  ease: 'easeInOut',
-                  delay: 0.4
-                }}
-              />
-
-              <motion.path
-                d="M30 95 C 75 125, 145 125, 190 95"
-                stroke="url(#nusaGradientSecondary)"
-                strokeWidth="3"
-                fill="none"
-                strokeLinecap="round"
-                opacity="0.4"
-                initial={{ pathLength: 0, opacity: 0 }}
-                animate={{ pathLength: 1, opacity: 0.4 }}
-                exit={{
-                  opacity: 0,
-                  pathLength: 0,
-                  transition: { duration: 0.4, ease: 'easeInOut' }
-                }}
-                transition={{
-                  duration: 1.2,
-                  ease: 'easeInOut',
-                  delay: 0.5
-                }}
-              />
-
-              {[0, 1, 2].map((i) => (
-                <motion.circle
-                  key={i}
-                  cx={50 + i * 60}
-                  cy={110 - i * 15 + (i === 1 ? 15 : 0)}
-                  r="4"
-                  fill="#1E98D4"
-                  initial={{ scale: 0, opacity: 0 }}
-                  animate={{ scale: 1, opacity: 1 }}
-                  exit={{
-                    scale: 0,
-                    opacity: 0,
-                    transition: { duration: 0.3 }
-                  }}
-                  transition={{
-                    delay: 0.7 + i * 0.1,
-                    duration: 0.4,
-                    ease: 'easeOut'
-                  }}
-                />
-              ))}
-
-              <defs>
-                <linearGradient id="nusaGradient" x1="20" y1="90" x2="200" y2="90" gradientUnits="userSpaceOnUse">
-                  <stop stopColor="#113561" />
-                  <stop offset="0.5" stopColor="#1E98D4" />
-                  <stop offset="1" stopColor="#1E98D4" stopOpacity="0.4" />
-                </linearGradient>
-                <linearGradient id="nusaGradientSecondary" x1="30" y1="95" x2="190" y2="95" gradientUnits="userSpaceOnUse">
-                  <stop stopColor="#1E98D4" stopOpacity="0.6" />
-                  <stop offset="1" stopColor="#113561" stopOpacity="0.3" />
-                </linearGradient>
-              </defs>
-            </svg>
-          </motion.div>
-        </motion.div>
-      )}
-    </AnimatePresence>
+      {/* Subtitle */}
+      <p ref={subtitleRef} className="tracking-[0.3em] text-slate-400 uppercase opacity-0 max-sm:text-sm">
+        Nusacaraka Studio
+      </p>
+    </div>
   )
 }

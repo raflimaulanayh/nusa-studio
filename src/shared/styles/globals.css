@@ -6,6 +6,9 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme {
+  --font-sans: var(--font-sans);
+  --font-serif: var(--font-sans);
+  /* Use Poppins for everything */
   --color-primary: #113561;
   --color-secondary: #1e98d4;
 }
