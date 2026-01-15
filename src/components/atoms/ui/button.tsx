@@ -17,29 +17,26 @@ const buttonVariants = cva(
     variants: {
       variant: {
         default:
-          'bg-primary text-white shadow-lg hover:bg-primary/90 hover:shadow-xl hover:shadow-primary/25 hover:-translate-y-0.5 active:translate-y-0 disabled:bg-slate-600',
+          'bg-primary text-white shadow-sm hover:bg-primary/90 hover:shadow-md hover:shadow-primary/25 active:translate-y-0 disabled:bg-slate-600',
         secondary:
-          'bg-secondary text-white shadow-lg hover:bg-secondary/90 hover:shadow-xl hover:shadow-secondary/25 hover:-translate-y-0.5 active:translate-y-0 disabled:bg-slate-600',
+          'bg-secondary text-white shadow-sm hover:bg-secondary/90 hover:shadow-md hover:shadow-secondary/25 active:translate-y-0 disabled:bg-slate-600',
         destructive:
-          'bg-red-500 text-white shadow-lg hover:bg-red-500/90 hover:shadow-xl hover:shadow-red-500/25 hover:-translate-y-0.5 focus-visible:ring-red-500/20',
+          'bg-red-500 text-white shadow-sm hover:bg-red-500/90 hover:shadow-md hover:shadow-red-500/25 focus-visible:ring-red-500/20',
         outline:
-          'border-2 shadow-sm border-primary/20 text-primary hover:bg-primary hover:text-white hover:shadow-lg hover:-translate-y-0.5 backdrop-blur-sm',
+          'border shadow-sm border-primary/20 text-primary hover:bg-primary hover:text-white hover:shadow-md backdrop-blur-sm',
         'outline-primary':
-          'border-2 border-primary text-primary bg-transparent hover:bg-primary hover:text-white hover:shadow-lg hover:shadow-primary/25 hover:-translate-y-0.5',
+          'border border-primary text-primary bg-transparent hover:bg-primary hover:text-white hover:shadow-md hover:shadow-primary/25',
         'outline-secondary':
-          'border-2 border-secondary text-secondary bg-transparent hover:bg-secondary hover:text-white hover:shadow-lg hover:shadow-secondary/25 hover:-translate-y-0.5',
-        ghost: 'hover:bg-accent hover:text-accent-foreground hover:-translate-y-0.5',
+          'border border-secondary text-secondary bg-transparent hover:bg-secondary hover:text-white hover:shadow-md hover:shadow-secondary/25',
+        ghost: 'hover:bg-accent hover:text-accent-foreground',
         link: 'text-primary underline-offset-4 hover:underline',
         'accent-orange':
-          'bg-accent-orange text-white shadow-lg hover:bg-accent-orange/90 hover:shadow-xl hover:shadow-accent-orange/25 hover:-translate-y-0.5 disabled:bg-slate-600',
-        'outline-slate':
-          'bg-transparent text-slate-500 shadow-xs hover:bg-slate-300/80 border border-slate-300 hover:-translate-y-0.5',
-        'outline-blue':
-          'bg-transparent text-primary shadow-xs hover:bg-primary/10 border border-primary hover:-translate-y-0.5',
-        'outline-green':
-          'bg-transparent text-secondary shadow-xs hover:bg-secondary/10 border border-secondary hover:-translate-y-0.5',
+          'bg-accent-orange text-white shadow-sm hover:bg-accent-orange/90 hover:shadow-md hover:shadow-accent-orange/25 disabled:bg-slate-600',
+        'outline-slate': 'bg-transparent text-slate-500 shadow-xs hover:bg-slate-300/80 border border-slate-300',
+        'outline-blue': 'bg-transparent text-primary shadow-xs hover:bg-primary/10 border border-primary',
+        'outline-green': 'bg-transparent text-secondary shadow-xs hover:bg-secondary/10 border border-secondary',
         'outline-orange':
-          'bg-transparent text-accent-orange shadow-xs hover:bg-accent-orange/10 border border-accent-orange hover:-translate-y-0.5',
+          'bg-transparent text-accent-orange shadow-xs hover:bg-accent-orange/10 border border-accent-orange',
         none: 'bg-none border-none'
       },
       size: {
@@ -97,7 +94,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       external = false,
       disabledHref = false,
       ordinaryHref = false,
-      loadingMsg,
+      loadingMsg = 'Loading...',
       ...props
     },
     ref

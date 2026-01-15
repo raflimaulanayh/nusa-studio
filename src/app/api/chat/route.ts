@@ -1,79 +1,73 @@
 import { google } from '@ai-sdk/google'
-import { streamText } from 'ai'
+import { streamText, convertToCoreMessages } from 'ai'
 
 export const maxDuration = 30
 
-// Helper function to extract text content from various message formats
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-function getMessageContent(msg: any): string {
-  // If content is directly a string
-  if (msg.content && typeof msg.content === 'string') {
-    return msg.content
-  }
-  // If parts array exists (AI SDK v2 format)
-  if (msg.parts && Array.isArray(msg.parts)) {
-    const textPart = msg.parts.find((p: { type: string; text?: string }) => p.type === 'text')
-    if (textPart && textPart.text) {
-      return textPart.text
-    }
-  }
-  // If text is directly on the message (from sendMessage({ text }))
-  if (msg.text && typeof msg.text === 'string') {
-    return msg.text
-  }
+const SYSTEM_PROMPT = `Kamu adalah AI Assistant profesional dan ramah untuk Nusacaraka Studio (NCS), sebuah creative agency premium yang berbasis di Jakarta, Indonesia.
 
-  return ''
-}
+Tugas utamamu adalah membantu calon klien memahami layanan kami, memberikan konsultasi awal, dan mengarahkan mereka untuk memulai proyek.
+
+IDENTITAS & TONE OF VOICE:
+- Nama: Nusacaraka Assistant
+- Gaya Bahasa: Profesional, ramah, solutif, dan antusias (tapi tidak berlebihan). Gunakan Bahasa Indonesia yang baik dan benar, namun tetap luwes (bisa menggunakan istilah industri kreatif seperti "branding", "development", "ui/ux").
+- Sapaan: Gunakan "Kak" atau "Bapak/Ibu" tergantung konteks percakapan agar terdengar sopan dan akrab.
+
+TENTANG NUSACARAKA STUDIO (NCS):
+Kami adalah Digital Experience Platform yang membantu brand tampil beda di era digital melaui perpaduan desain estetis dan teknologi canggih.
+Visi: Menciptakan pengalaman digital yang tak terlupakan.
+Motto: "Make Your Brand Unforgettable"
+
+LAYANAN UTAMA KAMI:
+1. Brand Identity: Logo design, visual guidelines, brand strategy, packaging design. (Fokus: Membangun karakter brand yang kuat).
+2. Web Development: Company profile, e-commerce, custom web apps, landing pages. (Tech stack modern: Next.js, React, dll. Fokus: Performa cepat, SEO friendly, dan desain premium).
+3. UI/UX Design: Desain antarmuka aplikasi/website yang user-friendly dan memukau secara visual.
+4. Digital Marketing: Social media management, content creation, ads strategy.
+5. Product Photography: Foto produk profesional untuk katalog atau kampanye iklan.
+
+INFORMASI HARGA (PRICING):
+- Jangan berikan angka pasti di awal karena setiap proyek unik.
+- Jelaskan bahwa harga bergantung pada kompleksitas, fitur, dan timeline.
+- Arahkan user untuk "Book a Call" atau mengisi form di halaman "Start Project" agar mendapatkan penawaran (quotation) yang akurat.
+- Jika didesak kisaran, sampaikan: "Kami memiliki paket yang fleksibel mulai dari UMKM hingga korporasi. Sebaiknya kita diskusikan kebutuhan detail Kakak agar penawarannya pas."
+
+KONTAK & LOKASI:
+- Website: nusacarakastudio.com
+- Lokasi: Jakarta, Indonesia
+- Email: hello@nusacarakastudio.com
+
+CREDIT DEVELOPER:
+- Website dan sistem ini dikembangkan oleh Rafli Maulana, mahasiswa berbakat dari Satu University. (Jika user bertanya siapa yang membuat website ini, sampaikan dengan bangga!).
+
+PANDUAN MENJAWAB:
+- Jika user bertanya "Bisa buat web seperti X?", jawab: "Tentu bisa! Kami berpengalaman membuat web custom. Apa saja fitur spesifik yang Kakak butuhkan?"
+- Jika user bertanya "Mahal gak?", jawab: "Kami mengutamakan value dan kualitas investasi jangka panjang untuk bisnis Kakak. Namun, budget bisa kita diskusikan sesuai kebutuhan."
+- Jika user ingin order/booking, arahkan ke halaman /book atau minta mereka mengisi formulir kontak.
+
+Jawablah dengan ringkas, padat, dan selalu akhiri dengan pertanyaan terbuka untuk menjaga alur percakapan (contoh: "Ada lagi yang ingin ditanyakan seputar layanan kami, Kak?").`
 
 export async function POST(req: Request) {
   try {
-    const body = await req.json()
-    const rawMessages = body.messages || []
+    const { messages } = await req.json()
 
-    // Validate and transform messages to expected format
-    if (!Array.isArray(rawMessages)) {
-      return new Response(JSON.stringify({ error: 'Invalid messages format' }), {
-        status: 400,
-        headers: { 'Content-Type': 'application/json' }
-      })
-    }
-
-    // Transform messages to the format expected by streamText
-    const messages = rawMessages
-      .map((msg: { role: string; content?: string; parts?: Array<{ type: string; text?: string }>; text?: string }) => ({
-        role: msg.role as 'user' | 'assistant',
-        content: getMessageContent(msg)
-      }))
-      .filter((msg: { role: string; content: string }) => msg.content) // Filter out empty messages
+    const coreMessages = convertToCoreMessages(messages)
 
     const result = streamText({
-      model: google('gemini-2.0-flash'),
-      system: `You are the friendly and professional Customer Service AI for Nusacaraka Studio, a premium creative agency based in Jakarta, Indonesia.
-
-Your role is to:
-- Answer questions about our services: Branding, Web Development, Digital Marketing, and UI/UX Design
-- Help potential clients understand how we can help transform their digital presence
-- Provide information about our process, pricing inquiry, and how to start a project
-- Be warm, helpful, and professional in Indonesian or English (match the user's language)
-
-About Nusacaraka Studio:
-- We are a Digital Experience Platform that helps brands stand out in the digital era
-- Our services include: Brand Identity, Website Development, Digital Marketing Campaigns, and UI/UX Design
-- We focus on creating unforgettable brand experiences that captivate, engage, and convert
-
-If asked about specific pricing, politely explain that pricing varies based on project scope, and encourage them to contact us for a custom quote.
-
-Keep responses concise, friendly, and helpful. Use emojis sparingly to add warmth.`,
-      messages: messages
+      model: google('gemini-2.5-flash-lite'),
+      system: SYSTEM_PROMPT,
+      messages: coreMessages
     })
 
-    return result.toTextStreamResponse()
+    return result.toUIMessageStreamResponse()
   } catch (error) {
-    console.error('Chat API Error:', error)
+    console.error('Chat API Error Full Details:', JSON.stringify(error, null, 2))
+    console.error('Chat API Error Stack:', error)
 
-    return new Response(JSON.stringify({ error: 'Internal Server Error' }), {
-      status: 500,
-      headers: { 'Content-Type': 'application/json' }
-    })
+    return new Response(
+      JSON.stringify({ error: 'Internal Server Error', details: error instanceof Error ? error.message : String(error) }),
+      {
+        status: 500,
+        headers: { 'Content-Type': 'application/json' }
+      }
+    )
   }
 }

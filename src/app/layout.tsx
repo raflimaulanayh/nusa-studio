@@ -8,7 +8,6 @@ import NextTopLoader from 'nextjs-toploader'
 import React from 'react'
 
 import { CustomCursor } from '@/components/atoms/ui/custom-cursor'
-import { SmoothScroll } from '@/components/atoms/ui/smooth-scroll'
 import { Toaster } from '@/components/atoms/ui/sonner'
 
 import { cn } from '@/utils/cn'
@@ -60,7 +59,6 @@ export default async function RootLayout({
       <body suppressHydrationWarning className={cn('min-h-screen bg-slate-50 font-sans antialiased', poppins.variable)}>
         <CustomCursor />
         <NextTopLoader color="#2b5a9e" showSpinner={false} />
-        <SmoothScroll />
         {children}
         <Toaster richColors position="top-right" closeButton theme="light" />
         <Analytics />

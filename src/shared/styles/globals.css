@@ -11,6 +11,19 @@
   /* Use Poppins for everything */
   --color-primary: #113561;
   --color-secondary: #1e98d4;
+
+  /* Modern Dashboard Colors */
+  --color-stat-blue: #3b82f6;
+  --color-stat-teal: #14b8a6;
+  --color-stat-orange: #f97316;
+  --color-stat-purple: #a855f7;
+  --color-stat-green: #10b981;
+
+  /* Gradient backgrounds */
+  --gradient-blue: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+  --gradient-teal: linear-gradient(135deg, #14b8a6 0%, #0d9488 100%);
+  --gradient-orange: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
+  --gradient-purple: linear-gradient(135deg, #a855f7 0%, #9333ea 100%);
 }
 
 @layer base {
@@ -24,7 +37,7 @@
 
   button,
   a {
-    @apply cursor-pointer transition-all hover:scale-[0.98];
+    @apply cursor-pointer transition-all hover:scale-[0.99];
   }
 
   .bg-cta-gradient {
@@ -41,5 +54,50 @@
     -ms-overflow-style: none;
     overflow: -moz-scrollbars-none;
     scrollbar-width: none;
+  }
+
+  /* Modern Dashboard Utilities */
+  .stat-card-blue {
+    @apply border-l-4 border-[--color-stat-blue] bg-gradient-to-br from-blue-50/50 to-white;
+  }
+
+  .stat-card-teal {
+    @apply border-l-4 border-[--color-stat-teal] bg-gradient-to-br from-teal-50/50 to-white;
+  }
+
+  .stat-card-orange {
+    @apply border-l-4 border-[--color-stat-orange] bg-gradient-to-br from-orange-50/50 to-white;
+  }
+
+  .stat-card-purple {
+    @apply border-l-4 border-[--color-stat-purple] bg-gradient-to-br from-purple-50/50 to-white;
+  }
+
+  .glass-effect {
+    @apply bg-white/80 backdrop-blur-lg;
+  }
+
+  .gradient-icon-blue {
+    background: var(--gradient-blue);
+  }
+
+  .gradient-icon-teal {
+    background: var(--gradient-teal);
+  }
+
+  .gradient-icon-orange {
+    background: var(--gradient-orange);
+  }
+
+  .gradient-icon-purple {
+    background: var(--gradient-purple);
+  }
+
+  .shadow-modern {
+    box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.05), 0 2px 4px -2px rgb(0 0 0 / 0.05);
+  }
+
+  .shadow-modern-lg {
+    box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.08), 0 4px 6px -4px rgb(0 0 0 / 0.05);
   }
 }

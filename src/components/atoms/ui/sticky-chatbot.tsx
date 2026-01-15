@@ -3,12 +3,34 @@
 import { useChat } from '@ai-sdk/react'
 import { DefaultChatTransport } from 'ai'
 import { AnimatePresence, motion } from 'framer-motion'
-import { MessageCircle, Send, X, Bot, User } from 'lucide-react'
+import { MessageCircle, Send, X, Bot, User, Loader2 } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
 
 import { Button } from '@/components/atoms/ui/button'
 
 import { cn } from '@/utils/cn'
+
+// Helper function to extract text from message parts
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const getMessageContent = (msg: any): string => {
+  // Direct content string
+  if (msg.content && typeof msg.content === 'string') {
+    return msg.content
+  }
+  // AI SDK v5 parts format
+  if (msg.parts && Array.isArray(msg.parts)) {
+    return msg.parts
+      .filter((p: { type: string }) => p.type === 'text')
+      .map((p: { text: string }) => p.text)
+      .join('')
+  }
+  // Text field
+  if (msg.text && typeof msg.text === 'string') {
+    return msg.text
+  }
+
+  return ''
+}
 
 export const StickyChatbot = () => {
   const [isOpen, setIsOpen] = useState(false)
@@ -17,7 +39,7 @@ export const StickyChatbot = () => {
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
   const messagesEndRef = useRef<HTMLDivElement>(null)
 
-  // useChat hook dengan DefaultChatTransport
+  // useChat hook with DefaultChatTransport
   const { messages, status, sendMessage } = useChat({
     transport: new DefaultChatTransport({
       api: '/api/chat',
@@ -25,7 +47,6 @@ export const StickyChatbot = () => {
     }),
     onError: (error) => {
       console.error('Chat error:', error)
-      // Check for quota/rate limit error
       if (error.message?.includes('429') || error.message?.includes('quota')) {
         setErrorMessage('Maaf, API sedang sibuk. Coba lagi dalam beberapa saat.')
       } else {
@@ -33,16 +54,6 @@ export const StickyChatbot = () => {
       }
     }
   })
-
-  // Welcome message (manually added since initialMessages not supported in SDK v2)
-  const allMessages = [
-    {
-      id: 'welcome',
-      role: 'assistant' as const,
-      parts: [{ type: 'text' as const, text: 'Halo! 👋 Saya asisten virtual Nusacaraka Studio. Ada yang bisa saya bantu?' }]
-    },
-    ...messages
-  ]
 
   const isLoading = status === 'streaming' || status === 'submitted'
 
@@ -79,28 +90,24 @@ export const StickyChatbot = () => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     if (!inputValue.trim() || isLoading) return
-    setErrorMessage(null) // Clear error on new message
+    setErrorMessage(null)
     sendMessage({ text: inputValue })
     setInputValue('')
   }
 
-  // Helper function to get message content (handling parts structure)
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const getMessageContent = (msg: any): string => {
-    // Check if content exists directly
-    if (msg.content && typeof msg.content === 'string') {
-      return msg.content
-    }
-    // Check for parts array (AI SDK v2 format)
-    if (msg.parts && Array.isArray(msg.parts)) {
-      const textPart = msg.parts.find((p: { type: string; text?: string }) => p.type === 'text')
-      if (textPart && textPart.text) {
-        return textPart.text
-      }
-    }
-
-    return ''
-  }
+  // Build display messages with welcome message
+  const displayMessages = [
+    {
+      id: 'welcome',
+      role: 'assistant' as const,
+      content: 'Halo! 👋 Saya asisten virtual Nusacaraka Studio. Ada yang bisa saya bantu?'
+    },
+    ...messages.map((msg) => ({
+      id: msg.id,
+      role: msg.role as 'user' | 'assistant',
+      content: getMessageContent(msg)
+    }))
+  ]
 
   return (
     <>
@@ -135,36 +142,42 @@ export const StickyChatbot = () => {
             </div>
 
             {/* Messages */}
-            <div className="h-80 space-y-4 overflow-y-auto bg-slate-50 p-4">
-              {allMessages.map((message) => (
-                <div
-                  key={message.id}
-                  className={cn('flex gap-2', message.role === 'user' ? 'flex-row-reverse' : 'flex-row')}
-                >
+            <div data-lenis-prevent className="h-80 space-y-4 overflow-y-auto bg-slate-50 p-4">
+              {displayMessages
+                .filter((msg) => msg.role === 'user' || msg.role === 'assistant')
+                .map((message) => (
                   <div
-                    className={cn(
-                      'flex h-8 w-8 shrink-0 items-center justify-center rounded-full',
-                      message.role === 'user' ? 'bg-secondary' : 'bg-primary'
-                    )}
+                    key={message.id}
+                    className={cn('flex gap-2', message.role === 'user' ? 'flex-row-reverse' : 'flex-row')}
                   >
-                    {message.role === 'user' ? (
-                      <User size={14} className="text-white" />
-                    ) : (
-                      <Bot size={14} className="text-white" />
-                    )}
+                    <div
+                      className={cn(
+                        'flex h-8 w-8 shrink-0 items-center justify-center rounded-full',
+                        message.role === 'user' ? 'bg-secondary' : 'bg-primary'
+                      )}
+                    >
+                      {message.role === 'user' ? (
+                        <User size={14} className="text-white" />
+                      ) : (
+                        <Bot size={14} className="text-white" />
+                      )}
+                    </div>
+                    <div
+                      className={cn(
+                        'max-w-[80%] rounded-2xl px-4 py-2.5 text-sm',
+                        message.role === 'user'
+                          ? 'rounded-br-md bg-secondary text-white'
+                          : 'rounded-bl-md border border-slate-100 bg-white text-slate-700 shadow-sm'
+                      )}
+                    >
+                      {message.content || (
+                        <span className="flex items-center gap-2 text-slate-400">
+                          <Loader2 className="h-3 w-3 animate-spin" />
+                        </span>
+                      )}
+                    </div>
                   </div>
-                  <div
-                    className={cn(
-                      'max-w-[80%] rounded-2xl px-4 py-2.5 text-sm',
-                      message.role === 'user'
-                        ? 'rounded-br-md bg-secondary text-white'
-                        : 'rounded-bl-md border border-slate-100 bg-white text-slate-700 shadow-sm'
-                    )}
-                  >
-                    {getMessageContent(message)}
-                  </div>
-                </div>
-              ))}
+                ))}
 
               {/* Typing indicator */}
               {isLoading && (
@@ -221,7 +234,7 @@ export const StickyChatbot = () => {
                   disabled={isLoading || !inputValue.trim()}
                   className="shrink-0"
                 >
-                  <Send size={18} />
+                  {isLoading ? <Loader2 size={18} className="animate-spin" /> : <Send size={18} />}
                 </Button>
               </div>
             </form>

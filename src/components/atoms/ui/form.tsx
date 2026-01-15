@@ -33,7 +33,7 @@ interface SelectProps extends React.SelectHTMLAttributes<HTMLSelectElement> {
   placeholder?: string
 }
 export const SelectGroup = ({ label, options, placeholder = 'Pilih', ...props }: SelectProps) => (
-  <div className="space-y-2">
+  <div className="flex flex-col gap-2">
     <label className="block text-sm font-semibold text-slate-800">{label}</label>
     <div className="relative">
       <select

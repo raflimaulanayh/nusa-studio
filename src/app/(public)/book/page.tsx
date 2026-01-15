@@ -30,6 +30,7 @@ const BUDGETS = ['< Rp 5 Juta', 'Rp 5 Juta - Rp 15 Juta', 'Rp 15 Juta - Rp 30 Ju
 const formSchema = z.object({
   name: z.string().min(2, { message: 'Name must be at least 2 characters.' }),
   email: z.string().email({ message: 'Please enter a valid email address.' }),
+  phone: z.string().min(10, { message: 'Start with country code (e.g. 62).' }),
   company: z.string().optional(),
   service: z.string().min(1, { message: 'Please select a service.' }),
   budget: z.string().min(1, { message: 'Please select a budget range.' }),
@@ -97,19 +98,42 @@ function BookForm() {
   const selectedService = watch('service')
   const selectedBudget = watch('budget')
 
-  const onSubmit = async () => {
+  // Replace with your Google Apps Script Web App URL
+  const GOOGLE_SCRIPT_URL =
+    'https://script.google.com/macros/s/AKfycbzCypNeJMPm_RFXB6Gs49qbjaj9f_RI_aq_JcnxfzYWwm_eDcbh-vh7qQHZs7bAAlgZlQ/exec'
+
+  const onSubmit = async (data: FormData) => {
     setIsSubmitting(true)
 
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 1500))
+    try {
+      // Create FormData object for Google Apps Script
+      const formData = new FormData()
+      formData.append('timestamp', new Date().toISOString())
+      Object.entries(data).forEach(([key, value]) => {
+        // Handle undefined/null values safely
+        formData.append(key, value || '')
+      })
 
-    setIsSubmitting(false)
-    setIsSuccess(true)
+      // Send to Google Apps Script
+      // mode: 'no-cors' is crucial because Google Scripts don't send CORS headers by default for simple web apps
+      await fetch(GOOGLE_SCRIPT_URL, {
+        method: 'POST',
+        body: formData,
+        mode: 'no-cors'
+      })
 
-    setTimeout(() => {
-      reset()
-      setIsSuccess(false)
-    }, 5000)
+      setIsSubmitting(false)
+      setIsSuccess(true)
+
+      setTimeout(() => {
+        reset()
+        setIsSuccess(false)
+      }, 5000)
+    } catch (error) {
+      console.error('Error submitting form:', error)
+      setIsSubmitting(false)
+      // Optionally show error state
+    }
   }
 
   if (isSuccess) {
@@ -185,6 +209,20 @@ function BookForm() {
               placeholder="your@email.com"
             />
             {errors.email && <p className="pl-1 text-xs text-red-500">{errors.email.message}</p>}
+          </div>
+
+          <div className="flex flex-col gap-2">
+            <label htmlFor="phone" className="pl-1 text-sm font-semibold text-primary">
+              Phone / WhatsApp
+            </label>
+            <input
+              id="phone"
+              type="tel"
+              {...register('phone')}
+              className="w-full rounded-xl border-0 bg-slate-50 px-5 py-4 text-primary transition-all duration-300 placeholder:text-muted-foreground/40 focus:bg-white focus:ring-2 focus:ring-secondary/20"
+              placeholder="628123456789"
+            />
+            {errors.phone && <p className="pl-1 text-xs text-red-500">{errors.phone.message}</p>}
           </div>
 
           <div className="flex flex-col gap-2">

@@ -61,7 +61,7 @@ export const HeroSection = () => {
             initial={{ opacity: 0, y: 40 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1, ease: [0.16, 1, 0.3, 1], delay: 0.1 }}
-            className="font-serif text-6xl leading-[0.9] font-medium tracking-tighter text-primary md:text-7xl lg:text-8xl"
+            className="font-serif text-5xl leading-[0.9] font-medium tracking-tighter text-primary md:text-7xl lg:text-8xl"
           >
             Make Your Brand <br className="hidden md:block" />
             <span className="italic">Unforgettable</span>
