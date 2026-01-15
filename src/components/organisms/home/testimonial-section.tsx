@@ -3,6 +3,7 @@
 import Autoplay from 'embla-carousel-autoplay'
 import { motion } from 'framer-motion'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
+import Image from 'next/image'
 import { useEffect, useState } from 'react'
 
 import {
@@ -91,9 +92,11 @@ export const TestimonialSection = () => {
                       transition={{ delay: 0.2 }}
                       className="flex items-center gap-4 rounded-full border border-primary/5 bg-white p-2 pr-6 shadow-sm"
                     >
-                      <img
+                      <Image
                         src={testimonial.image}
                         alt={testimonial.author}
+                        width={48}
+                        height={48}
                         className="h-12 w-12 rounded-full object-cover"
                       />
                       <div className="text-left">

@@ -3,6 +3,7 @@
 import { MENU } from '@/constants/menu'
 import { motion } from 'framer-motion'
 import { Instagram, Linkedin, Mail, MapPin, Phone, Twitter } from 'lucide-react'
+import Image from 'next/image'
 import Link from 'next/link'
 
 import { Text } from '@/components/atoms/typography'
@@ -29,7 +30,7 @@ export const Footer = () => {
         <div className="mb-16 grid grid-cols-1 gap-10 md:grid-cols-2 lg:grid-cols-4">
           <div className="lg:col-span-1">
             <Link href="/" className="mb-6 inline-block">
-              <img src="/logo.png" alt="Nusacaraka" className="w-40 object-contain" />
+              <Image src="/logo.png" alt="Nusacaraka" width={160} height={40} className="w-40 object-contain" />
             </Link>
             <Text variant="default" size="sm" className="mb-6 leading-relaxed opacity-70">
               Digital Experience Platform yang membantu brand Anda berkembang di era digital.

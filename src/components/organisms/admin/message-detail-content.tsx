@@ -1,9 +1,9 @@
 'use client'
 
+import type { ContactMessage } from '@/data/mock-contacts'
 import { EnvelopeSimple, CalendarBlank, Briefcase, ChatCircleText } from '@phosphor-icons/react'
 import { ArrowLeft } from 'lucide-react'
 import Link from 'next/link'
-import type { ContactMessage } from '@/data/mock-contacts'
 
 import { Button } from '@/components/atoms/ui/button'
 import { Card } from '@/components/atoms/ui/card'

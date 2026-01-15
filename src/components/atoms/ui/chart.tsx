@@ -70,11 +70,11 @@ export const ChartTooltip = Tooltip
 export const ChartTooltipContent = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement> &
-    TooltipProps<any, any> & {
+    TooltipProps<number, string> & {
       hideLabel?: boolean
       indicator?: 'line' | 'dot' | 'dashed'
     }
->(({ active, payload, className, indicator = 'dot', hideLabel = false, label, ...props }, ref) => {
+>(({ active, payload, className, hideLabel = false, label }, ref) => {
   const { config } = useChart()
 
   if (!active || !payload?.length) {
@@ -91,7 +91,7 @@ export const ChartTooltipContent = React.forwardRef<
     >
       {!hideLabel && <div className="mb-1 font-medium text-slate-500">{label}</div>}
       <div className="grid gap-1.5 align-middle">
-        {payload.map((item: any, index: number) => {
+        {payload.map((item, index: number) => {
           const key = item.dataKey || item.name
           const conf = config[key] || { label: key, color: item.fill || item.color }
 

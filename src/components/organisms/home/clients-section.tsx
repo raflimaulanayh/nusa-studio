@@ -1,6 +1,7 @@
 'use client'
 
 import { motion } from 'framer-motion'
+import Image from 'next/image'
 
 import { Heading, Text } from '@/components/atoms/typography'
 import { Container } from '@/components/templates/container'
@@ -86,9 +87,11 @@ export const ClientsSection = () => {
                 key={`${client.name}-${index}-row1`}
                 className="group relative flex shrink-0 cursor-pointer items-center justify-center px-8 transition-all duration-300"
               >
-                <img
+                <Image
                   src={client.logo}
                   alt={client.name}
+                  width={160}
+                  height={48}
                   className="h-12 w-auto max-w-40 object-contain opacity-50 grayscale filter transition-all duration-300 group-hover:scale-110 group-hover:opacity-100 group-hover:grayscale-0"
                   onError={(e) => {
                     e.currentTarget.style.display = 'none'
@@ -110,9 +113,11 @@ export const ClientsSection = () => {
                 key={`${client.name}-${index}-row1-dup`}
                 className="group relative flex shrink-0 cursor-pointer items-center justify-center px-8 transition-all duration-300"
               >
-                <img
+                <Image
                   src={client.logo}
                   alt={client.name}
+                  width={160}
+                  height={48}
                   className="h-12 w-auto object-contain opacity-50 grayscale filter transition-all duration-300 group-hover:scale-110 group-hover:opacity-100 group-hover:grayscale-0"
                   onError={(e) => {
                     e.currentTarget.style.display = 'none'

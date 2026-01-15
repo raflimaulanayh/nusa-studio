@@ -3,6 +3,7 @@
 import { type Article } from '@/data/articles'
 import { motion } from 'framer-motion'
 import { ArrowUpRight, Calendar } from 'lucide-react'
+import Image from 'next/image'
 import Link from 'next/link'
 
 import { Text } from '@/components/atoms/typography'
@@ -24,10 +25,11 @@ export const ArticleCard = ({ article, index }: ArticleCardProps) => {
       {/* Image */}
       <Link href={`/articles/${article.slug}`} className="mb-6 block overflow-hidden rounded-2xl">
         <div className="relative aspect-[4/3] overflow-hidden">
-          <img
+          <Image
             src={article.image}
             alt={article.title}
-            className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
+            fill
+            className="object-cover transition-transform duration-700 group-hover:scale-105"
           />
           <div className="absolute top-4 left-4 rounded-full bg-white/90 px-3 py-1 text-xs font-semibold tracking-wider text-primary uppercase backdrop-blur-sm">
             {article.category}
@@ -56,7 +58,13 @@ export const ArticleCard = ({ article, index }: ArticleCardProps) => {
 
         <div className="mt-auto flex items-center justify-between border-t border-primary/10 pt-6">
           <div className="flex items-center gap-2">
-            <img src={article.author.image} alt={article.author.name} className="h-8 w-8 rounded-full object-cover" />
+            <Image
+              src={article.author.image}
+              alt={article.author.name}
+              width={32}
+              height={32}
+              className="h-8 w-8 rounded-full object-cover"
+            />
             <div className="flex flex-col">
               <span className="text-xs font-semibold text-primary">{article.author.name}</span>
               <span className="text-[10px] text-muted-foreground">{article.author.role}</span>

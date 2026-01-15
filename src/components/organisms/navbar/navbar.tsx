@@ -3,6 +3,7 @@
 import { MENU } from '@/constants/menu'
 import { AnimatePresence, motion } from 'framer-motion'
 import { Menu, X } from 'lucide-react'
+import Image from 'next/image'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useState } from 'react'
@@ -73,7 +74,7 @@ export const Navbar = () => {
                 whileTap={{ scale: 0.95 }}
                 className="relative flex items-center gap-3"
               >
-                <img src="/logo.png" alt="Nusacaraka" className="w-32 object-contain" />
+                <Image src="/logo.png" alt="Nusacaraka" width={128} height={32} className="w-32 object-contain" />
               </motion.div>
             </Link>
 

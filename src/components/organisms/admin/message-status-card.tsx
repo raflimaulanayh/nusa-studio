@@ -21,13 +21,7 @@ const StatusBadge = ({ status }: { status: ContactMessage['status'] }) => {
   )
 }
 
-export function MessageStatusCard({
-  initialStatus,
-  messageId
-}: {
-  initialStatus: ContactMessage['status']
-  messageId: string
-}) {
+export function MessageStatusCard({ initialStatus }: { initialStatus: ContactMessage['status']; messageId: string }) {
   const [status, setStatus] = useState<ContactMessage['status']>(initialStatus)
   const [isSaving, setIsSaving] = useState(false)
 
@@ -39,7 +33,6 @@ export function MessageStatusCard({
     await new Promise((resolve) => setTimeout(resolve, 500))
     setIsSaving(false)
     // TODO: Implement actual API call to update status
-    console.log('Updating message', messageId, 'to status:', status)
   }
 
   return (
