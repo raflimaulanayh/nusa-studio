@@ -92,7 +92,7 @@ export const ChartTooltipContent = React.forwardRef<
       {!hideLabel && <div className="mb-1 font-medium text-slate-500">{label}</div>}
       <div className="grid gap-1.5 align-middle">
         {payload.map((item, index: number) => {
-          const key = item.dataKey || item.name
+          const key = (item.dataKey || item.name || 'unknown') as string
           const conf = config[key] || { label: key, color: item.fill || item.color }
 
           return (
