@@ -86,20 +86,20 @@ export default function DashboardPage() {
       </div>
 
       {/* Split View */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
+      <div className="grid gap-4 lg:grid-cols-7">
         {/* Chart Section */}
-        <Card className="shadow-modern col-span-4">
+        <Card className="shadow-modern overflow-hidden lg:col-span-4">
           <CardHeader>
             <CardTitle className="text-slate-900">Overview</CardTitle>
             <CardDescription>Monthly revenue trajectory (Estimations).</CardDescription>
           </CardHeader>
-          <CardContent className="pl-2">
+          <CardContent className="px-2 pb-6 sm:px-6">
             <OverviewChart />
           </CardContent>
         </Card>
 
         {/* Recent Sales/Bookings */}
-        <Card className="shadow-modern col-span-3">
+        <Card className="shadow-modern lg:col-span-3">
           <CardHeader className="flex flex-row items-start justify-between space-y-0 pb-4">
             <div className="space-y-1.5">
               <CardTitle className="text-slate-900">Recent Bookings</CardTitle>

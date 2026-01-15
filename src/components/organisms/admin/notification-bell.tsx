@@ -105,7 +105,7 @@ export function NotificationBell() {
                                 <p className="text-sm font-medium text-slate-900">{booking.name}</p>
                                 <p className="text-xs text-slate-500">{booking.email}</p>
                                 <p className="text-xs text-slate-600">
-                                  {booking.projectType} • {booking.budget}
+                                  {booking.service} • {booking.budget}
                                 </p>
                               </div>
 

@@ -1,6 +1,6 @@
 'use client'
 
-import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from 'recharts'
+import { Bar, BarChart, CartesianGrid, ResponsiveContainer, XAxis, YAxis } from 'recharts'
 
 import { ChartConfig, ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/atoms/ui/chart'
 
@@ -28,27 +28,29 @@ const chartConfig = {
 
 export function OverviewChart() {
   return (
-    <ChartContainer config={chartConfig} className="min-h-[350px] w-full">
-      <BarChart accessibilityLayer data={chartData}>
-        <CartesianGrid vertical={false} strokeDasharray="3 3" stroke="#e5e7eb" />
-        <XAxis
-          dataKey="month"
-          tickLine={false}
-          tickMargin={10}
-          axisLine={false}
-          tickFormatter={(value) => value.slice(0, 3)}
-          className="text-xs text-muted-foreground"
-        />
-        <YAxis
-          tickLine={false}
-          axisLine={false}
-          tickFormatter={(value) => `Rp${(value / 1000000).toFixed(0)}jt`}
-          className="text-xs text-muted-foreground"
-          width={80}
-        />
-        <ChartTooltip cursor={false} content={<ChartTooltipContent hideLabel />} />
-        <Bar dataKey="revenue" fill="var(--color-revenue)" radius={[4, 4, 0, 0]} />
-      </BarChart>
+    <ChartContainer config={chartConfig} className="h-[350px] w-full">
+      <ResponsiveContainer width="100%" height="100%">
+        <BarChart accessibilityLayer data={chartData} margin={{ left: -20, right: 10, top: 10, bottom: 10 }}>
+          <CartesianGrid vertical={false} strokeDasharray="3 3" stroke="#e5e7eb" />
+          <XAxis
+            dataKey="month"
+            tickLine={false}
+            tickMargin={10}
+            axisLine={false}
+            tickFormatter={(value) => value.slice(0, 3)}
+            className="text-xs text-muted-foreground"
+          />
+          <YAxis
+            tickLine={false}
+            axisLine={false}
+            tickFormatter={(value) => `Rp${(value / 1000000).toFixed(0)}jt`}
+            className="text-xs text-muted-foreground"
+            width={50}
+          />
+          <ChartTooltip cursor={false} content={<ChartTooltipContent hideLabel />} />
+          <Bar dataKey="revenue" fill="var(--color-revenue)" radius={[4, 4, 0, 0]} />
+        </BarChart>
+      </ResponsiveContainer>
     </ChartContainer>
   )
 }

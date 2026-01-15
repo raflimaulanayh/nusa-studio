@@ -6,7 +6,6 @@ import {
   Phone,
   CalendarBlank,
   Briefcase,
-  Buildings,
   CurrencyDollar,
   ChatCircleText,
   WhatsappLogo
@@ -39,7 +38,7 @@ export function BookingDetailContent({ booking }: { booking: Booking }) {
       {/* Header */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div>
-          <h1 className="text-2xl font-semibold text-slate-900 lg:text-3xl">
+          <h1 className="text-xl font-semibold text-slate-900 lg:text-3xl">
             {booking.name}
             {booking.company && <span className="ml-2 font-normal text-slate-600">({booking.company})</span>}
           </h1>

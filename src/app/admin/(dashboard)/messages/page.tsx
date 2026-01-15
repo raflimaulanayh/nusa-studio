@@ -1,13 +1,14 @@
 'use client'
 
-import { useState } from 'react'
-import Link from 'next/link'
 import { MOCK_CONTACTS, type ContactMessage } from '@/data/mock-contacts'
 import { EnvelopeSimple, CalendarBlank, Briefcase } from '@phosphor-icons/react'
 import { Download, Search, CalendarDays } from 'lucide-react'
+import Link from 'next/link'
+import { useState } from 'react'
 
 import { Button } from '@/components/atoms/ui/button'
 import { Card } from '@/components/atoms/ui/card'
+
 import { cn } from '@/utils/cn'
 
 const StatusBadge = ({ status }: { status: ContactMessage['status'] }) => {
