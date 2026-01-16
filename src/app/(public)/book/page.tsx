@@ -172,7 +172,7 @@ function BookForm() {
         <div className="mb-10 flex items-center justify-between rounded-2xl border border-secondary/20 bg-slate-50 p-6">
           <div>
             <div className="mb-1 text-sm text-muted-foreground">Selected Plan</div>
-            <div className="text-xl font-bold text-primary">{initialPlan}</div>
+            <div className="text-xl font-semibold text-primary">{initialPlan}</div>
             <div className="font-semibold text-secondary">{selectedPackageInfo.price}</div>
           </div>
           <div className="hidden sm:block">

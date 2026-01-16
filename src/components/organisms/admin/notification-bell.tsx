@@ -27,7 +27,7 @@ export function NotificationBell() {
       >
         <Bell className="h-5 w-5" />
         {totalUnread > 0 && (
-          <span className="absolute top-1 right-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white">
+          <span className="absolute top-1 right-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[10px] font-semibold text-white">
             {totalUnread > 9 ? '9+' : totalUnread}
           </span>
         )}
@@ -58,7 +58,7 @@ export function NotificationBell() {
                     <Calendar className="h-4 w-4" />
                     <span>Booking</span>
                     {newBookings.length > 0 && (
-                      <span className="ml-1 flex h-5 w-5 items-center justify-center rounded-full bg-blue-100 text-[10px] font-bold text-blue-600">
+                      <span className="ml-1 flex h-5 w-5 items-center justify-center rounded-full bg-blue-100 text-[10px] font-semibold text-blue-600">
                         {newBookings.length}
                       </span>
                     )}
@@ -77,7 +77,7 @@ export function NotificationBell() {
                     <MessageSquare className="h-4 w-4" />
                     <span>Messages</span>
                     {newMessages.length > 0 && (
-                      <span className="ml-1 flex h-5 w-5 items-center justify-center rounded-full bg-teal-100 text-[10px] font-bold text-teal-600">
+                      <span className="ml-1 flex h-5 w-5 items-center justify-center rounded-full bg-teal-100 text-[10px] font-semibold text-teal-600">
                         {newMessages.length}
                       </span>
                     )}

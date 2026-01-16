@@ -37,7 +37,7 @@ export default function DashboardPage() {
             </div>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-slate-900">{totalRevenue}</div>
+            <div className="text-2xl font-semibold text-slate-900">{totalRevenue}</div>
             <p className="text-xs font-medium text-emerald-600">+20.1% from last month</p>
           </CardContent>
         </Card>
@@ -51,7 +51,7 @@ export default function DashboardPage() {
             </div>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-slate-900">+{totalBookings}</div>
+            <div className="text-2xl font-semibold text-slate-900">+{totalBookings}</div>
             <p className="text-xs font-medium text-emerald-600">+180.1% from last month</p>
           </CardContent>
         </Card>
@@ -65,7 +65,7 @@ export default function DashboardPage() {
             </div>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-slate-900">+{activeClients}</div>
+            <div className="text-2xl font-semibold text-slate-900">+{activeClients}</div>
             <p className="text-xs font-medium text-emerald-600">+19% from last month</p>
           </CardContent>
         </Card>
@@ -79,7 +79,7 @@ export default function DashboardPage() {
             </div>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-slate-900">+{newBookings}</div>
+            <div className="text-2xl font-semibold text-slate-900">+{newBookings}</div>
             <p className="text-xs font-medium text-emerald-600">+201 since last hour</p>
           </CardContent>
         </Card>

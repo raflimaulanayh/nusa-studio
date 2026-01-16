@@ -1,9 +1,10 @@
 'use client'
 
-import { LayoutDashboard, MessageSquare, LogOut, Mail } from 'lucide-react'
+import { LayoutDashboard, MessageSquare, LogOut, Mail, FileText, ChevronDown } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
+import { useState } from 'react'
 
 import { cn } from '@/utils/cn'
 
@@ -13,8 +14,17 @@ const NAV_ITEMS = [
   { label: 'Messages', href: '/admin/messages', icon: Mail }
 ]
 
+const CMS_ITEMS = [
+  { label: 'Services', href: '/admin/cms/services' },
+  { label: 'Articles', href: '/admin/cms/articles' },
+  { label: 'Knowledge Base', href: '/admin/cms/knowledge' }
+]
+
 export function AdminSidebar() {
   const pathname = usePathname()
+  const [isCmsOpen, setIsCmsOpen] = useState(pathname.startsWith('/admin/cms'))
+
+  const isCmsActive = pathname.startsWith('/admin/cms')
 
   return (
     <aside className="sticky top-0 z-30 flex h-screen w-72 shrink-0 flex-col bg-primary text-white">
@@ -45,6 +55,55 @@ export function AdminSidebar() {
           )
         })}
 
+        {/* CMS Dropdown Menu */}
+        <div className="flex flex-col gap-y-1">
+          <button
+            onClick={() => setIsCmsOpen(!isCmsOpen)}
+            className={cn(
+              'group flex items-center justify-between gap-3 rounded-md px-3 py-2.5 text-sm font-medium transition-all duration-200',
+              isCmsActive
+                ? 'relative overflow-hidden bg-secondary text-white shadow-md'
+                : 'text-blue-100 hover:bg-white/10 hover:text-white'
+            )}
+          >
+            <div className="flex items-center gap-3">
+              <FileText
+                className={cn('h-5 w-5 shrink-0', isCmsActive ? 'text-white' : 'text-blue-200 group-hover:text-white')}
+              />
+              CMS
+            </div>
+            <ChevronDown
+              className={cn(
+                'h-4 w-4 transition-transform duration-200',
+                isCmsOpen && 'rotate-180',
+                isCmsActive ? 'text-white' : 'text-blue-200 group-hover:text-white'
+              )}
+            />
+          </button>
+
+          {/* Submenu */}
+          {isCmsOpen && (
+            <div className="ml-4 flex flex-col gap-y-1 border-l border-white/10 pl-3">
+              {CMS_ITEMS.map((item) => {
+                const isActive = pathname === item.href
+
+                return (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    className={cn(
+                      'rounded-md px-3 py-2 text-sm transition-all duration-200',
+                      isActive ? 'bg-white/20 font-bold text-white' : 'text-blue-100 hover:bg-white/10 hover:text-white'
+                    )}
+                  >
+                    {item.label}
+                  </Link>
+                )
+              })}
+            </div>
+          )}
+        </div>
+
         <div className="mt-auto space-y-4 py-8">
           {/* User Info Card */}
           <div className="rounded-lg bg-white/10 p-3 backdrop-blur-sm">
@@ -55,7 +114,7 @@ export function AdminSidebar() {
               </div>
               {/* User Details */}
               <div className="flex-1 overflow-hidden">
-                <p className="truncate text-sm font-semibold text-white">Administrator</p>
+                <p className="truncate text-sm font-bold text-white">Administrator</p>
                 <p className="truncate text-xs text-blue-200">ADMIN</p>
               </div>
             </div>
