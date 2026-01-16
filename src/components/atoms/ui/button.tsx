@@ -63,7 +63,7 @@ const buttonVariants = cva(
     defaultVariants: {
       variant: 'secondary',
       size: 'default',
-      rounded: 'default'
+      rounded: 'full'
     }
   }
 )

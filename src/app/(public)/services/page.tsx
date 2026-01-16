@@ -78,11 +78,7 @@ export default function ServicesPage() {
                         ))}
                       </div>
 
-                      <Button
-                        variant="outline"
-                        rounded="full"
-                        className="w-fit border-primary/20 bg-transparent transition-all duration-300 group-hover:bg-primary group-hover:text-white"
-                      >
+                      <Button variant="outline" rounded="full" className="w-fit">
                         Learn More
                         <ArrowUpRight className="ml-2 h-4 w-4 transition-transform duration-300 group-hover:rotate-45" />
                       </Button>

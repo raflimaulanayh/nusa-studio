@@ -89,14 +89,7 @@ export const FeaturedWorks = () => {
           transition={{ duration: 0.6, delay: 0.3 }}
           className="text-center"
         >
-          <Button
-            url="/work"
-            variant="outline"
-            size="lg"
-            rounded="full"
-            rightIcon={<ArrowRight size={20} />}
-            className="border-primary/20 text-primary hover:bg-primary hover:text-white"
-          >
+          <Button url="/work" variant="outline" size="lg" rounded="full" rightIcon={<ArrowRight size={20} />}>
             View All Works
           </Button>
         </motion.div>

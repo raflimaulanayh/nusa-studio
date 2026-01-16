@@ -63,19 +63,16 @@ export const PricingSection = ({
                   const isActive = activeTab === pkg.id
 
                   return (
-                    <button
+                    <Button
                       key={pkg.id}
                       onClick={() => setActiveTab(pkg.id)}
-                      className={cn(
-                        'relative flex items-center gap-2 rounded-full border px-4 py-2 transition-all duration-300 sm:px-6 sm:py-3',
-                        isActive
-                          ? 'border-primary bg-primary text-white shadow-lg shadow-primary/25'
-                          : 'border-primary/10 bg-white text-muted-foreground hover:border-primary/30 hover:bg-primary/5'
-                      )}
+                      variant={isActive ? 'default' : 'outline'}
+                      rounded="full"
+                      size="lg"
                     >
                       {Icon && <Icon className="h-4 w-4" />}
                       <span className="text-sm font-medium sm:text-base">{pkg.title}</span>
-                    </button>
+                    </Button>
                   )
                 })}
               </div>
@@ -101,7 +98,7 @@ export const PricingSection = ({
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: -20 }}
               transition={{ duration: 0.4 }}
-              className="grid grid-cols-1 place-items-start justify-center gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
+              className="grid grid-cols-1 place-items-start justify-center gap-6 max-lg:gap-10 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
             >
               {activePackage.tiers.map((tier, index) => (
                 <article
@@ -142,10 +139,7 @@ export const PricingSection = ({
                   <Button
                     url={`/book?service=${encodeURIComponent(activePackage.title)}&plan=${encodeURIComponent(tier.name)}`}
                     variant={tier.highlight ? 'default' : 'outline'}
-                    className={cn(
-                      'mt-auto w-full',
-                      !tier.highlight && 'border-primary/20 text-primary hover:bg-primary hover:text-white'
-                    )}
+                    className={cn('mt-auto w-full')}
                   >
                     Choose Plan
                   </Button>

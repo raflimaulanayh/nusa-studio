@@ -105,12 +105,7 @@ export const Navbar = () => {
             </div>
 
             <div className="hidden lg:block">
-              <Button
-                url="/book"
-                variant="outline"
-                rounded="full"
-                className="border-primary/20 text-primary hover:bg-primary hover:text-white"
-              >
+              <Button url="/book" variant="outline" rounded="full">
                 Start Project
               </Button>
             </div>

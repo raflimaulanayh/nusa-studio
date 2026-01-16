@@ -8,6 +8,7 @@ import Link from 'next/link'
 import ReactMarkdown from 'react-markdown'
 
 import { Text } from '@/components/atoms/typography'
+import { Button } from '@/components/atoms/ui/button'
 import { CtaSection } from '@/components/organisms/home'
 import { Container } from '@/components/templates/container'
 import { GeneralLayout } from '@/components/templates/general-layout'
@@ -89,11 +90,9 @@ export const ArticleDetailView = ({ article }: ArticleDetailViewProps) => {
           <footer className="mx-auto mt-20 max-w-3xl border-t border-primary/10 pt-10 text-center">
             <Text className="text-muted-foreground italic">Thanks for reading. Check out more insights below.</Text>
             <div className="mt-8">
-              <Link href="/articles">
-                <button className="rounded-full border border-primary/20 px-8 py-3 font-medium text-primary transition-all hover:bg-primary hover:text-white">
-                  Read More Articles
-                </button>
-              </Link>
+              <Button url="/articles" size="lg" variant="outline" rounded="full">
+                Read More Articles
+              </Button>
             </div>
           </footer>
         </Container>

@@ -9,10 +9,11 @@ import Link from 'next/link'
 import { Text } from '@/components/atoms/typography'
 
 const SERVICES = [
-  { label: 'Branding', url: '/services/branding' },
-  { label: 'Web Development', url: '/services/web-development' },
-  { label: 'Digital Marketing', url: '/services/digital-marketing' },
-  { label: 'UI/UX Design', url: '/services/ui-ux-design' }
+  { label: 'Branding', url: '/services' },
+  { label: 'Web Development', url: '/services' },
+  { label: 'Digital Marketing', url: '/services' },
+  { label: 'UI/UX Design', url: '/services' },
+  { label: 'Product Photography', url: '/services' }
 ]
 
 const SOCIAL_LINKS = [
@@ -57,8 +58,8 @@ export const Footer = () => {
           <div>
             <h4 className="mb-4 font-semibold text-foreground">Navigation</h4>
             <ul className="space-y-3">
-              {MENU.map((item) => (
-                <li key={item.url}>
+              {MENU.map((item, index) => (
+                <li key={index}>
                   <Link
                     href={item.url}
                     className="text-sm text-muted-foreground transition-colors duration-300 hover:text-primary"
@@ -73,8 +74,8 @@ export const Footer = () => {
           <div>
             <h4 className="mb-4 font-semibold text-foreground">Services</h4>
             <ul className="space-y-3">
-              {SERVICES.map((item) => (
-                <li key={item.url}>
+              {SERVICES.map((item, index) => (
+                <li key={index}>
                   <Link
                     href={item.url}
                     className="text-sm text-muted-foreground transition-colors duration-300 hover:text-primary"

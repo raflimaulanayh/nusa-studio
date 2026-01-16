@@ -87,15 +87,11 @@ export const HeroSection = () => {
             transition={{ delay: 0.6, duration: 0.8 }}
             className="flex flex-col items-center justify-center gap-4 sm:flex-row"
           >
-            <Button
-              size="lg"
-              rounded="full"
-              className="group bg-primary px-10 py-7 text-lg font-medium text-white shadow-xl shadow-primary/10 hover:bg-primary/90"
-            >
+            <Button size="lg" variant="default" rounded="full">
               Start Project
               <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
             </Button>
-            <Button variant="ghost" size="lg" rounded="full" className="px-10 py-7 text-lg text-primary hover:bg-black/5">
+            <Button variant="outline" size="lg" rounded="full">
               View Our Work
             </Button>
           </motion.div>

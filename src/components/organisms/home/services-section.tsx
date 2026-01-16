@@ -131,13 +131,7 @@ export const ServicesSection = () => {
           transition={{ duration: 0.6, delay: 0.3 }}
           className="text-center"
         >
-          <Button
-            url="/services"
-            variant="outline"
-            size="lg"
-            rounded="full"
-            className="h-14 border-primary/20 px-8 text-base text-primary hover:bg-primary hover:text-white"
-          >
+          <Button url="/services" size="lg" variant="outline">
             Explore All Services
           </Button>
         </motion.div>

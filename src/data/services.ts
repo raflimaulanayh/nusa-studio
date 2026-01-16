@@ -1,16 +1,16 @@
 import {
-  Camera,
-  Palette,
-  Globe,
-  Megaphone,
-  LucideIcon,
   BarChart,
-  PenTool,
+  Camera,
+  Globe,
   Layout,
+  LucideIcon,
+  Megaphone,
+  Package,
+  Palette,
+  PenTool,
   Search,
   Share2,
-  Video,
-  Package
+  Video
 } from 'lucide-react'
 
 export interface ServiceProcess {
@@ -47,7 +47,7 @@ export const SERVICES_DATA: Service[] = [
       },
       {
         title: 'High-End Retouching',
-        description: ' meticulous post-production to ensure flawless lighting, color accuracy, and texture detail.',
+        description: 'Meticulous post-production to ensure flawless lighting, color accuracy, and texture detail.',
         icon: Layout
       },
       {
@@ -182,5 +182,44 @@ export const SERVICES_DATA: Service[] = [
       { title: 'Optimization', description: 'A/B testing and performance reporting.' }
     ],
     tags: ['Marketing', 'Social Media', 'Content']
+  },
+  {
+    id: '05',
+    title: 'UI/UX Design',
+    slug: 'ui-ux-design',
+    icon: Layout,
+    shortDescription: 'User-centric interfaces that are intuitive, engaging, and beautiful.',
+    fullDescription:
+      'We design digital products that people love to use. Connecting business goals with user needs, we create seamless interfaces for web and mobile applications. Our process is rooted in empathy and data.',
+    features: [
+      {
+        title: 'User Research',
+        description: 'Understanding your users through interviews, surveys, and persona building.',
+        icon: Search
+      },
+      {
+        title: 'Wireframing',
+        description: 'Low-fidelity blueprints to establish structure and user flow.',
+        icon: PenTool
+      },
+      {
+        title: 'Prototyping',
+        description: 'Interactive high-fidelity prototypes for testing and stakeholder validation.',
+        icon: Layout
+      },
+      {
+        title: 'Design Systems',
+        description: 'Scalable component libraries for consistent UI across products.',
+        icon: Package
+      }
+    ],
+    process: [
+      { title: 'Empathize', description: 'Deep dive into user needs and pain points.' },
+      { title: 'Define', description: 'Establishing clear problem statements and goals.' },
+      { title: 'Ideate', description: 'Brainstorming and sketching solutions.' },
+      { title: 'Prototype', description: 'Creating testable artifacts.' },
+      { title: 'Test', description: 'Validating with real users.' }
+    ],
+    tags: ['UI/UX', 'Product Design', 'Research']
   }
 ]
