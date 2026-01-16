@@ -244,7 +244,6 @@ export default function ContactPage() {
                       <Button
                         type="submit"
                         size="lg"
-                        className="w-full px-10 py-6 text-lg md:w-auto"
                         disabled={isSubmitting}
                         rightIcon={!isSubmitting ? <ArrowRight className="h-5 w-5" /> : undefined}
                       >

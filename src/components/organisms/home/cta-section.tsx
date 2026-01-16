@@ -32,7 +32,7 @@ export const CtaSection = () => {
             </Text>
 
             <div className="flex flex-col items-center justify-center gap-4 pt-4 sm:flex-row">
-              <Button url="/contact" variant="secondary" size="lg" rounded="full" className="w-full px-8 text-lg sm:w-auto">
+              <Button url="/contact" variant="secondary" size="lg" rounded="full" className="w-full sm:w-auto">
                 Start a Project
               </Button>
               <Button

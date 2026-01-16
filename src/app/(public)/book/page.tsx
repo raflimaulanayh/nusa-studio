@@ -14,8 +14,6 @@ import { Button } from '@/components/atoms/ui/button'
 import { Container } from '@/components/templates/container'
 import { GeneralLayout } from '@/components/templates/general-layout'
 
-import { cn } from '@/utils/cn'
-
 const SERVICES = [
   'Product Photography',
   'Brand Identity',
@@ -192,7 +190,7 @@ function BookForm() {
             <input
               id="name"
               {...register('name')}
-              className="w-full rounded-xl border-0 bg-slate-50 px-5 py-4 text-primary transition-all duration-300 placeholder:text-muted-foreground/40 focus:bg-white focus:ring-2 focus:ring-secondary/20"
+              className="w-full rounded-sm border bg-slate-50 px-4 py-3 text-primary transition-all duration-300 placeholder:text-muted-foreground/40 focus:bg-white focus:ring-2 focus:ring-secondary/20"
               placeholder="Your name"
             />
             {errors.name && <p className="pl-1 text-xs text-red-500">{errors.name.message}</p>}
@@ -205,7 +203,7 @@ function BookForm() {
             <input
               id="email"
               {...register('email')}
-              className="w-full rounded-xl border-0 bg-slate-50 px-5 py-4 text-primary transition-all duration-300 placeholder:text-muted-foreground/40 focus:bg-white focus:ring-2 focus:ring-secondary/20"
+              className="w-full rounded-sm border bg-slate-50 px-4 py-3 text-primary transition-all duration-300 placeholder:text-muted-foreground/40 focus:bg-white focus:ring-2 focus:ring-secondary/20"
               placeholder="your@email.com"
             />
             {errors.email && <p className="pl-1 text-xs text-red-500">{errors.email.message}</p>}
@@ -219,7 +217,7 @@ function BookForm() {
               id="phone"
               type="tel"
               {...register('phone')}
-              className="w-full rounded-xl border-0 bg-slate-50 px-5 py-4 text-primary transition-all duration-300 placeholder:text-muted-foreground/40 focus:bg-white focus:ring-2 focus:ring-secondary/20"
+              className="w-full rounded-sm border bg-slate-50 px-4 py-3 text-primary transition-all duration-300 placeholder:text-muted-foreground/40 focus:bg-white focus:ring-2 focus:ring-secondary/20"
               placeholder="628123456789"
             />
             {errors.phone && <p className="pl-1 text-xs text-red-500">{errors.phone.message}</p>}
@@ -232,7 +230,7 @@ function BookForm() {
             <input
               id="company"
               {...register('company')}
-              className="w-full rounded-xl border-0 bg-slate-50 px-5 py-4 text-primary transition-all duration-300 placeholder:text-muted-foreground/40 focus:bg-white focus:ring-2 focus:ring-secondary/20"
+              className="w-full rounded-sm border bg-slate-50 px-4 py-3 text-primary transition-all duration-300 placeholder:text-muted-foreground/40 focus:bg-white focus:ring-2 focus:ring-secondary/20"
               placeholder="Your company name"
             />
           </div>
@@ -242,19 +240,14 @@ function BookForm() {
           <label className="pl-1 text-sm font-semibold text-primary">I need help with...</label>
           <div className="flex flex-wrap gap-3">
             {SERVICES.map((service) => (
-              <button
+              <Button
                 key={service}
                 type="button"
                 onClick={() => setValue('service', service, { shouldValidate: true })}
-                className={cn(
-                  'rounded-full border px-6 py-3 text-sm font-medium transition-all duration-300',
-                  selectedService === service
-                    ? 'scale-105 border-primary bg-primary text-white shadow-lg shadow-primary/25'
-                    : 'border-slate-200 bg-white text-muted-foreground hover:border-primary/30 hover:bg-slate-50'
-                )}
+                variant={selectedService === service ? 'default' : 'outline'}
               >
                 {service}
-              </button>
+              </Button>
             ))}
           </div>
           {errors.service && <p className="pl-1 text-xs text-red-500">{errors.service.message}</p>}
@@ -265,19 +258,14 @@ function BookForm() {
             <label className="pl-1 text-sm font-semibold text-primary">My budget is...</label>
             <div className="flex flex-wrap gap-3">
               {BUDGETS.map((budget) => (
-                <button
+                <Button
                   key={budget}
                   type="button"
                   onClick={() => setValue('budget', budget, { shouldValidate: true })}
-                  className={cn(
-                    'rounded-full border px-6 py-3 text-sm font-medium transition-all duration-300',
-                    selectedBudget === budget
-                      ? 'scale-105 border-primary bg-primary text-white shadow-lg shadow-primary/25'
-                      : 'border-slate-200 bg-white text-muted-foreground hover:border-primary/30 hover:bg-slate-50'
-                  )}
+                  variant={selectedBudget === budget ? 'default' : 'outline'}
                 >
                   {budget}
-                </button>
+                </Button>
               ))}
             </div>
             {errors.budget && <p className="pl-1 text-xs text-red-500">{errors.budget.message}</p>}
@@ -292,7 +280,7 @@ function BookForm() {
             id="message"
             {...register('message')}
             rows={5}
-            className="w-full resize-none rounded-xl border-0 bg-slate-50 px-5 py-4 text-primary transition-all duration-300 placeholder:text-muted-foreground/40 focus:bg-white focus:ring-2 focus:ring-secondary/20"
+            className="w-full resize-none rounded-sm border bg-slate-50 px-4 py-3 text-primary transition-all duration-300 placeholder:text-muted-foreground/40 focus:bg-white focus:ring-2 focus:ring-secondary/20"
             placeholder="Tell us about your goals, timeline, and what you're looking to achieve..."
           />
           {errors.message && <p className="pl-1 text-xs text-red-500">{errors.message.message}</p>}
@@ -302,7 +290,6 @@ function BookForm() {
           <Button
             type="submit"
             size="lg"
-            className="w-full px-12 py-6 text-lg md:w-auto"
             disabled={isSubmitting}
             rightIcon={!isSubmitting ? <ArrowRight className="h-5 w-5" /> : undefined}
           >
