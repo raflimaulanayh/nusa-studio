@@ -17,7 +17,8 @@ export default function BookingDetailPage() {
   const {
     data: booking,
     isLoading,
-    error
+    error,
+    mutate
   } = useSWR<Booking>(`/api/bookings/${id}`, fetcher, {
     revalidateOnFocus: false,
     revalidateOnReconnect: true
@@ -45,5 +46,5 @@ export default function BookingDetailPage() {
     return notFound()
   }
 
-  return <BookingDetailContent booking={booking} />
+  return <BookingDetailContent booking={booking} onUpdate={mutate} />
 }

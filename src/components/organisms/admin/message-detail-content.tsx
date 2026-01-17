@@ -3,6 +3,7 @@
 import { EnvelopeSimple, CalendarBlank, Briefcase, ChatCircleText, Ticket } from '@phosphor-icons/react'
 import { ArrowLeft } from 'lucide-react'
 import Link from 'next/link'
+import { useState } from 'react'
 
 import type { Message } from '@/hooks/useMessages'
 
@@ -10,8 +11,8 @@ import { Button } from '@/components/atoms/ui/button'
 import { Card } from '@/components/atoms/ui/card'
 import { MessageStatusCard } from '@/components/organisms/admin/message-status-card'
 
-export function MessageDetailContent({ message }: { message: Message }) {
-  // Email reply template
+export function MessageDetailContent({ message, onUpdate }: { message: Message; onUpdate?: () => void }) {
+  const [currentStatus, setCurrentStatus] = useState(message.status || 'New')
   const emailSubject = encodeURIComponent(`Re: ${message.ticketNumber || 'Your Message'} - ${message.service}`)
   const emailBody = encodeURIComponent(
     `Halo ${message.name},
@@ -36,6 +37,35 @@ Best regards,
 Nusa Creative Studio Team`
   )
   const emailLink = `mailto:${message.email}?subject=${emailSubject}&body=${emailBody}`
+
+  // Auto-update status to Replied when clicking reply button
+  const handleReply = async () => {
+    if (currentStatus === 'New' || currentStatus === 'Read') {
+      // Optimistic update - update UI immediately
+      setCurrentStatus('Replied')
+
+      try {
+        // Then make API call in background
+        await fetch('/api/messages', {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            rowIndex: message.rowIndex,
+            status: 'Replied'
+          })
+        })
+
+        // Trigger background revalidation (optional)
+        if (onUpdate) {
+          onUpdate()
+        }
+      } catch (error) {
+        console.error('Failed to update status:', error)
+        // Revert on error
+        setCurrentStatus(message.status || 'New')
+      }
+    }
+  }
 
   return (
     <div className="space-y-6">
@@ -73,7 +103,7 @@ Nusa Creative Studio Team`
         </div>
 
         <div className="flex shrink-0 gap-3">
-          <a href={emailLink}>
+          <a href={emailLink} onClick={handleReply}>
             <Button variant="outline">
               <EnvelopeSimple className="size-5" weight="duotone" />
               Reply via Email
@@ -121,7 +151,7 @@ Nusa Creative Studio Team`
           </Card>
 
           {/* Status Card */}
-          <MessageStatusCard initialStatus={message.status || 'New'} rowIndex={message.rowIndex} />
+          <MessageStatusCard key={currentStatus} initialStatus={currentStatus} rowIndex={message.rowIndex} />
         </div>
       </div>
     </div>

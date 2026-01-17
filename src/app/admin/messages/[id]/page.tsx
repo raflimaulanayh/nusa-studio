@@ -18,7 +18,8 @@ export default function MessageDetailPage() {
   const {
     data: message,
     isLoading,
-    error
+    error,
+    mutate
   } = useSWR<Message>(`/api/messages/${id}`, fetcher, {
     revalidateOnFocus: false,
     revalidateOnReconnect: true
@@ -45,5 +46,5 @@ export default function MessageDetailPage() {
     return notFound()
   }
 
-  return <MessageDetailContent message={message} />
+  return <MessageDetailContent message={message} onUpdate={mutate} />
 }

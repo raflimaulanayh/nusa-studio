@@ -12,6 +12,7 @@ import {
 } from '@phosphor-icons/react'
 import { ArrowLeft } from 'lucide-react'
 import Link from 'next/link'
+import { useState } from 'react'
 
 import type { Booking } from '@/hooks/useBookings'
 
@@ -19,7 +20,8 @@ import { Button } from '@/components/atoms/ui/button'
 import { Card } from '@/components/atoms/ui/card'
 import { StatusCard } from '@/components/organisms/admin/status-card'
 
-export function BookingDetailContent({ booking }: { booking: Booking }) {
+export function BookingDetailContent({ booking, onUpdate }: { booking: Booking; onUpdate?: () => void }) {
+  const [currentStatus, setCurrentStatus] = useState(booking.status || 'New')
   const cleanPhone = booking.phone?.replace(/\D/g, '') || ''
   const waNumber = cleanPhone.startsWith('0') ? '62' + cleanPhone.slice(1) : cleanPhone
 
@@ -62,6 +64,35 @@ Salam,
 Nusa Creative Studio Team`
   )
   const emailLink = `mailto:${booking.email}?subject=${emailSubject}&body=${emailBody}`
+
+  // Auto-update status to Contacted when clicking contact buttons
+  const handleContact = async () => {
+    if (currentStatus === 'New' || currentStatus === 'Read') {
+      // Optimistic update - update UI immediately
+      setCurrentStatus('Contacted')
+
+      try {
+        // Then make API call in background
+        await fetch('/api/bookings', {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            rowIndex: booking.rowIndex,
+            status: 'Contacted'
+          })
+        })
+
+        // Trigger background revalidation (optional)
+        if (onUpdate) {
+          onUpdate()
+        }
+      } catch (error) {
+        console.error('Failed to update status:', error)
+        // Revert on error
+        setCurrentStatus(booking.status || 'New')
+      }
+    }
+  }
 
   return (
     <div className="space-y-6">
@@ -108,7 +139,7 @@ Nusa Creative Studio Team`
         {/* Action Buttons */}
         <div className="flex shrink-0 gap-3">
           {booking.phone ? (
-            <a href={waLink} target="_blank" rel="noopener noreferrer">
+            <a href={waLink} target="_blank" rel="noopener noreferrer" onClick={handleContact}>
               <Button className="bg-green-500 text-white hover:bg-green-600">
                 <WhatsappLogo className="size-5" weight="fill" />
                 WhatsApp
@@ -120,7 +151,7 @@ Nusa Creative Studio Team`
               No Phone
             </Button>
           )}
-          <a href={emailLink}>
+          <a href={emailLink} onClick={handleContact}>
             <Button variant="outline">
               <EnvelopeSimple className="size-5" weight="duotone" />
               Email
@@ -181,7 +212,7 @@ Nusa Creative Studio Team`
           </Card>
 
           {/* Status Card */}
-          <StatusCard initialStatus={booking.status || 'New'} rowIndex={booking.rowIndex} />
+          <StatusCard key={currentStatus} initialStatus={currentStatus} rowIndex={booking.rowIndex} />
         </div>
       </div>
     </div>
