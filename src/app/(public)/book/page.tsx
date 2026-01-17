@@ -7,6 +7,7 @@ import { ArrowRight, CheckCircle2 } from 'lucide-react'
 import { useSearchParams } from 'next/navigation'
 import { useState, useEffect, Suspense } from 'react'
 import { useForm } from 'react-hook-form'
+import { toast } from 'sonner'
 import * as z from 'zod'
 
 import { Heading, Text } from '@/components/atoms/typography'
@@ -52,6 +53,7 @@ function BookForm() {
 
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isSuccess, setIsSuccess] = useState(false)
+  const [orderNumber, setOrderNumber] = useState<string>('')
 
   const {
     register,
@@ -65,29 +67,25 @@ function BookForm() {
     defaultValues: {
       service: '',
       budget: '',
-      // Pre-fill message if a plan is selected
       message: initialPlan ? `I'm interested in the ${initialPlan} package. ` : ''
     }
   })
 
-  // Check if we should hide budget (Fixed price plan selected)
   const isFixedPricePlan = initialPlan && selectedPackageInfo && selectedPackageInfo.price !== 'Hubungi Kami'
   const shouldShowBudget = !isFixedPricePlan
 
-  // Pre-select service logic (existing + enhanced)
   useEffect(() => {
     if (initialService) {
       const matched =
         SERVICES.find((s) => s.toLowerCase().replace(' ', '-') === initialService.toLowerCase()) ||
         SERVICES.find((s) => s.toLowerCase() === initialService.toLowerCase()) ||
-        SERVICES.find((s) => s.includes(initialService.split(' ')[0])) // Fallback partial match
+        SERVICES.find((s) => s.includes(initialService.split(' ')[0]))
 
       if (matched) {
         setValue('service', matched)
       }
     }
 
-    // Auto-fill budget if fixed price plan to satisfy validation
     if (isFixedPricePlan) {
       setValue('budget', 'Fixed Price Plan')
     }
@@ -96,41 +94,35 @@ function BookForm() {
   const selectedService = watch('service')
   const selectedBudget = watch('budget')
 
-  // Replace with your Google Apps Script Web App URL
-  const GOOGLE_SCRIPT_URL =
-    'https://script.google.com/macros/s/AKfycbzCypNeJMPm_RFXB6Gs49qbjaj9f_RI_aq_JcnxfzYWwm_eDcbh-vh7qQHZs7bAAlgZlQ/exec'
-
   const onSubmit = async (data: FormData) => {
     setIsSubmitting(true)
 
     try {
-      // Create FormData object for Google Apps Script
-      const formData = new FormData()
-      formData.append('timestamp', new Date().toISOString())
-      Object.entries(data).forEach(([key, value]) => {
-        // Handle undefined/null values safely
-        formData.append(key, value || '')
-      })
-
-      // Send to Google Apps Script
-      // mode: 'no-cors' is crucial because Google Scripts don't send CORS headers by default for simple web apps
-      await fetch(GOOGLE_SCRIPT_URL, {
+      const response = await fetch('/api/bookings/submit', {
         method: 'POST',
-        body: formData,
-        mode: 'no-cors'
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
       })
 
-      setIsSubmitting(false)
+      if (!response.ok) {
+        const error = await response.json()
+        throw new Error(error.error || 'Failed to submit booking')
+      }
+
+      const result = await response.json()
+      setOrderNumber(result.orderNumber || '')
       setIsSuccess(true)
 
       setTimeout(() => {
         reset()
         setIsSuccess(false)
-      }, 5000)
+        setOrderNumber('')
+      }, 15000)
     } catch (error) {
-      console.error('Error submitting form:', error)
+      console.error('Submit error:', error)
+      toast.error(error instanceof Error ? error.message : 'Failed to submit. Please try again.')
+    } finally {
       setIsSubmitting(false)
-      // Optionally show error state
     }
   }
 
@@ -139,17 +131,34 @@ function BookForm() {
       <motion.div
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
-        className="mx-auto max-w-2xl rounded-3xl border border-slate-100 bg-white p-12 text-center shadow-xl shadow-slate-200/50 md:p-16"
+        className="mx-auto max-w-2xl rounded-3xl border border-slate-100 bg-white px-5 py-8 text-center shadow-xl shadow-slate-200/50 sm:p-12 lg:p-16"
       >
         <div className="mx-auto mb-8 flex h-24 w-24 items-center justify-center rounded-full bg-green-50 text-green-600">
           <CheckCircle2 className="h-12 w-12" />
         </div>
-        <Heading as="h3" variant="primary" className="mb-6 text-3xl md:text-4xl">
-          Project Inquiry Sent!
+        <Heading as="h3" variant="primary" className="mb-4 text-2xl md:text-4xl">
+          Booking Confirmed!
         </Heading>
-        <Text variant="muted" className="mb-8 text-lg leading-relaxed">
-          Thanks for starting your journey with us, <span className="font-semibold text-primary">{watch('name')}</span>.
-          We&apos;ve received your details and will get back to you with a proposal within 24 hours.
+
+        {orderNumber && (
+          <div className="mb-6 rounded-xl bg-gradient-to-r from-blue-50 to-purple-50 p-6">
+            <Text variant="muted" className="mb-2 text-sm font-medium tracking-wide uppercase">
+              Your Order Number
+            </Text>
+            <div className="text-3xl font-bold text-primary md:text-4xl">{orderNumber}</div>
+            <Text variant="muted" className="mt-2 text-sm">
+              Please save this number for future reference
+            </Text>
+          </div>
+        )}
+
+        <Text variant="muted" className="mb-4 leading-relaxed sm:text-lg">
+          Thanks for choosing us, <span className="font-semibold text-primary">{watch('name')}</span>!
+        </Text>
+        <Text variant="muted" className="mb-8 leading-relaxed">
+          A confirmation email has been sent to <strong>{watch('email')}</strong>
+          <br />
+          Our team will contact you within 1-2 business days.
         </Text>
         <Button onClick={() => setIsSuccess(false)} variant="outline" rounded="full">
           Send Another Request
@@ -163,7 +172,7 @@ function BookForm() {
       initial={{ opacity: 0, y: 30 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.8, delay: 0.2 }}
-      className="mx-auto max-w-4xl rounded-3xl border border-slate-100 bg-white p-8 shadow-xl shadow-slate-200/50 md:p-12"
+      className="mx-auto max-w-4xl rounded-lg border border-slate-100 bg-white px-5 py-8 shadow-md shadow-slate-200/50 sm:p-12 lg:p-16"
     >
       {/* Selected Plan Summary Card */}
       {initialPlan && selectedPackageInfo && (
@@ -180,8 +189,6 @@ function BookForm() {
       )}
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-10">
-        {/* ... existing form ... */}
-
         <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
           <div className="flex flex-col gap-2">
             <label htmlFor="name" className="pl-1 text-sm font-semibold text-primary">

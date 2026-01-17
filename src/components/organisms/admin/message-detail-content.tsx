@@ -1,24 +1,18 @@
 'use client'
 
-import type { ContactMessage } from '@/data/mock-contacts'
 import { EnvelopeSimple, CalendarBlank, Briefcase, ChatCircleText } from '@phosphor-icons/react'
 import { ArrowLeft } from 'lucide-react'
 import Link from 'next/link'
+
+import type { Message } from '@/hooks/useMessages'
 
 import { Button } from '@/components/atoms/ui/button'
 import { Card } from '@/components/atoms/ui/card'
 import { MessageStatusCard } from '@/components/organisms/admin/message-status-card'
 
-export function MessageDetailContent({ message }: { message: ContactMessage }) {
-  const emailSubject = encodeURIComponent(`Re: ${message.service} Inquiry`)
-  const emailBody = encodeURIComponent(
-    `Hi ${message.name},\n\nThank you for contacting Nusa Creative Studio regarding ${message.service}.\n\n`
-  )
-  const emailLink = `mailto:${message.email}?subject=${emailSubject}&body=${emailBody}`
-
+export function MessageDetailContent({ message }: { message: Message }) {
   return (
     <div className="space-y-6">
-      {/* Back Button */}
       <Link
         href="/admin/messages"
         className="group inline-flex items-center text-sm text-slate-600 transition-colors hover:text-primary"
@@ -27,18 +21,21 @@ export function MessageDetailContent({ message }: { message: ContactMessage }) {
         Back to Messages
       </Link>
 
-      {/* Header */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div>
-          <h1 className="text-2xl font-semibold text-slate-900 lg:text-3xl">{message.name}</h1>
+          <h1 className="text-xl font-semibold text-slate-900 lg:text-3xl">{message.name}</h1>
           <div className="mt-3 flex flex-wrap gap-4 text-sm text-slate-600">
             <div className="flex items-center gap-2">
               <EnvelopeSimple className="size-5 text-primary" weight="duotone" />
               {message.email}
             </div>
             <div className="flex items-center gap-2">
+              <Briefcase className="size-5 text-primary" weight="duotone" />
+              {message.service}
+            </div>
+            <div className="flex items-center gap-2">
               <CalendarBlank className="size-5 text-primary" weight="duotone" />
-              {new Date(message.createdAt).toLocaleDateString('id-ID', {
+              {new Date(message.timestamp).toLocaleDateString('id-ID', {
                 day: 'numeric',
                 month: 'long',
                 year: 'numeric',
@@ -49,9 +46,8 @@ export function MessageDetailContent({ message }: { message: ContactMessage }) {
           </div>
         </div>
 
-        {/* Action Button */}
-        <div className="flex shrink-0">
-          <a href={emailLink}>
+        <div className="flex shrink-0 gap-3">
+          <a href={`mailto:${message.email}`}>
             <Button variant="outline">
               <EnvelopeSimple className="size-5" weight="duotone" />
               Reply via Email
@@ -60,9 +56,7 @@ export function MessageDetailContent({ message }: { message: ContactMessage }) {
         </div>
       </div>
 
-      {/* Main Content Grid */}
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
-        {/* Left Column - Message */}
         <div className="lg:col-span-2">
           <Card className="border-slate-200 p-6 shadow-sm">
             <div className="mb-4 flex items-center gap-2 text-sm font-semibold tracking-wide text-slate-700 uppercase">
@@ -75,23 +69,8 @@ export function MessageDetailContent({ message }: { message: ContactMessage }) {
           </Card>
         </div>
 
-        {/* Right Column - Info & Status */}
         <div className="space-y-6">
-          {/* Info Card */}
-          <Card className="border-slate-200 p-6 shadow-sm">
-            <div className="space-y-5">
-              <div>
-                <div className="mb-2 flex items-center gap-2 text-xs font-semibold tracking-wide text-slate-500 uppercase">
-                  <Briefcase className="size-5" weight="duotone" />
-                  Service Interest
-                </div>
-                <div className="text-base font-medium text-slate-900">{message.service}</div>
-              </div>
-            </div>
-          </Card>
-
-          {/* Status Card */}
-          <MessageStatusCard initialStatus={message.status} messageId={message.id} />
+          <MessageStatusCard initialStatus={message.status || 'New'} rowIndex={message.rowIndex} />
         </div>
       </div>
     </div>

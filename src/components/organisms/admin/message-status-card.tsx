@@ -1,14 +1,18 @@
 'use client'
 
-import type { ContactMessage } from '@/data/mock-contacts'
 import { useState } from 'react'
+import { toast } from 'sonner'
+
+import { useMessages } from '@/hooks/useMessages'
 
 import { Button } from '@/components/atoms/ui/button'
 import { Card } from '@/components/atoms/ui/card'
 
 import { cn } from '@/utils/cn'
 
-const StatusBadge = ({ status }: { status: ContactMessage['status'] }) => {
+type Status = 'New' | 'Read' | 'Replied'
+
+const StatusBadge = ({ status }: { status: string }) => {
   let classes = 'bg-slate-100 text-slate-700 border-slate-200'
   if (status === 'New') classes = 'bg-blue-50 text-blue-700 border-blue-200'
   if (status === 'Read') classes = 'bg-amber-50 text-amber-700 border-amber-200'
@@ -21,18 +25,27 @@ const StatusBadge = ({ status }: { status: ContactMessage['status'] }) => {
   )
 }
 
-export function MessageStatusCard({ initialStatus }: { initialStatus: ContactMessage['status']; messageId: string }) {
-  const [status, setStatus] = useState<ContactMessage['status']>(initialStatus)
+export const MessageStatusCard = ({ initialStatus, rowIndex }: { initialStatus: string; rowIndex: number }) => {
+  const [status, setStatus] = useState<Status>(initialStatus as Status)
   const [isSaving, setIsSaving] = useState(false)
+  const { updateStatus } = useMessages()
 
-  const statuses: ContactMessage['status'][] = ['New', 'Read', 'Replied']
+  const statuses: Status[] = ['New', 'Read', 'Replied']
 
   const handleSave = async () => {
+    if (status === initialStatus) return
+
     setIsSaving(true)
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 500))
-    setIsSaving(false)
-    // TODO: Implement actual API call to update status
+
+    try {
+      await updateStatus(rowIndex, status)
+      toast.success('Status updated successfully')
+    } catch {
+      toast.error('Failed to update status')
+      setStatus(initialStatus as Status)
+    } finally {
+      setIsSaving(false)
+    }
   }
 
   return (
@@ -50,8 +63,9 @@ export function MessageStatusCard({ initialStatus }: { initialStatus: ContactMes
           <select
             id="status-select"
             value={status}
-            onChange={(e) => setStatus(e.target.value as ContactMessage['status'])}
-            className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm focus:border-primary focus:ring-2 focus:ring-primary/20 focus:outline-none"
+            onChange={(e) => setStatus(e.target.value as Status)}
+            disabled={isSaving}
+            className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm focus:border-primary focus:ring-2 focus:ring-primary/20 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50"
           >
             {statuses.map((s) => (
               <option key={s} value={s}>
@@ -62,7 +76,7 @@ export function MessageStatusCard({ initialStatus }: { initialStatus: ContactMes
         </div>
 
         <Button loading={isSaving} onClick={handleSave} disabled={isSaving || status === initialStatus} className="w-full">
-          Update Status
+          {isSaving ? 'Updating...' : 'Update Status'}
         </Button>
       </div>
     </Card>

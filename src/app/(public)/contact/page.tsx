@@ -5,14 +5,13 @@ import { motion } from 'framer-motion'
 import { ArrowRight, Mail, MapPin, Phone, Instagram, Linkedin, Twitter, Check } from 'lucide-react'
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
+import { toast } from 'sonner'
 import * as z from 'zod'
 
 import { Heading, Text } from '@/components/atoms/typography'
 import { Button } from '@/components/atoms/ui/button'
 import { Container } from '@/components/templates/container'
 import { GeneralLayout } from '@/components/templates/general-layout'
-
-import { cn } from '@/utils/cn'
 
 const SERVICES = ['Branding', 'Web Development', 'UI/UX Design', 'Digital Marketing', 'Other']
 
@@ -45,18 +44,34 @@ export default function ContactPage() {
 
   const selectedService = watch('service')
 
-  const onSubmit = async () => {
+  const onSubmit = async (data: FormData) => {
     setIsSubmitting(true)
 
-    await new Promise((resolve) => setTimeout(resolve, 1500))
+    try {
+      const response = await fetch('/api/messages/send', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      })
 
-    setIsSubmitting(false)
-    setIsSuccess(true)
+      if (!response.ok) {
+        const error = await response.json()
+        throw new Error(error.error || 'Failed to send message')
+      }
 
-    setTimeout(() => {
-      reset()
-      setIsSuccess(false)
-    }, 3000)
+      setIsSuccess(true)
+      toast.success("Message sent successfully! We'll get back to you soon.")
+
+      setTimeout(() => {
+        reset()
+        setIsSuccess(false)
+      }, 5000)
+    } catch (error) {
+      console.error('Submit error:', error)
+      toast.error(error instanceof Error ? error.message : 'Failed to send message. Please try again.')
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   return (
@@ -184,7 +199,7 @@ export default function ContactPage() {
                         <input
                           id="name"
                           {...register('name')}
-                          className="w-full rounded-xl border-0 bg-slate-50 px-5 py-4 text-primary transition-all duration-300 placeholder:text-muted-foreground/40 focus:bg-white focus:ring-2 focus:ring-secondary/20"
+                          className="w-full rounded-sm border bg-slate-50 px-4 py-3 text-primary transition-all duration-300 placeholder:text-muted-foreground/40 focus:bg-white focus:ring-2 focus:ring-secondary/20"
                           placeholder="Your name"
                         />
                         {errors.name && <p className="pl-1 text-xs text-red-500">{errors.name.message}</p>}
@@ -197,7 +212,7 @@ export default function ContactPage() {
                         <input
                           id="email"
                           {...register('email')}
-                          className="w-full rounded-xl border-0 bg-slate-50 px-5 py-4 text-primary transition-all duration-300 placeholder:text-muted-foreground/40 focus:bg-white focus:ring-2 focus:ring-secondary/20"
+                          className="w-full rounded-sm border bg-slate-50 px-4 py-3 text-primary transition-all duration-300 placeholder:text-muted-foreground/40 focus:bg-white focus:ring-2 focus:ring-secondary/20"
                           placeholder="your@email.com"
                         />
                         {errors.email && <p className="pl-1 text-xs text-red-500">{errors.email.message}</p>}
@@ -208,19 +223,14 @@ export default function ContactPage() {
                       <label className="pl-1 text-sm font-semibold text-primary">I&apos;m interested in...</label>
                       <div className="flex flex-wrap gap-3">
                         {SERVICES.map((service) => (
-                          <button
+                          <Button
                             key={service}
                             type="button"
                             onClick={() => setValue('service', service, { shouldValidate: true })}
-                            className={cn(
-                              'rounded-full border px-5 py-2.5 text-sm font-medium transition-all duration-300',
-                              selectedService === service
-                                ? 'border-primary bg-primary text-white'
-                                : 'border-slate-200 bg-white text-muted-foreground hover:border-primary/30 hover:bg-slate-50'
-                            )}
+                            variant={selectedService === service ? 'default' : 'outline'}
                           >
                             {service}
-                          </button>
+                          </Button>
                         ))}
                       </div>
                       {errors.service && <p className="pl-1 text-xs text-red-500">{errors.service.message}</p>}
@@ -234,7 +244,7 @@ export default function ContactPage() {
                         id="message"
                         {...register('message')}
                         rows={5}
-                        className="w-full resize-none rounded-xl border-0 bg-slate-50 px-5 py-4 text-primary transition-all duration-300 placeholder:text-muted-foreground/40 focus:bg-white focus:ring-2 focus:ring-secondary/20"
+                        className="w-full resize-none rounded-sm border bg-slate-50 px-4 py-3 text-primary transition-all duration-300 placeholder:text-muted-foreground/40 focus:bg-white focus:ring-2 focus:ring-secondary/20"
                         placeholder="Tell us about your project goals, timeline, and budget..."
                       />
                       {errors.message && <p className="pl-1 text-xs text-red-500">{errors.message.message}</p>}
@@ -245,6 +255,7 @@ export default function ContactPage() {
                         type="submit"
                         size="lg"
                         disabled={isSubmitting}
+                        loading={isSubmitting}
                         rightIcon={!isSubmitting ? <ArrowRight className="h-5 w-5" /> : undefined}
                       >
                         {isSubmitting ? 'Sending Message...' : 'Send Message'}

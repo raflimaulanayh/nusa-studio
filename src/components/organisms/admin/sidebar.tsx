@@ -41,7 +41,7 @@ export function AdminSidebar() {
 
       <nav className="mt-8 flex flex-1 flex-col gap-y-2 px-5">
         {NAV_ITEMS.map((item) => {
-          const isActive = pathname.startsWith(item.href)
+          const isActive = pathname === item.href
 
           return (
             <Link
