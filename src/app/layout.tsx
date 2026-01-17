@@ -9,6 +9,7 @@ import React from 'react'
 
 import { CustomCursor } from '@/components/atoms/ui/custom-cursor'
 import { Toaster } from '@/components/atoms/ui/sonner'
+import { ClientProvider } from '@/components/providers/client-provider'
 
 import { cn } from '@/utils/cn'
 
@@ -59,7 +60,7 @@ export default async function RootLayout({
       <body suppressHydrationWarning className={cn('min-h-screen bg-slate-50 font-sans antialiased', poppins.variable)}>
         <CustomCursor />
         <NextTopLoader color="#2b5a9e" showSpinner={false} />
-        {children}
+        <ClientProvider>{children}</ClientProvider>
         <Toaster richColors position="top-right" closeButton theme="light" />
         <Analytics />
       </body>

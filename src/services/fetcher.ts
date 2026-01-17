@@ -1,16 +1,11 @@
-import { AxiosRequestConfig } from 'axios'
+// Fetcher for SWR - uses native fetch (no baseURL)
+export const fetcher = async (url: string) => {
+  const res = await fetch(url)
 
-import api from './api'
+  if (!res.ok) {
+    const error = new Error('An error occurred while fetching the data.')
+    throw error
+  }
 
-export const fetcher = async (url: string | null, config?: AxiosRequestConfig) => {
-  if (typeof url !== 'string' || !url || url === '') return null
-
-  return api
-    .get(url, config)
-    .then((res) => {
-      return res.data
-    })
-    .catch((e) => {
-      throw new Error(e)
-    })
+  return res.json()
 }
