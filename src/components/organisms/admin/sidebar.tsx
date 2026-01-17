@@ -6,6 +6,8 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useState } from 'react'
 
+import { useAuth } from '@/hooks/useAuth'
+
 import { cn } from '@/utils/cn'
 
 const NAV_ITEMS = [
@@ -22,9 +24,14 @@ const CMS_ITEMS = [
 
 export function AdminSidebar() {
   const pathname = usePathname()
+  const { logout, user } = useAuth()
   const [isCmsOpen, setIsCmsOpen] = useState(pathname.startsWith('/admin/cms'))
 
   const isCmsActive = pathname.startsWith('/admin/cms')
+
+  const handleLogout = async () => {
+    await logout()
+  }
 
   return (
     <aside className="sticky top-0 z-30 flex h-screen w-72 shrink-0 flex-col bg-primary text-white">
@@ -93,7 +100,7 @@ export function AdminSidebar() {
                     href={item.href}
                     className={cn(
                       'rounded-md px-3 py-2 text-sm transition-all duration-200',
-                      isActive ? 'bg-white/20 font-bold text-white' : 'text-blue-100 hover:bg-white/10 hover:text-white'
+                      isActive ? 'bg-white/20 font-semibold text-white' : 'text-blue-100 hover:bg-white/10 hover:text-white'
                     )}
                   >
                     {item.label}
@@ -109,20 +116,23 @@ export function AdminSidebar() {
           <div className="rounded-lg bg-white/10 p-3 backdrop-blur-sm">
             <div className="flex items-center gap-3">
               {/* Avatar */}
-              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-white/20 text-sm font-bold text-white">
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-white/20 text-sm font-semibold text-white">
                 AD
               </div>
               {/* User Details */}
               <div className="flex-1 overflow-hidden">
-                <p className="truncate text-sm font-bold text-white">Administrator</p>
-                <p className="truncate text-xs text-blue-200">ADMIN</p>
+                <p className="truncate text-sm font-semibold text-white">{user?.name || 'Administrator'}</p>
+                <p className="truncate text-xs text-blue-200">{user?.role?.toUpperCase() || 'ADMIN'}</p>
               </div>
             </div>
           </div>
 
           {/* Sign Out Button */}
           <div className="border-t border-white/10 pt-2">
-            <button className="flex w-full items-center gap-3 rounded-md px-3 py-2.5 text-left text-sm font-medium text-blue-100 transition-colors hover:bg-white/10 hover:text-white">
+            <button
+              onClick={handleLogout}
+              className="flex w-full items-center gap-3 rounded-md px-3 py-2.5 text-left text-sm font-medium text-blue-100 transition-colors hover:bg-white/10 hover:text-white"
+            >
               <LogOut className="h-5 w-5 text-blue-200" />
               Keluar
             </button>

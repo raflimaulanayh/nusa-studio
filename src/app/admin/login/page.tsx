@@ -2,27 +2,43 @@
 
 import { Eye, EyeOff } from 'lucide-react'
 import Image from 'next/image'
-import { useRouter } from 'next/navigation'
 import { useState } from 'react'
+import { toast } from 'sonner'
+
+import { useAuth } from '@/hooks/useAuth'
 
 import { Button } from '@/components/atoms/ui/button'
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/atoms/ui/card'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/atoms/ui/card'
 import { Input } from '@/components/atoms/ui/input'
 import { Label } from '@/components/atoms/ui/label'
 
 export default function LoginPage() {
-  const router = useRouter()
-  const [loading, setLoading] = useState(false)
+  const { login, isLoading } = useAuth()
   const [showPassword, setShowPassword] = useState(false)
+  const [error, setError] = useState('')
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-    setLoading(true)
+    setError('')
 
-    await new Promise((resolve) => setTimeout(resolve, 1500))
+    const formData = new FormData(e.currentTarget)
+    const email = formData.get('email') as string
+    const password = formData.get('password') as string
 
-    setLoading(false)
-    router.push('/admin/dashboard')
+    const result = await login(email, password)
+
+    if (!result.success) {
+      const errorMsg = result.error || 'Login failed'
+      setError(errorMsg)
+
+      if (errorMsg.includes('timeout')) {
+        toast.error('Server timeout - please try again in a moment')
+      } else {
+        toast.error(errorMsg)
+      }
+    } else {
+      toast.success('Login successful! Welcome back.')
+    }
   }
 
   return (
@@ -46,10 +62,18 @@ export default function LoginPage() {
           <CardDescription className="text-slate-500">Sign in to access your dashboard</CardDescription>
         </CardHeader>
         <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-6">
+          {error && <div className="mb-4 rounded-lg bg-red-50 p-3 text-sm text-red-600">{error}</div>}
+          <form id="login-form" onSubmit={handleSubmit} className="space-y-6">
             <div className="flex flex-col gap-2">
               <Label htmlFor="email">Email address</Label>
-              <Input id="email" type="email" placeholder="admin@nusacaraka.com" className="bg-white/50" required />
+              <Input
+                id="email"
+                name="email"
+                type="email"
+                placeholder="admin@nusacaraka.com"
+                className="bg-white/50"
+                required
+              />
             </div>
             <div className="flex flex-col gap-2">
               <div className="flex items-center justify-between">
@@ -61,6 +85,7 @@ export default function LoginPage() {
               <div className="relative">
                 <Input
                   id="password"
+                  name="password"
                   type={showPassword ? 'text' : 'password'}
                   placeholder="••••••••"
                   className="bg-white/50 pr-10"
@@ -75,13 +100,11 @@ export default function LoginPage() {
                 </button>
               </div>
             </div>
+            <Button type="submit" loading={isLoading} className="my-2! w-full" disabled={isLoading}>
+              Sign In
+            </Button>
           </form>
         </CardContent>
-        <CardFooter className="pt-2 pb-8">
-          <Button loading={loading} className="w-full" onClick={handleSubmit} disabled={loading}>
-            Sign In
-          </Button>
-        </CardFooter>
       </Card>
 
       <div className="absolute bottom-8 w-full text-center text-xs text-slate-400">

@@ -1,10 +1,12 @@
 'use client'
 
-import { MOCK_BOOKINGS } from '@/data/mock-bookings'
 import { EnvelopeSimple, CalendarBlank, CurrencyDollar, Briefcase } from '@phosphor-icons/react'
-import { Download, Search, CalendarDays } from 'lucide-react'
+import { Download, Search, CalendarDays, RefreshCw } from 'lucide-react'
 import Link from 'next/link'
 import { useState } from 'react'
+import { toast } from 'sonner'
+
+import { useBookings } from '@/hooks/useBookings'
 
 import { Button } from '@/components/atoms/ui/button'
 import { Card } from '@/components/atoms/ui/card'
@@ -27,13 +29,56 @@ const StatusBadge = ({ status }: { status: string }) => {
 
 type StatusFilter = 'all' | 'New' | 'Contacted' | 'In Progress' | 'Completed'
 
+// Loading Skeleton
+const BookingsSkeleton = () => (
+  <div className="space-y-6">
+    <div className="h-10 w-48 animate-pulse rounded-lg bg-slate-200" />
+    <div className="h-14 animate-pulse rounded-lg bg-slate-200" />
+    <div className="flex gap-2">
+      {[1, 2, 3, 4, 5].map((i) => (
+        <div key={i} className="h-10 w-32 animate-pulse rounded-lg bg-slate-200" />
+      ))}
+    </div>
+    <div className="space-y-4">
+      {[1, 2, 3].map((i) => (
+        <div key={i} className="h-40 animate-pulse rounded-lg bg-slate-200" />
+      ))}
+    </div>
+  </div>
+)
+
+// Error State
+const ErrorState = ({ onRetry }: { onRetry: () => void }) => (
+  <Card className="border-slate-200 p-12 shadow-sm">
+    <div className="text-center">
+      <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-red-100">
+        <svg className="h-8 w-8 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+          />
+        </svg>
+      </div>
+      <h3 className="text-lg font-semibold text-slate-900">Failed to load bookings</h3>
+      <p className="mt-1 text-sm text-slate-500">There was an error loading the data</p>
+      <Button onClick={onRetry} className="mt-4">
+        <RefreshCw className="h-4 w-4" />
+        Retry
+      </Button>
+    </div>
+  </Card>
+)
+
 export default function BookingsPage() {
+  const { bookings, total, isLoading, isError, mutate } = useBookings()
   const [searchQuery, setSearchQuery] = useState('')
   const [statusFilter, setStatusFilter] = useState<StatusFilter>('all')
   const [dateFilter, setDateFilter] = useState<string>('all')
 
   // Filter bookings based on search, status, and date
-  const filteredBookings = MOCK_BOOKINGS.filter((booking) => {
+  const filteredBookings = (bookings || []).filter((booking) => {
     const matchesSearch =
       booking.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       booking.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -44,7 +89,7 @@ export default function BookingsPage() {
     // Date filtering logic
     let matchesDate = true
     if (dateFilter !== 'all') {
-      const bookingDate = new Date(booking.createdAt)
+      const bookingDate = new Date(booking.timestamp)
       const now = new Date()
 
       if (dateFilter === 'today') {
@@ -62,21 +107,73 @@ export default function BookingsPage() {
   })
 
   const statusTabs: { value: StatusFilter; label: string; count: number }[] = [
-    { value: 'all', label: 'All', count: MOCK_BOOKINGS.length },
-    { value: 'New', label: 'New', count: MOCK_BOOKINGS.filter((b) => b.status === 'New').length },
-    { value: 'Contacted', label: 'Contacted', count: MOCK_BOOKINGS.filter((b) => b.status === 'Contacted').length },
-    { value: 'In Progress', label: 'In Progress', count: MOCK_BOOKINGS.filter((b) => b.status === 'In Progress').length },
-    { value: 'Completed', label: 'Completed', count: MOCK_BOOKINGS.filter((b) => b.status === 'Completed').length }
+    { value: 'all', label: 'All', count: bookings?.length || 0 },
+    { value: 'New', label: 'New', count: bookings?.filter((b) => b.status === 'New' || !b.status).length || 0 },
+    {
+      value: 'Contacted',
+      label: 'Contacted',
+      count: bookings?.filter((b) => b.status === 'Contacted').length || 0
+    },
+    {
+      value: 'In Progress',
+      label: 'In Progress',
+      count: bookings?.filter((b) => b.status === 'In Progress').length || 0
+    },
+    { value: 'Completed', label: 'Completed', count: bookings?.filter((b) => b.status === 'Completed').length || 0 }
   ]
+
+  const handleDownload = () => {
+    if (!bookings || bookings.length === 0) {
+      toast.error('No bookings to download')
+
+      return
+    }
+
+    // Create CSV
+    const headers = ['Name', 'Email', 'Phone', 'Company', 'Service', 'Budget', 'Status', 'Date']
+    const rows = filteredBookings.map((b) => [
+      b.name,
+      b.email,
+      b.phone || '',
+      b.company || '',
+      b.service,
+      b.budget || '',
+      b.status || 'New',
+      new Date(b.timestamp).toLocaleDateString('id-ID')
+    ])
+
+    const csv = [headers.join(','), ...rows.map((r) => r.map((c) => `"${c}"`).join(','))].join('\n')
+
+    // Download
+    const blob = new Blob([csv], { type: 'text/csv' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = `bookings-${new Date().toISOString().split('T')[0]}.csv`
+    a.click()
+    URL.revokeObjectURL(url)
+
+    toast.success('Downloaded successfully')
+  }
+
+  // Loading state
+  if (isLoading) {
+    return <BookingsSkeleton />
+  }
+
+  // Error state
+  if (isError) {
+    return <ErrorState onRetry={() => mutate()} />
+  }
 
   return (
     <div className="space-y-6">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-xl font-semibold text-slate-900 lg:text-3xl">Bookings</h1>
-          <p className="mt-1 text-sm text-slate-500">{filteredBookings.length} total bookings</p>
+          <p className="mt-1 text-sm text-slate-500">{total || 0} total bookings</p>
         </div>
-        <Button>
+        <Button onClick={handleDownload} disabled={!bookings || bookings.length === 0}>
           <Download className="h-4 w-4" />
           Download
         </Button>
@@ -143,7 +240,7 @@ export default function BookingsPage() {
       {/* Bookings Grid */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-1">
         {filteredBookings.map((booking) => (
-          <Link key={booking.id} href={`/admin/bookings/${booking.id}`}>
+          <Link key={booking.rowIndex} href={`/admin/bookings/${booking.rowIndex}`}>
             <Card className="group hover:shadow-modern-lg cursor-pointer border-slate-200 shadow-sm transition-all hover:border-secondary">
               <div className="p-6">
                 <div className="flex items-start justify-between gap-4">
@@ -157,7 +254,7 @@ export default function BookingsPage() {
                           {booking.name}
                           {booking.company && <span className="ml-1 font-normal text-slate-600">({booking.company})</span>}
                         </h3>
-                        <StatusBadge status={booking.status} />
+                        <StatusBadge status={booking.status || 'New'} />
                       </div>
 
                       {/* Details Grid */}
@@ -179,19 +276,21 @@ export default function BookingsPage() {
                         </div>
 
                         {/* Budget */}
-                        <div className="flex items-center gap-2.5 text-slate-600">
-                          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-50">
-                            <CurrencyDollar className="h-4 w-4 text-emerald-600" weight="duotone" />
+                        {booking.budget && (
+                          <div className="flex items-center gap-2.5 text-slate-600">
+                            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-50">
+                              <CurrencyDollar className="h-4 w-4 text-emerald-600" weight="duotone" />
+                            </div>
+                            <span>{booking.budget}</span>
                           </div>
-                          <span>{booking.budget}</span>
-                        </div>
+                        )}
 
                         {/* Date */}
                         <div className="flex items-center gap-2.5 text-slate-600">
                           <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-purple-50">
                             <CalendarBlank className="h-4 w-4 text-purple-600" weight="duotone" />
                           </div>
-                          <span>{new Date(booking.createdAt).toLocaleDateString('id-ID')}</span>
+                          <span>{new Date(booking.timestamp).toLocaleDateString('id-ID')}</span>
                         </div>
                       </div>
                     </div>

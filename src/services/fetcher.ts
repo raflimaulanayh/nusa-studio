@@ -1,4 +1,3 @@
-// Fetcher for SWR - uses native fetch (no baseURL)
 export const fetcher = async (url: string) => {
   const res = await fetch(url)
 

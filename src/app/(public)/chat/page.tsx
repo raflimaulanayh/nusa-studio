@@ -89,7 +89,7 @@ export default function ChatPage() {
               <div className="absolute -top-1 -right-1 h-3 w-3 animate-pulse rounded-full bg-green-500 ring-2 ring-white" />
             </motion.div>
             <div>
-              <h1 className="text-lg font-bold text-gray-900 md:text-xl">Nusacaraka AI</h1>
+              <h1 className="text-lg font-semibold text-gray-900 md:text-xl">Nusacaraka AI</h1>
               <p className="flex items-center gap-1.5 text-xs text-green-600">
                 <span className="relative flex h-2 w-2">
                   <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-green-400 opacity-75"></span>

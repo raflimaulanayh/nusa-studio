@@ -1,6 +1,5 @@
 'use client'
 
-import type { Booking } from '@/data/mock-bookings'
 import {
   EnvelopeSimple,
   Phone,
@@ -12,6 +11,8 @@ import {
 } from '@phosphor-icons/react'
 import { ArrowLeft } from 'lucide-react'
 import Link from 'next/link'
+
+import type { Booking } from '@/hooks/useBookings'
 
 import { Button } from '@/components/atoms/ui/button'
 import { Card } from '@/components/atoms/ui/card'
@@ -55,7 +56,7 @@ export function BookingDetailContent({ booking }: { booking: Booking }) {
             )}
             <div className="flex items-center gap-2">
               <CalendarBlank className="size-5 text-primary" weight="duotone" />
-              {new Date(booking.createdAt).toLocaleDateString('id-ID', {
+              {new Date(booking.timestamp).toLocaleDateString('id-ID', {
                 day: 'numeric',
                 month: 'long',
                 year: 'numeric',
@@ -118,18 +119,20 @@ export function BookingDetailContent({ booking }: { booking: Booking }) {
                 <div className="text-base font-medium text-slate-900">{booking.service}</div>
               </div>
 
-              <div className="border-t border-slate-100 pt-5">
-                <div className="mb-2 flex items-center gap-2 text-xs font-semibold tracking-wide text-slate-500 uppercase">
-                  <CurrencyDollar className="size-5" weight="duotone" />
-                  Budget
+              {booking.budget && (
+                <div className="border-t border-slate-100 pt-5">
+                  <div className="mb-2 flex items-center gap-2 text-xs font-semibold tracking-wide text-slate-500 uppercase">
+                    <CurrencyDollar className="size-5" weight="duotone" />
+                    Budget
+                  </div>
+                  <div className="text-base font-medium text-slate-900">{booking.budget}</div>
                 </div>
-                <div className="text-base font-medium text-slate-900">{booking.budget}</div>
-              </div>
+              )}
             </div>
           </Card>
 
           {/* Status Card */}
-          <StatusCard initialStatus={booking.status} bookingId={booking.id} />
+          <StatusCard initialStatus={booking.status || 'New'} rowIndex={booking.rowIndex} />
         </div>
       </div>
     </div>

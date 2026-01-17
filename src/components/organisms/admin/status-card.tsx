@@ -1,19 +1,24 @@
 'use client'
 
-import type { Booking } from '@/data/mock-bookings'
 import { useState } from 'react'
+import { toast } from 'sonner'
+
+import { useBookings } from '@/hooks/useBookings'
 
 import { Button } from '@/components/atoms/ui/button'
 import { Card } from '@/components/atoms/ui/card'
 
 import { cn } from '@/utils/cn'
 
-const StatusBadge = ({ status }: { status: Booking['status'] }) => {
+type Status = 'New' | 'Contacted' | 'In Progress' | 'Completed' | 'Cancelled'
+
+const StatusBadge = ({ status }: { status: string }) => {
   let classes = 'bg-slate-100 text-slate-700 border-slate-200'
   if (status === 'New') classes = 'bg-blue-50 text-blue-700 border-blue-200'
   if (status === 'Contacted') classes = 'bg-amber-50 text-amber-700 border-amber-200'
   if (status === 'In Progress') classes = 'bg-purple-50 text-purple-700 border-purple-200'
   if (status === 'Completed') classes = 'bg-emerald-50 text-emerald-700 border-emerald-200'
+  if (status === 'Cancelled') classes = 'bg-red-50 text-red-700 border-red-200'
 
   return (
     <span className={cn('inline-flex items-center rounded-full border px-3 py-1 text-sm font-semibold', classes)}>
@@ -22,18 +27,27 @@ const StatusBadge = ({ status }: { status: Booking['status'] }) => {
   )
 }
 
-export const StatusCard = ({ initialStatus, bookingId }: { initialStatus: Booking['status']; bookingId: string }) => {
-  const [status, setStatus] = useState<Booking['status']>(initialStatus)
+export const StatusCard = ({ initialStatus, rowIndex }: { initialStatus: string; rowIndex: number }) => {
+  const [status, setStatus] = useState<Status>(initialStatus as Status)
   const [isSaving, setIsSaving] = useState(false)
+  const { updateStatus } = useBookings()
 
-  const statuses: Booking['status'][] = ['New', 'Contacted', 'In Progress', 'Completed', 'Cancelled']
+  const statuses: Status[] = ['New', 'Contacted', 'In Progress', 'Completed', 'Cancelled']
 
   const handleSave = async () => {
+    if (status === initialStatus) return
+
     setIsSaving(true)
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 500))
-    setIsSaving(false)
-    console.info('Status updated to:', status + ' for booking ' + bookingId)
+
+    try {
+      await updateStatus(rowIndex, status)
+      toast.success('Status updated successfully')
+    } catch {
+      toast.error('Failed to update status')
+      setStatus(initialStatus as Status)
+    } finally {
+      setIsSaving(false)
+    }
   }
 
   return (
@@ -51,8 +65,9 @@ export const StatusCard = ({ initialStatus, bookingId }: { initialStatus: Bookin
           <select
             id="status-select"
             value={status}
-            onChange={(e) => setStatus(e.target.value as Booking['status'])}
-            className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm focus:border-primary focus:ring-2 focus:ring-primary/20 focus:outline-none"
+            onChange={(e) => setStatus(e.target.value as Status)}
+            disabled={isSaving}
+            className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm focus:border-primary focus:ring-2 focus:ring-primary/20 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50"
           >
             {statuses.map((s) => (
               <option key={s} value={s}>
@@ -63,7 +78,7 @@ export const StatusCard = ({ initialStatus, bookingId }: { initialStatus: Bookin
         </div>
 
         <Button loading={isSaving} onClick={handleSave} disabled={isSaving || status === initialStatus} className="w-full">
-          Update Status
+          {isSaving ? 'Updating...' : 'Update Status'}
         </Button>
       </div>
     </Card>

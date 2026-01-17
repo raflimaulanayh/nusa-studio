@@ -78,7 +78,7 @@ export function ServiceRecommendationCards({ serviceIds, reasoning }: ServiceRec
                       <Icon size={28} className="hidden sm:block" />
                     </motion.div>
                     <div className="min-w-0 flex-1">
-                      <h3 className="text-base font-bold text-gray-900 sm:text-lg">{service.title}</h3>
+                      <h3 className="text-base font-semibold text-gray-900 sm:text-lg">{service.title}</h3>
                       <p className="mt-0.5 text-xs font-medium text-primary">Service #{service.id}</p>
                     </div>
                   </div>
