@@ -11,7 +11,7 @@ import { useAuth } from '@/hooks/useAuth'
 import { cn } from '@/utils/cn'
 
 const NAV_ITEMS = [
-  { label: 'Dashboard', href: '/admin/dashboard', icon: LayoutDashboard },
+  { label: 'Dashboard', href: '/admin', icon: LayoutDashboard },
   { label: 'Bookings', href: '/admin/bookings', icon: MessageSquare },
   { label: 'Messages', href: '/admin/messages', icon: Mail }
 ]

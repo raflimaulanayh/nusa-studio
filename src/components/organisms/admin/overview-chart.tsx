@@ -4,33 +4,44 @@ import { Bar, BarChart, CartesianGrid, ResponsiveContainer, XAxis, YAxis } from 
 
 import { ChartConfig, ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/atoms/ui/chart'
 
-const chartData = [
-  { month: 'Jan', revenue: 12000000 },
-  { month: 'Feb', revenue: 18000000 },
-  { month: 'Mar', revenue: 25000000 },
-  { month: 'Apr', revenue: 22000000 },
-  { month: 'May', revenue: 45231899 },
-  { month: 'Jun', revenue: 32000000 },
-  { month: 'Jul', revenue: 38000000 },
-  { month: 'Aug', revenue: 42000000 },
-  { month: 'Sep', revenue: 35000000 },
-  { month: 'Oct', revenue: 50000000 },
-  { month: 'Nov', revenue: 48000000 },
-  { month: 'Dec', revenue: 60000000 }
-]
+interface Booking {
+  timestamp: string
+  [key: string]: unknown
+}
+
+interface OverviewChartProps {
+  bookings?: Booking[]
+}
 
 const chartConfig = {
-  revenue: {
-    label: 'Revenue',
-    color: '#113561' // Using primary hex or var(--primary) if supported
+  bookings: {
+    label: 'Bookings',
+    color: '#113561'
   }
 } satisfies ChartConfig
 
-export function OverviewChart() {
+const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+
+export function OverviewChart({ bookings = [] }: OverviewChartProps) {
+  const monthlyData = MONTHS.map((month, index) => {
+    const monthNum = index + 1
+
+    const count = bookings.filter((booking) => {
+      const bookingDate = new Date(booking.timestamp)
+
+      return bookingDate.getMonth() + 1 === monthNum
+    }).length
+
+    return {
+      month,
+      bookings: count
+    }
+  })
+
   return (
     <ChartContainer config={chartConfig} className="h-[350px] w-full">
       <ResponsiveContainer width="100%" height="100%">
-        <BarChart accessibilityLayer data={chartData} margin={{ left: -20, right: 10, top: 10, bottom: 10 }}>
+        <BarChart accessibilityLayer data={monthlyData} margin={{ left: -20, right: 10, top: 10, bottom: 10 }}>
           <CartesianGrid vertical={false} strokeDasharray="3 3" stroke="#e5e7eb" />
           <XAxis
             dataKey="month"
@@ -40,15 +51,9 @@ export function OverviewChart() {
             tickFormatter={(value) => value.slice(0, 3)}
             className="text-xs text-muted-foreground"
           />
-          <YAxis
-            tickLine={false}
-            axisLine={false}
-            tickFormatter={(value) => `Rp${(value / 1000000).toFixed(0)}jt`}
-            className="text-xs text-muted-foreground"
-            width={50}
-          />
-          <ChartTooltip cursor={false} content={<ChartTooltipContent hideLabel />} />
-          <Bar dataKey="revenue" fill="var(--color-revenue)" radius={[4, 4, 0, 0]} />
+          <YAxis tickLine={false} axisLine={false} className="text-xs text-slate-600" width={40} allowDecimals={false} />
+          <ChartTooltip cursor={false} content={<ChartTooltipContent />} />
+          <Bar dataKey="bookings" fill="var(--color-bookings)" radius={[4, 4, 0, 0]} />
         </BarChart>
       </ResponsiveContainer>
     </ChartContainer>

@@ -18,7 +18,7 @@ export function useAuth() {
       })
 
       if (result?.ok) {
-        router.push('/admin/dashboard')
+        router.push('/admin')
 
         return { success: true }
       }

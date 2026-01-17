@@ -5,7 +5,6 @@ import { ResponsiveContainer, Tooltip, Legend, TooltipProps } from 'recharts'
 
 import { cn } from '@/utils/cn'
 
-// Config interface
 export interface ChartConfig {
   [key: string]: {
     label: string
@@ -13,7 +12,6 @@ export interface ChartConfig {
   }
 }
 
-// Context
 const ChartContext = React.createContext<{ config: ChartConfig } | null>(null)
 
 function useChart() {
@@ -85,7 +83,7 @@ export const ChartTooltipContent = React.forwardRef<
     <div
       ref={ref}
       className={cn(
-        'grid min-w-[8rem] items-start gap-1.5 rounded-lg border border-slate-200/50 bg-white/95 px-2.5 py-1.5 text-xs shadow-xl backdrop-blur-sm dark:border-slate-800 dark:bg-slate-950/95',
+        'grid min-w-32 items-start gap-1.5 rounded-lg border border-slate-200/50 bg-white/95 px-2.5 py-1.5 text-xs shadow-xl backdrop-blur-sm dark:border-slate-800 dark:bg-slate-950/95',
         className
       )}
     >
@@ -100,9 +98,7 @@ export const ChartTooltipContent = React.forwardRef<
               <div className="h-2 w-2 rounded-full" style={{ backgroundColor: conf.color }} />
               <div className="flex flex-1 items-center justify-between gap-4 leading-none">
                 <span className="text-slate-500">{conf.label}</span>
-                <span className="font-mono font-medium text-slate-900 tabular-nums dark:text-slate-50">
-                  {typeof item.value === 'number' ? `Rp${(item.value / 1000000).toFixed(1)}jt` : item.value}
-                </span>
+                <span className="font-mono font-medium text-slate-900 tabular-nums dark:text-slate-50">{item.value}</span>
               </div>
             </div>
           )
