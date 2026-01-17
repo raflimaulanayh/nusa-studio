@@ -137,7 +137,7 @@ export default function ContactPage() {
                         Phone
                       </Text>
                       <Text variant="muted" size="sm">
-                        +62 812-3456-7890
+                        +62 851-2802-5700
                       </Text>
                     </div>
                   </div>

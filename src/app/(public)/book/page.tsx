@@ -227,7 +227,7 @@ function BookForm() {
               type="tel"
               {...register('phone')}
               className="w-full rounded-sm border bg-slate-50 px-4 py-3 text-primary transition-all duration-300 placeholder:text-muted-foreground/40 focus:bg-white focus:ring-2 focus:ring-secondary/20"
-              placeholder="628123456789"
+              placeholder="08123456789"
             />
             {errors.phone && <p className="pl-1 text-xs text-red-500">{errors.phone.message}</p>}
           </div>
