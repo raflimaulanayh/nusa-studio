@@ -7,7 +7,8 @@ import {
   Briefcase,
   CurrencyDollar,
   ChatCircleText,
-  WhatsappLogo
+  WhatsappLogo,
+  IdentificationCard
 } from '@phosphor-icons/react'
 import { ArrowLeft } from 'lucide-react'
 import Link from 'next/link'
@@ -148,6 +149,17 @@ Nusa Creative Studio Team`
           {/* Info Card */}
           <Card className="border-slate-200 p-6 shadow-sm">
             <div className="space-y-5">
+              {/* Order Number */}
+              {booking.order_number && (
+                <div>
+                  <div className="mb-2 flex items-center gap-2 text-xs font-semibold tracking-wide text-slate-500 uppercase">
+                    <IdentificationCard className="size-5" weight="duotone" />
+                    Order Number
+                  </div>
+                  <div className="text-base font-medium text-slate-900">{booking.order_number}</div>
+                </div>
+              )}
+
               <div>
                 <div className="mb-2 flex items-center gap-2 text-xs font-semibold tracking-wide text-slate-500 uppercase">
                   <Briefcase className="size-5" weight="duotone" />

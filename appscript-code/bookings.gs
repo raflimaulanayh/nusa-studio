@@ -189,6 +189,13 @@ const Bookings = {
         status: foundRow[9] || 'New'
       }
 
+      // Auto-mark as Read if status is New
+      if (booking.status === 'New') {
+        sheet.getRange(foundRowIndex, 10).setValue('Read')
+        booking.status = 'Read'
+        Utils.log(`Booking ${booking.order_number} marked as Read`, 'INFO')
+      }
+
       return Utils.createResponse({ success: true, booking: booking })
     } catch (error) {
       Utils.log(`Get booking by ID error: ${error.toString()}`, 'ERROR')
@@ -251,8 +258,8 @@ const Bookings = {
       return Utils.createResponse({ error: 'Row index and status required' }, 400)
     }
 
-    const validStatuses = ['pending', 'contacted', 'in-progress', 'completed', 'cancelled']
-    if (!validStatuses.includes(status.toLowerCase())) {
+    const validStatuses = ['New', 'Read', 'Contacted', 'In Progress', 'Completed', 'Cancelled']
+    if (!validStatuses.includes(status)) {
       return Utils.createResponse({ error: 'Invalid status value' }, 400)
     }
 

@@ -18,7 +18,7 @@ export function useAuth() {
       })
 
       if (result?.ok) {
-        router.push('/admin')
+        router.push('/admin/dashboard')
 
         return { success: true }
       }
@@ -40,7 +40,7 @@ export function useAuth() {
   }
 
   const logout = async () => {
-    await signOut({ redirect: true, callbackUrl: '/admin/login' })
+    await signOut({ redirect: true, callbackUrl: '/auth/login' })
   }
 
   return {

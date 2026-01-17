@@ -3,18 +3,17 @@
 import { useState } from 'react'
 import { toast } from 'sonner'
 
-import { useBookings } from '@/hooks/useBookings'
-
 import { Button } from '@/components/atoms/ui/button'
 import { Card } from '@/components/atoms/ui/card'
 
 import { cn } from '@/utils/cn'
 
-type Status = 'New' | 'Contacted' | 'In Progress' | 'Completed' | 'Cancelled'
+type Status = 'New' | 'Read' | 'Contacted' | 'In Progress' | 'Completed' | 'Cancelled'
 
 const StatusBadge = ({ status }: { status: string }) => {
   let classes = 'bg-slate-100 text-slate-700 border-slate-200'
   if (status === 'New') classes = 'bg-blue-50 text-blue-700 border-blue-200'
+  if (status === 'Read') classes = 'bg-cyan-50 text-cyan-700 border-cyan-200'
   if (status === 'Contacted') classes = 'bg-amber-50 text-amber-700 border-amber-200'
   if (status === 'In Progress') classes = 'bg-purple-50 text-purple-700 border-purple-200'
   if (status === 'Completed') classes = 'bg-emerald-50 text-emerald-700 border-emerald-200'
@@ -30,9 +29,8 @@ const StatusBadge = ({ status }: { status: string }) => {
 export const StatusCard = ({ initialStatus, rowIndex }: { initialStatus: string; rowIndex: number }) => {
   const [status, setStatus] = useState<Status>(initialStatus as Status)
   const [isSaving, setIsSaving] = useState(false)
-  const { updateStatus } = useBookings()
 
-  const statuses: Status[] = ['New', 'Contacted', 'In Progress', 'Completed', 'Cancelled']
+  const statuses: Status[] = ['New', 'Read', 'Contacted', 'In Progress', 'Completed', 'Cancelled']
 
   const handleSave = async () => {
     if (status === initialStatus) return
@@ -40,7 +38,16 @@ export const StatusCard = ({ initialStatus, rowIndex }: { initialStatus: string;
     setIsSaving(true)
 
     try {
-      await updateStatus(rowIndex, status)
+      const response = await fetch('/api/bookings', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ rowIndex, status })
+      })
+
+      if (!response.ok) {
+        throw new Error('Failed to update status')
+      }
+
       toast.success('Status updated successfully')
     } catch {
       toast.error('Failed to update status')

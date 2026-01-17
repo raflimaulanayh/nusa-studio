@@ -1,6 +1,6 @@
 'use client'
 
-import { EnvelopeSimple, CalendarBlank, Briefcase, ChatCircleText } from '@phosphor-icons/react'
+import { EnvelopeSimple, CalendarBlank, Briefcase, ChatCircleText, Ticket } from '@phosphor-icons/react'
 import { ArrowLeft } from 'lucide-react'
 import Link from 'next/link'
 
@@ -11,6 +11,32 @@ import { Card } from '@/components/atoms/ui/card'
 import { MessageStatusCard } from '@/components/organisms/admin/message-status-card'
 
 export function MessageDetailContent({ message }: { message: Message }) {
+  // Email reply template
+  const emailSubject = encodeURIComponent(`Re: ${message.ticketNumber || 'Your Message'} - ${message.service}`)
+  const emailBody = encodeURIComponent(
+    `Halo ${message.name},
+
+Terima kasih telah menghubungi Nusa Creative Studio!
+
+Ticket: ${message.ticketNumber || 'N/A'}
+Topik: ${message.service}
+
+Kami merespons pesan Anda:
+"${message.message.substring(0, 100)}${message.message.length > 100 ? '...' : ''}"
+
+━━━━━━━━━━━━━━━━━━━━
+
+[Tulis balasan Anda di sini]
+
+━━━━━━━━━━━━━━━━━━━━
+
+Terima kasih atas perhatian Anda.
+
+Best regards,
+Nusa Creative Studio Team`
+  )
+  const emailLink = `mailto:${message.email}?subject=${emailSubject}&body=${emailBody}`
+
   return (
     <div className="space-y-6">
       <Link
@@ -47,7 +73,7 @@ export function MessageDetailContent({ message }: { message: Message }) {
         </div>
 
         <div className="flex shrink-0 gap-3">
-          <a href={`mailto:${message.email}`}>
+          <a href={emailLink}>
             <Button variant="outline">
               <EnvelopeSimple className="size-5" weight="duotone" />
               Reply via Email
@@ -70,6 +96,31 @@ export function MessageDetailContent({ message }: { message: Message }) {
         </div>
 
         <div className="space-y-6">
+          {/* Info Card */}
+          <Card className="border-slate-200 p-6 shadow-sm">
+            <div className="space-y-5">
+              {/* Ticket Number */}
+              {message.ticketNumber && (
+                <div>
+                  <div className="mb-2 flex items-center gap-2 text-xs font-semibold tracking-wide text-slate-500 uppercase">
+                    <Ticket className="size-5" weight="duotone" />
+                    Ticket Number
+                  </div>
+                  <div className="text-base font-medium text-slate-900">{message.ticketNumber}</div>
+                </div>
+              )}
+
+              <div>
+                <div className="mb-2 flex items-center gap-2 text-xs font-semibold tracking-wide text-slate-500 uppercase">
+                  <Briefcase className="size-5" weight="duotone" />
+                  Service
+                </div>
+                <div className="text-base font-medium text-slate-900">{message.service}</div>
+              </div>
+            </div>
+          </Card>
+
+          {/* Status Card */}
           <MessageStatusCard initialStatus={message.status || 'New'} rowIndex={message.rowIndex} />
         </div>
       </div>

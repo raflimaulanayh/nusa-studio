@@ -1,9 +1,11 @@
 'use client'
 
-import { MOCK_BOOKINGS } from '@/data/mock-bookings'
-import { MOCK_CONTACTS } from '@/data/mock-contacts'
 import { Bell, MessageSquare, Calendar } from 'lucide-react'
+import Link from 'next/link'
 import { useState } from 'react'
+
+import { useBookings } from '@/hooks/useBookings'
+import { useMessages } from '@/hooks/useMessages'
 
 import { cn } from '@/utils/cn'
 
@@ -13,9 +15,13 @@ export function NotificationBell() {
   const [isOpen, setIsOpen] = useState(false)
   const [activeTab, setActiveTab] = useState<NotificationTab>('bookings')
 
-  // Get new bookings and messages for notifications
-  const newBookings = MOCK_BOOKINGS.filter((b) => b.status === 'New').slice(0, 5)
-  const newMessages = MOCK_CONTACTS.filter((c) => c.status === 'New').slice(0, 5)
+  // Get real data from hooks
+  const { bookings } = useBookings()
+  const { messages } = useMessages()
+
+  // Filter for new items only
+  const newBookings = (bookings || []).filter((b) => b.status === 'New' || !b.status).slice(0, 5)
+  const newMessages = (messages || []).filter((m) => m.status === 'New' || !m.status).slice(0, 5)
   const totalUnread = newBookings.length + newMessages.length
 
   return (
@@ -86,14 +92,19 @@ export function NotificationBell() {
               </div>
 
               {/* Notification List */}
-              <div className="max-h-96 overflow-y-auto">
+              <div className="max-h-96 overflow-y-auto py-2">
                 {/* Bookings Tab Content */}
                 {activeTab === 'bookings' && (
                   <>
                     {newBookings.length > 0 ? (
                       <div className="divide-y divide-slate-100">
                         {newBookings.map((booking) => (
-                          <div key={booking.id} className="px-4 py-3 transition-colors hover:bg-slate-50">
+                          <Link
+                            key={booking.rowIndex}
+                            href={`/admin/bookings/${booking.rowIndex}`}
+                            onClick={() => setIsOpen(false)}
+                            className="block px-4 py-3 transition-colors hover:bg-slate-50"
+                          >
                             <div className="flex items-start gap-3">
                               {/* Avatar */}
                               <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-blue-100 text-sm font-semibold text-blue-600">
@@ -105,7 +116,7 @@ export function NotificationBell() {
                                 <p className="text-sm font-medium text-slate-900">{booking.name}</p>
                                 <p className="text-xs text-slate-500">{booking.email}</p>
                                 <p className="text-xs text-slate-600">
-                                  {booking.service} • {booking.budget}
+                                  {booking.service} • {booking.budget || 'Budget not specified'}
                                 </p>
                               </div>
 
@@ -114,7 +125,7 @@ export function NotificationBell() {
                                 NEW
                               </span>
                             </div>
-                          </div>
+                          </Link>
                         ))}
                       </div>
                     ) : (
@@ -131,7 +142,12 @@ export function NotificationBell() {
                     {newMessages.length > 0 ? (
                       <div className="divide-y divide-slate-100">
                         {newMessages.map((message) => (
-                          <div key={message.id} className="px-4 py-3 transition-colors hover:bg-slate-50">
+                          <Link
+                            key={message.rowIndex}
+                            href={`/admin/messages/${message.rowIndex}`}
+                            onClick={() => setIsOpen(false)}
+                            className="block px-4 py-3 transition-colors hover:bg-slate-50"
+                          >
                             <div className="flex items-start gap-3">
                               {/* Avatar */}
                               <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-teal-100 text-sm font-semibold text-teal-600">
@@ -151,7 +167,7 @@ export function NotificationBell() {
                                 NEW
                               </span>
                             </div>
-                          </div>
+                          </Link>
                         ))}
                       </div>
                     ) : (
@@ -165,9 +181,13 @@ export function NotificationBell() {
 
               {/* Footer */}
               <div className="border-t border-slate-200 px-4 py-2">
-                <button className="w-full rounded-md py-2 text-center text-xs font-medium text-slate-600 transition-colors hover:bg-slate-50">
+                <Link
+                  href={activeTab === 'bookings' ? '/admin/bookings' : '/admin/messages'}
+                  onClick={() => setIsOpen(false)}
+                  className="block w-full rounded-md py-2 text-center text-xs font-medium text-slate-600 transition-colors hover:bg-slate-50"
+                >
                   {activeTab === 'bookings' ? 'Lihat Semua Booking' : 'Lihat Semua Pesan'}
-                </button>
+                </Link>
               </div>
             </div>
           </div>

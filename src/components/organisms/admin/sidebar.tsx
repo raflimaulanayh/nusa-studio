@@ -11,7 +11,7 @@ import { useAuth } from '@/hooks/useAuth'
 import { cn } from '@/utils/cn'
 
 const NAV_ITEMS = [
-  { label: 'Dashboard', href: '/admin', icon: LayoutDashboard },
+  { label: 'Dashboard', href: '/admin/dashboard', icon: LayoutDashboard },
   { label: 'Bookings', href: '/admin/bookings', icon: MessageSquare },
   { label: 'Messages', href: '/admin/messages', icon: Mail }
 ]
@@ -41,7 +41,7 @@ export function AdminSidebar() {
 
       <nav className="mt-8 flex flex-1 flex-col gap-y-2 px-5">
         {NAV_ITEMS.map((item) => {
-          const isActive = pathname === item.href
+          const isActive = pathname.startsWith(item.href)
 
           return (
             <Link

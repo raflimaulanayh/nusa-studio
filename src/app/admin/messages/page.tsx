@@ -47,6 +47,7 @@ export default function MessagesPage() {
   const { messages, total, isLoading, isError, mutate } = useMessages()
   const [statusFilter, setStatusFilter] = useState<StatusFilter>('all')
   const [searchQuery, setSearchQuery] = useState('')
+  const [itemsToShow, setItemsToShow] = useState(10)
 
   const filteredMessages = messages
     ?.filter((msg) =>
@@ -58,6 +59,21 @@ export default function MessagesPage() {
         msg.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
         msg.service.toLowerCase().includes(searchQuery.toLowerCase())
     )
+
+  // Paginate results
+  const displayedMessages = filteredMessages?.slice(0, itemsToShow) || []
+  const hasMore = itemsToShow < (filteredMessages?.length || 0)
+
+  // Reset pagination when filter changes
+  const handleFilterChange = (newFilter: StatusFilter) => {
+    setStatusFilter(newFilter)
+    setItemsToShow(10)
+  }
+
+  const handleSearchChange = (value: string) => {
+    setSearchQuery(value)
+    setItemsToShow(10)
+  }
 
   const statusTabs: { value: StatusFilter; label: string; count: number }[] = [
     { value: 'all', label: 'All', count: messages?.length || 0 },
@@ -119,7 +135,7 @@ export default function MessagesPage() {
           <p className="text-sm text-muted-foreground">{total || 0} total messages</p>
         </div>
         <Button onClick={handleDownload}>
-          <Download className="mr-2 h-4 w-4" />
+          <Download className="h-4 w-4" />
           Download
         </Button>
       </div>
@@ -131,7 +147,7 @@ export default function MessagesPage() {
             type="text"
             placeholder="Search by name, email, or service..."
             value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
+            onChange={(e) => handleSearchChange(e.target.value)}
             className="h-10 w-full rounded-lg border border-slate-200 bg-white pr-4 pl-10 text-sm transition-all placeholder:text-muted-foreground focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none"
           />
         </div>
@@ -141,7 +157,7 @@ export default function MessagesPage() {
         {statusTabs.map((tab) => (
           <button
             key={tab.value}
-            onClick={() => setStatusFilter(tab.value)}
+            onClick={() => handleFilterChange(tab.value)}
             className={cn(
               'flex items-center gap-2 rounded-lg border px-4 py-2 text-sm font-medium transition-all',
               statusFilter === tab.value
@@ -171,44 +187,60 @@ export default function MessagesPage() {
           </div>
         </Card>
       ) : (
-        <div className="grid gap-4">
-          {filteredMessages.map((message) => (
-            <Link key={message.rowIndex} href={`/admin/messages/${message.rowIndex}`}>
-              <Card className="group cursor-pointer border-slate-200 p-6 transition-all hover:border-secondary hover:shadow-md">
-                <div className="flex items-start justify-between gap-4">
-                  <div className="flex-1 space-y-3">
-                    <div className="flex items-start justify-between gap-4">
-                      <div>
-                        <h3 className="font-semibold text-slate-900 group-hover:text-primary">{message.name}</h3>
-                        <div className="mt-1 flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
-                          <div className="flex items-center gap-1.5">
-                            <EnvelopeSimple className="h-4 w-4" weight="duotone" />
-                            {message.email}
-                          </div>
-                          <div className="flex items-center gap-1.5">
-                            <Briefcase className="h-4 w-4" weight="duotone" />
-                            {message.service}
-                          </div>
-                          <div className="flex items-center gap-1.5">
-                            <CalendarBlank className="h-4 w-4" weight="duotone" />
-                            {new Date(message.timestamp).toLocaleDateString('id-ID', {
-                              day: 'numeric',
-                              month: 'short',
-                              year: 'numeric'
-                            })}
+        <>
+          <div className="grid gap-4">
+            {displayedMessages.map((message) => (
+              <Link key={message.rowIndex} href={`/admin/messages/${message.rowIndex}`}>
+                <Card className="group cursor-pointer border-slate-200 p-6 transition-all hover:border-secondary hover:shadow-md">
+                  <div className="flex items-start justify-between gap-4">
+                    <div className="flex-1 space-y-3">
+                      <div className="flex items-start justify-between gap-4">
+                        <div>
+                          <h3 className="font-semibold text-slate-900 group-hover:text-primary">{message.name}</h3>
+                          <div className="mt-1 flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
+                            <div className="flex items-center gap-1.5">
+                              <EnvelopeSimple className="h-4 w-4" weight="duotone" />
+                              {message.email}
+                            </div>
+                            <div className="flex items-center gap-1.5">
+                              <Briefcase className="h-4 w-4" weight="duotone" />
+                              {message.service}
+                            </div>
+                            <div className="flex items-center gap-1.5">
+                              <CalendarBlank className="h-4 w-4" weight="duotone" />
+                              {new Date(message.timestamp).toLocaleDateString('id-ID', {
+                                day: 'numeric',
+                                month: 'short',
+                                year: 'numeric'
+                              })}
+                            </div>
                           </div>
                         </div>
+                        <StatusBadge status={message.status || 'New'} />
                       </div>
-                      <StatusBadge status={message.status || 'New'} />
-                    </div>
 
-                    <p className="line-clamp-2 text-sm text-slate-600">{message.message}</p>
+                      <p className="line-clamp-2 text-sm text-slate-600">{message.message}</p>
+                    </div>
                   </div>
-                </div>
-              </Card>
-            </Link>
-          ))}
-        </div>
+                </Card>
+              </Link>
+            ))}
+          </div>
+
+          {/* Load More Button */}
+          {hasMore && filteredMessages && filteredMessages.length > 0 && (
+            <div className="mt-6 flex justify-center">
+              <Button
+                size="lg"
+                variant="secondary"
+                onClick={() => setItemsToShow((prev) => prev + 10)}
+                className="min-w-[200px]"
+              >
+                Load More ({(filteredMessages?.length || 0) - itemsToShow} remaining)
+              </Button>
+            </div>
+          )}
+        </>
       )}
     </div>
   )

@@ -27,7 +27,7 @@ export default function DashboardPage() {
 
   // Recent bookings - latest 5
   const recentBookings = bookings
-    ? [...bookings].sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()).slice(0, 5)
+    ? [...bookings].sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()).slice(0, 3)
     : []
 
   return (
@@ -115,7 +115,7 @@ export default function DashboardPage() {
             <CardDescription>Monthly booking trends</CardDescription>
           </CardHeader>
           <CardContent className="px-2 pb-6 sm:px-6">
-            <OverviewChart />
+            <OverviewChart bookings={bookings} isLoading={bookingsLoading} />
           </CardContent>
         </Card>
 
@@ -135,7 +135,7 @@ export default function DashboardPage() {
           <CardContent>
             {bookingsLoading ? (
               <div className="space-y-3">
-                {[1, 2, 3, 4, 5].map((i) => (
+                {[1, 2, 3].map((i) => (
                   <div key={i} className="h-24 animate-pulse rounded-lg bg-slate-200" />
                 ))}
               </div>

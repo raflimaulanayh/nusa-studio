@@ -4,6 +4,7 @@ import { fetcher } from '@/services/fetcher'
 
 export interface Message {
   rowIndex: number
+  ticketNumber?: string
   timestamp: string
   name: string
   email: string

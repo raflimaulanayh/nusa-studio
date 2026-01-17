@@ -2,15 +2,27 @@
 
 import { notFound } from 'next/navigation'
 import { useParams } from 'next/navigation'
+import useSWR from 'swr'
 
-import { useMessages } from '@/hooks/useMessages'
+import { fetcher } from '@/services/fetcher'
+
+import type { Message } from '@/hooks/useMessages'
 
 import { MessageDetailContent } from '@/components/organisms/admin/message-detail-content'
 
 export default function MessageDetailPage() {
   const params = useParams()
   const id = params.id as string
-  const { messages, isLoading, isError } = useMessages()
+
+  // Use new single message endpoint (auto-marks as Read)
+  const {
+    data: message,
+    isLoading,
+    error
+  } = useSWR<Message>(`/api/messages/${id}`, fetcher, {
+    revalidateOnFocus: false,
+    revalidateOnReconnect: true
+  })
 
   if (isLoading) {
     return (
@@ -29,13 +41,7 @@ export default function MessageDetailPage() {
     )
   }
 
-  if (isError || !messages) {
-    return notFound()
-  }
-
-  const message = messages.find((m) => m.rowIndex.toString() === id)
-
-  if (!message) {
+  if (error || !message) {
     return notFound()
   }
 

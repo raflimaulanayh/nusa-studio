@@ -1,7 +1,7 @@
 'use client'
 
 import { EnvelopeSimple, CalendarBlank, CurrencyDollar, Briefcase } from '@phosphor-icons/react'
-import { Download, Search, CalendarDays, RefreshCw } from 'lucide-react'
+import { Download, Search, RefreshCw } from 'lucide-react'
 import Link from 'next/link'
 import { useState } from 'react'
 import { toast } from 'sonner'
@@ -16,6 +16,7 @@ import { cn } from '@/utils/cn'
 const StatusBadge = ({ status }: { status: string }) => {
   let classes = 'bg-slate-100 text-slate-700 border-slate-200'
   if (status === 'New') classes = 'bg-blue-50 text-blue-700 border-blue-200'
+  if (status === 'Read') classes = 'bg-cyan-50 text-cyan-700 border-cyan-200'
   if (status === 'Contacted') classes = 'bg-amber-50 text-amber-700 border-amber-200'
   if (status === 'In Progress') classes = 'bg-purple-50 text-purple-700 border-purple-200'
   if (status === 'Completed') classes = 'bg-emerald-50 text-emerald-700 border-emerald-200'
@@ -27,7 +28,7 @@ const StatusBadge = ({ status }: { status: string }) => {
   )
 }
 
-type StatusFilter = 'all' | 'New' | 'Contacted' | 'In Progress' | 'Completed'
+type StatusFilter = 'all' | 'New' | 'Read' | 'Contacted' | 'In Progress' | 'Completed'
 
 // Loading Skeleton
 const BookingsSkeleton = () => (
@@ -48,7 +49,7 @@ const BookingsSkeleton = () => (
 )
 
 // Error State
-const ErrorState = ({ onRetry }: { onRetry: () => void }) => (
+const ErrorState = ({ onRetry, isLoading }: { onRetry: () => void; isLoading: boolean }) => (
   <Card className="border-slate-200 p-12 shadow-sm">
     <div className="text-center">
       <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-red-100">
@@ -63,7 +64,7 @@ const ErrorState = ({ onRetry }: { onRetry: () => void }) => (
       </div>
       <h3 className="text-lg font-semibold text-slate-900">Failed to load bookings</h3>
       <p className="mt-1 text-sm text-slate-500">There was an error loading the data</p>
-      <Button onClick={onRetry} className="mt-4">
+      <Button loading={isLoading} onClick={onRetry} disabled={isLoading} className="mt-4">
         <RefreshCw className="h-4 w-4" />
         Retry
       </Button>
@@ -75,9 +76,9 @@ export default function BookingsPage() {
   const { bookings, total, isLoading, isError, mutate } = useBookings()
   const [searchQuery, setSearchQuery] = useState('')
   const [statusFilter, setStatusFilter] = useState<StatusFilter>('all')
-  const [dateFilter, setDateFilter] = useState<string>('all')
+  const [itemsToShow, setItemsToShow] = useState(10)
 
-  // Filter bookings based on search, status, and date
+  // Filter bookings based on search and status
   const filteredBookings = (bookings || []).filter((booking) => {
     const matchesSearch =
       booking.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -86,29 +87,32 @@ export default function BookingsPage() {
 
     const matchesStatus = statusFilter === 'all' || booking.status === statusFilter
 
-    // Date filtering logic
-    let matchesDate = true
-    if (dateFilter !== 'all') {
-      const bookingDate = new Date(booking.timestamp)
-      const now = new Date()
-
-      if (dateFilter === 'today') {
-        matchesDate = bookingDate.toDateString() === now.toDateString()
-      } else if (dateFilter === 'week') {
-        const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000)
-        matchesDate = bookingDate >= weekAgo
-      } else if (dateFilter === 'month') {
-        const monthAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000)
-        matchesDate = bookingDate >= monthAgo
-      }
-    }
-
-    return matchesSearch && matchesStatus && matchesDate
+    return matchesSearch && matchesStatus
   })
+
+  // Paginate results
+  const displayedBookings = filteredBookings.slice(0, itemsToShow)
+  const hasMore = itemsToShow < filteredBookings.length
+
+  // Reset pagination when filter changes
+  const handleFilterChange = (newFilter: StatusFilter) => {
+    setStatusFilter(newFilter)
+    setItemsToShow(10)
+  }
+
+  const handleSearchChange = (value: string) => {
+    setSearchQuery(value)
+    setItemsToShow(10)
+  }
 
   const statusTabs: { value: StatusFilter; label: string; count: number }[] = [
     { value: 'all', label: 'All', count: bookings?.length || 0 },
     { value: 'New', label: 'New', count: bookings?.filter((b) => b.status === 'New' || !b.status).length || 0 },
+    {
+      value: 'Read',
+      label: 'Read',
+      count: bookings?.filter((b) => b.status === 'Read').length || 0
+    },
     {
       value: 'Contacted',
       label: 'Contacted',
@@ -163,7 +167,7 @@ export default function BookingsPage() {
 
   // Error state
   if (isError) {
-    return <ErrorState onRetry={() => mutate()} />
+    return <ErrorState onRetry={() => mutate()} isLoading={isLoading} />
   }
 
   return (
@@ -179,44 +183,26 @@ export default function BookingsPage() {
         </Button>
       </div>
 
-      {/* Search and Date Filter Bar */}
-      <Card className="border-slate-200 p-4 shadow-sm">
-        <div className="flex flex-col gap-4 sm:flex-row">
-          {/* Search */}
-          <div className="relative flex-1">
-            <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-slate-400" />
-            <input
-              type="text"
-              placeholder="Search by name, email, or service..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="h-10 w-full rounded-lg border border-slate-200 bg-white pr-4 pl-10 text-sm transition-all placeholder:text-slate-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none"
-            />
-          </div>
-
-          {/* Date Filter */}
-          <div className="flex items-center gap-2">
-            <CalendarDays className="h-4 w-4 text-slate-400" />
-            <select
-              value={dateFilter}
-              onChange={(e) => setDateFilter(e.target.value)}
-              className="h-10 rounded-lg border border-slate-200 bg-white px-3 text-sm transition-all focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none"
-            >
-              <option value="all">All Time</option>
-              <option value="today">Today</option>
-              <option value="week">Last 7 Days</option>
-              <option value="month">Last 30 Days</option>
-            </select>
-          </div>
+      {/* Search Bar */}
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div className="relative flex-1">
+          <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+          <input
+            type="text"
+            placeholder="Search by name, email, or service..."
+            value={searchQuery}
+            onChange={(e) => handleSearchChange(e.target.value)}
+            className="h-10 w-full rounded-lg border border-slate-200 bg-white pr-4 pl-10 text-sm transition-all placeholder:text-muted-foreground focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none"
+          />
         </div>
-      </Card>
+      </div>
 
       {/* Status Filter Tabs */}
       <div className="flex flex-wrap gap-2">
         {statusTabs.map((tab) => (
           <button
             key={tab.value}
-            onClick={() => setStatusFilter(tab.value)}
+            onClick={() => handleFilterChange(tab.value)}
             className={cn(
               'inline-flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition-all',
               statusFilter === tab.value
@@ -239,7 +225,7 @@ export default function BookingsPage() {
 
       {/* Bookings Grid */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-1">
-        {filteredBookings.map((booking) => (
+        {displayedBookings.map((booking) => (
           <Link key={booking.rowIndex} href={`/admin/bookings/${booking.rowIndex}`}>
             <Card className="group hover:shadow-modern-lg cursor-pointer border-slate-200 shadow-sm transition-all hover:border-secondary">
               <div className="p-6">
@@ -306,6 +292,20 @@ export default function BookingsPage() {
           </Link>
         ))}
       </div>
+
+      {/* Load More Button */}
+      {hasMore && (
+        <div className="mt-6 flex justify-center">
+          <Button
+            variant="secondary"
+            size="lg"
+            onClick={() => setItemsToShow((prev) => prev + 10)}
+            className="min-w-[200px]"
+          >
+            Load More ({filteredBookings.length - itemsToShow} remaining)
+          </Button>
+        </div>
+      )}
 
       {/* Empty State */}
       {filteredBookings.length === 0 && (

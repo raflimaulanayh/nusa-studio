@@ -136,6 +136,75 @@ const Messages = {
   },
 
   /**
+   * Get single message by ID and auto-mark as Read (PROTECTED - Admin only)
+   */
+  handleGetMessageById: function (e) {
+    const token = e.parameter.token
+    const rowIndex = parseInt(e.parameter.rowIndex)
+    const ticketNumber = e.parameter.ticketNumber
+
+    const auth = Auth.authorizeRequest(token)
+    if (!auth.authorized) {
+      return Utils.createResponse({ error: auth.error }, 401)
+    }
+
+    if (!rowIndex && !ticketNumber) {
+      return Utils.createResponse({ error: 'rowIndex or ticketNumber required' }, 400)
+    }
+
+    try {
+      const sheet = Utils.getSheet(Config.MESSAGES_SHEET_NAME)
+      const data = sheet.getDataRange().getValues()
+
+      if (data.length <= 1) {
+        return Utils.createResponse({ error: 'Message not found' }, 404)
+      }
+
+      let foundRow = null
+      let foundRowIndex = null
+
+      // Search by rowIndex or ticketNumber
+      for (let i = 1; i < data.length; i++) {
+        const currentTicketNumber = data[i][0] // Column A
+        const currentRowIndex = i + 1
+
+        if ((rowIndex && currentRowIndex === rowIndex) || (ticketNumber && currentTicketNumber === ticketNumber)) {
+          foundRow = data[i]
+          foundRowIndex = currentRowIndex
+          break
+        }
+      }
+
+      if (!foundRow) {
+        return Utils.createResponse({ error: 'Message not found' }, 404)
+      }
+
+      const message = {
+        rowIndex: foundRowIndex,
+        ticketNumber: foundRow[0],
+        timestamp: foundRow[1],
+        name: foundRow[2],
+        email: foundRow[3],
+        service: foundRow[4],
+        message: foundRow[5],
+        status: foundRow[6] || 'New'
+      }
+
+      // Auto-mark as Read if status is New
+      if (message.status === 'New') {
+        sheet.getRange(foundRowIndex, 7).setValue('Read')
+        message.status = 'Read'
+        Utils.log(`Message ${message.ticketNumber} marked as Read`, 'INFO')
+      }
+
+      return Utils.createResponse({ success: true, message: message })
+    } catch (error) {
+      Utils.log(`Get message by ID error: ${error.toString()}`, 'ERROR')
+      return Utils.createResponse({ error: 'Failed to fetch message' }, 500)
+    }
+  },
+
+  /**
    * Update message status (PROTECTED - Admin only)
    */
   handleUpdateMessageStatus: function (e) {

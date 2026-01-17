@@ -35,6 +35,9 @@ function doPost(e) {
       case 'getMessages':
         return Messages.handleGetMessages(e)
 
+      case 'getMessageById':
+        return Messages.handleGetMessageById(e)
+
       case 'updateMessageStatus':
         return Messages.handleUpdateMessageStatus(e)
 
@@ -61,7 +64,15 @@ function doGet(e) {
     modules: ['auth', 'bookings', 'messages'],
     endpoints: {
       public: ['saveBooking', 'saveMessage'],
-      protected: ['login', 'verify', 'getBookings', 'getBookingById', 'updateBookingStatus', 'getMessages', 'updateMessageStatus']
+      protected: [
+        'login',
+        'verify',
+        'getBookings',
+        'getBookingById',
+        'updateBookingStatus',
+        'getMessages',
+        'updateMessageStatus'
+      ]
     }
   })
 }

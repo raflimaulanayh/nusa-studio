@@ -8,7 +8,7 @@ export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl
 
   if (pathname.startsWith('/admin')) {
-    if (pathname === '/admin/login') {
+    if (pathname === '/auth/login') {
       return NextResponse.next({
         request: { headers: requestHeaders }
       })
@@ -17,13 +17,13 @@ export async function proxy(request: NextRequest) {
     const session = await getServerSession(authOptions)
 
     if (!session) {
-      return NextResponse.redirect(new URL('/admin/login', request.url))
+      return NextResponse.redirect(new URL('/auth/login', request.url))
     }
 
     const role = session.user?.role?.toLowerCase()
 
     if (role !== 'admin') {
-      return NextResponse.redirect(new URL('/admin/login', request.url))
+      return NextResponse.redirect(new URL('/auth/login', request.url))
     }
   }
 

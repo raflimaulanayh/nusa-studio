@@ -3,8 +3,6 @@
 import { useState } from 'react'
 import { toast } from 'sonner'
 
-import { useMessages } from '@/hooks/useMessages'
-
 import { Button } from '@/components/atoms/ui/button'
 import { Card } from '@/components/atoms/ui/card'
 
@@ -28,7 +26,6 @@ const StatusBadge = ({ status }: { status: string }) => {
 export const MessageStatusCard = ({ initialStatus, rowIndex }: { initialStatus: string; rowIndex: number }) => {
   const [status, setStatus] = useState<Status>(initialStatus as Status)
   const [isSaving, setIsSaving] = useState(false)
-  const { updateStatus } = useMessages()
 
   const statuses: Status[] = ['New', 'Read', 'Replied']
 
@@ -38,7 +35,16 @@ export const MessageStatusCard = ({ initialStatus, rowIndex }: { initialStatus: 
     setIsSaving(true)
 
     try {
-      await updateStatus(rowIndex, status)
+      const response = await fetch('/api/messages', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ rowIndex, status })
+      })
+
+      if (!response.ok) {
+        throw new Error('Failed to update status')
+      }
+
       toast.success('Status updated successfully')
     } catch {
       toast.error('Failed to update status')
