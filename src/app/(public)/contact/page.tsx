@@ -2,7 +2,7 @@
 
 import { zodResolver } from '@hookform/resolvers/zod'
 import { motion } from 'framer-motion'
-import { ArrowRight, Mail, MapPin, Phone, Instagram, Linkedin, Twitter, Check } from 'lucide-react'
+import { ArrowRight, Mail, MapPin, Phone, Instagram, Linkedin, Twitter, CheckCircle2 } from 'lucide-react'
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
@@ -27,6 +27,7 @@ type FormData = z.infer<typeof formSchema>
 export default function ContactPage() {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isSuccess, setIsSuccess] = useState(false)
+  const [ticketNumber, setTicketNumber] = useState<string>('')
 
   const {
     register,
@@ -59,13 +60,9 @@ export default function ContactPage() {
         throw new Error(error.error || 'Failed to send message')
       }
 
+      const result = await response.json()
+      setTicketNumber(result.ticketNumber || '')
       setIsSuccess(true)
-      toast.success("Message sent successfully! We'll get back to you soon.")
-
-      setTimeout(() => {
-        reset()
-        setIsSuccess(false)
-      }, 5000)
     } catch (error) {
       console.error('Submit error:', error)
       toast.error(error instanceof Error ? error.message : 'Failed to send message. Please try again.')
@@ -91,7 +88,7 @@ export default function ContactPage() {
               <Text size="sm" weight="semibold" className="mb-6 tracking-widest text-secondary uppercase">
                 Contact Us
               </Text>
-              <h1 className="font-serif text-4xl leading-[1.1] font-medium tracking-tight text-primary md:text-5xl lg:text-6xl">
+              <h1 className="font-serif text-3xl leading-[1.1] font-medium tracking-tight text-primary md:text-5xl lg:text-6xl">
                 Let&apos;s create something <br />
                 <span className="text-secondary italic">meaningful</span> together.
               </h1>
@@ -99,72 +96,90 @@ export default function ContactPage() {
           </header>
 
           <div className="grid grid-cols-1 gap-12 lg:grid-cols-12 lg:gap-24">
-            <aside className="space-y-12 lg:col-span-4">
+            <aside className="space-y-8 lg:col-span-4">
               <motion.div
                 initial={{ opacity: 0, x: -30 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.8, delay: 0.2 }}
               >
-                <Text variant="muted" className="mb-10 text-lg leading-relaxed">
-                  Have a project in mind or just want to explore what&apos;s possible? We&apos;re here to listen,
-                  collaborate, and bring your vision to life.
+                <Heading as="h2" variant="secondary" className="mb-6">
+                  Get in Touch
+                </Heading>
+                <Text variant="muted" className="mb-8 leading-relaxed">
+                  Have a project in mind or just want to chat about your ideas? Send us a message and we&apos;ll respond as
+                  soon as possible.
                 </Text>
 
-                <address className="space-y-8 not-italic">
-                  <div className="flex items-start gap-4">
-                    <div className="shrink-0 rounded-full border border-slate-100 bg-white p-3 text-secondary shadow-sm">
-                      <Mail size={20} />
+                <div className="space-y-6 border-b border-slate-200 pb-10">
+                  <a
+                    href="mailto:hello@nusacreativestudio.com"
+                    className="group flex items-start gap-4 rounded-xl border border-transparent transition-all duration-300 hover:border-slate-100 hover:bg-slate-50/50"
+                  >
+                    <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-secondary/10 text-secondary transition-colors duration-300 group-hover:bg-secondary group-hover:text-white">
+                      <Mail className="h-5 w-5" />
                     </div>
                     <div>
-                      <h3 className="mb-1 font-semibold text-primary">Email Us</h3>
-                      <a
-                        href="mailto:hello@nusa-studio.com"
-                        className="text-muted-foreground transition-colors hover:text-primary"
-                      >
-                        hello@nusa-studio.com
-                      </a>
+                      <Text weight="semibold" className="mb-1 text-primary">
+                        Email
+                      </Text>
+                      <Text variant="muted" size="sm">
+                        hello@nusacreativestudio.com
+                      </Text>
+                    </div>
+                  </a>
+
+                  <div className="group flex items-start gap-4 rounded-xl border border-transparent transition-all duration-300 hover:border-slate-100 hover:bg-slate-50/50">
+                    <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-secondary/10 text-secondary transition-colors duration-300 group-hover:bg-secondary group-hover:text-white">
+                      <Phone className="h-5 w-5" />
+                    </div>
+                    <div>
+                      <Text weight="semibold" className="mb-1 text-primary">
+                        Phone
+                      </Text>
+                      <Text variant="muted" size="sm">
+                        +62 812-3456-7890
+                      </Text>
                     </div>
                   </div>
 
-                  <div className="flex items-start gap-4">
-                    <div className="shrink-0 rounded-full border border-slate-100 bg-white p-3 text-secondary shadow-sm">
-                      <Phone size={20} />
+                  <div className="group flex items-start gap-4 rounded-xl border border-transparent transition-all duration-300 hover:border-slate-100 hover:bg-slate-50/50">
+                    <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-secondary/10 text-secondary transition-colors duration-300 group-hover:bg-secondary group-hover:text-white">
+                      <MapPin className="h-5 w-5" />
                     </div>
                     <div>
-                      <h3 className="mb-1 font-semibold text-primary">Call Us</h3>
-                      <a href="tel:+6281234567890" className="text-muted-foreground transition-colors hover:text-primary">
-                        +62 812 3456 7890
-                      </a>
+                      <Text weight="semibold" className="mb-1 text-primary">
+                        Office
+                      </Text>
+                      <Text variant="muted" size="sm">
+                        Jakarta, Indonesia
+                      </Text>
                     </div>
                   </div>
+                </div>
 
-                  <div className="flex items-start gap-4">
-                    <div className="shrink-0 rounded-full border border-slate-100 bg-white p-3 text-secondary shadow-sm">
-                      <MapPin size={20} />
-                    </div>
-                    <div>
-                      <h3 className="mb-1 font-semibold text-primary">Visit Us</h3>
-                      <p className="text-muted-foreground">
-                        Jl. Dago No. 88
-                        <br />
-                        Bandung, West Java, Indonesia
-                      </p>
-                    </div>
-                  </div>
-                </address>
-
-                <div className="mt-12 border-t border-slate-200 pt-12">
-                  <h3 className="mb-6 font-semibold text-primary">Follow Us</h3>
-                  <div className="flex gap-4">
-                    {[Instagram, Twitter, Linkedin].map((Icon, i) => (
-                      <a
-                        key={i}
-                        href="#"
-                        className="flex h-10 w-10 items-center justify-center rounded-full border border-slate-100 bg-white text-muted-foreground shadow-sm transition-all duration-300 hover:bg-secondary hover:text-white"
-                      >
-                        <Icon size={18} />
-                      </a>
-                    ))}
+                <div className="mt-10">
+                  <Text weight="semibold" className="mb-4 text-primary">
+                    Follow Us
+                  </Text>
+                  <div className="flex gap-3">
+                    <a
+                      href="#"
+                      className="flex h-10 w-10 items-center justify-center rounded-lg border border-slate-200 text-muted-foreground transition-all duration-300 hover:border-secondary hover:bg-secondary hover:text-white"
+                    >
+                      <Instagram className="h-4 w-4" />
+                    </a>
+                    <a
+                      href="#"
+                      className="flex h-10 w-10 items-center justify-center rounded-lg border border-slate-200 text-muted-foreground transition-all duration-300 hover:border-secondary hover:bg-secondary hover:text-white"
+                    >
+                      <Linkedin className="h-4 w-4" />
+                    </a>
+                    <a
+                      href="#"
+                      className="flex h-10 w-10 items-center justify-center rounded-lg border border-slate-200 text-muted-foreground transition-all duration-300 hover:border-secondary hover:bg-secondary hover:text-white"
+                    >
+                      <Twitter className="h-4 w-4" />
+                    </a>
                   </div>
                 </div>
               </motion.div>
@@ -175,19 +190,47 @@ export default function ContactPage() {
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, delay: 0.4 }}
-                className="rounded-3xl border border-slate-100 bg-white p-8 shadow-xl shadow-slate-200/50 md:p-12"
+                className="rounded-lg border border-slate-100 bg-white px-5 py-8 shadow-xl shadow-slate-200/50 sm:p-12 lg:p-16"
               >
                 {isSuccess ? (
-                  <div className="flex min-h-[400px] flex-col items-center justify-center text-center">
+                  <div className="flex min-h-[400px] flex-col items-center justify-center px-4 text-center">
                     <div className="mb-8 flex h-20 w-20 items-center justify-center rounded-full bg-green-50 text-green-600">
-                      <Check className="h-10 w-10" />
+                      <CheckCircle2 className="h-10 w-10" />
                     </div>
                     <Heading as="h3" variant="primary" className="mb-4">
                       Message Sent!
                     </Heading>
-                    <Text variant="muted" className="mx-auto max-w-sm">
-                      Thank you for contacting us. We&apos;ve received your message and will get back to you within 24 hours.
+
+                    {ticketNumber && (
+                      <div className="mb-6 w-full max-w-md rounded-xl bg-gradient-to-r from-blue-50 to-purple-50 p-6">
+                        <Text variant="muted" className="mb-2 text-sm font-medium tracking-wide uppercase">
+                          Your Ticket Number
+                        </Text>
+                        <div className="text-3xl font-bold text-primary md:text-4xl">{ticketNumber}</div>
+                        <Text variant="muted" className="mt-2 text-sm">
+                          Save this for future reference
+                        </Text>
+                      </div>
+                    )}
+
+                    <Text variant="muted" className="mx-auto mb-4 max-w-sm">
+                      Thank you for contacting us, <span className="font-semibold text-primary">{watch('name')}</span>!
                     </Text>
+                    <Text variant="muted" className="mx-auto max-w-sm">
+                      We&apos;ve received your message and will get back to you within 24 hours.
+                    </Text>
+
+                    <Button
+                      onClick={() => {
+                        reset()
+                        setIsSuccess(false)
+                        setTicketNumber('')
+                      }}
+                      variant="outline"
+                      className="mt-8"
+                    >
+                      Send Another Message
+                    </Button>
                   </div>
                 ) : (
                   <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
@@ -250,15 +293,10 @@ export default function ContactPage() {
                       {errors.message && <p className="pl-1 text-xs text-red-500">{errors.message.message}</p>}
                     </div>
 
-                    <div className="pt-4">
-                      <Button
-                        type="submit"
-                        size="lg"
-                        disabled={isSubmitting}
-                        loading={isSubmitting}
-                        rightIcon={!isSubmitting ? <ArrowRight className="h-5 w-5" /> : undefined}
-                      >
-                        {isSubmitting ? 'Sending Message...' : 'Send Message'}
+                    <div className="flex justify-end pt-4">
+                      <Button type="submit" disabled={isSubmitting} rounded="full" size="lg">
+                        {isSubmitting ? 'Sending...' : 'Send Message'}
+                        {!isSubmitting && <ArrowRight className="h-4 w-4" />}
                       </Button>
                     </div>
                   </form>

@@ -139,7 +139,7 @@ export default function BookingsPage() {
       b.service,
       b.budget || '',
       b.status || 'New',
-      new Date(b.timestamp).toLocaleDateString('id-ID')
+      new Date(b.timestamp || '').toLocaleString('id-ID', { dateStyle: 'short', timeStyle: 'short' })
     ])
 
     const csv = [headers.join(','), ...rows.map((r) => r.map((c) => `"${c}"`).join(','))].join('\n')
@@ -290,7 +290,12 @@ export default function BookingsPage() {
                           <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-purple-50">
                             <CalendarBlank className="h-4 w-4 text-purple-600" weight="duotone" />
                           </div>
-                          <span>{new Date(booking.timestamp).toLocaleDateString('id-ID')}</span>
+                          <span>
+                            {new Date(booking.timestamp || '').toLocaleString('id-ID', {
+                              dateStyle: 'short',
+                              timeStyle: 'short'
+                            })}
+                          </span>
                         </div>
                       </div>
                     </div>

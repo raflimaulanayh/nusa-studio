@@ -112,12 +112,6 @@ function BookForm() {
       const result = await response.json()
       setOrderNumber(result.orderNumber || '')
       setIsSuccess(true)
-
-      setTimeout(() => {
-        reset()
-        setIsSuccess(false)
-        setOrderNumber('')
-      }, 15000)
     } catch (error) {
       console.error('Submit error:', error)
       toast.error(error instanceof Error ? error.message : 'Failed to submit. Please try again.')
@@ -160,7 +154,15 @@ function BookForm() {
           <br />
           Our team will contact you within 1-2 business days.
         </Text>
-        <Button onClick={() => setIsSuccess(false)} variant="outline" rounded="full">
+        <Button
+          onClick={() => {
+            reset()
+            setIsSuccess(false)
+            setOrderNumber('')
+          }}
+          variant="outline"
+          rounded="full"
+        >
           Send Another Request
         </Button>
       </motion.div>

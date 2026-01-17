@@ -5,11 +5,12 @@ import { fetcher } from '@/services/fetcher'
 interface Booking {
   id: number
   rowIndex: number
+  order_number?: string
   timestamp: string
   name: string
   email: string
   phone: string
-  company: string
+  company?: string
   service: string
   budget: string
   message: string

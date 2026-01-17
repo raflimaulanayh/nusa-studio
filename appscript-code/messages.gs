@@ -3,6 +3,49 @@
 // ========================================================================
 const Messages = {
   /**
+   * Generate ticket number: MSG-YYMMDD-XXX
+   */
+  generateTicketNumber: function () {
+    const now = new Date()
+    const year = now.getFullYear().toString().slice(-2)
+    const month = ('0' + (now.getMonth() + 1)).slice(-2)
+    const day = ('0' + now.getDate()).slice(-2)
+    const datePrefix = `MSG-${year}${month}${day}`
+
+    try {
+      const sheet = Utils.getSheet(Config.MESSAGES_SHEET_NAME)
+      const data = sheet.getDataRange().getValues()
+
+      let maxNumber = 0
+
+      // Skip header row, start from row 1 (index 1)
+      for (let i = 1; i < data.length; i++) {
+        const ticketNum = data[i][0] // Column A (ticket number)
+
+        // Convert to string and check if it starts with today's prefix
+        if (ticketNum) {
+          const ticketNumStr = ticketNum.toString()
+          if (ticketNumStr.startsWith(datePrefix)) {
+            const parts = ticketNumStr.split('-')
+            if (parts.length === 3) {
+              const num = parseInt(parts[2])
+              if (num > maxNumber) maxNumber = num
+            }
+          }
+        }
+      }
+
+      const nextNumber = ('00' + (maxNumber + 1)).slice(-3)
+      return `${datePrefix}-${nextNumber}`
+    } catch (error) {
+      Utils.log(`Ticket number generation error: ${error.toString()}`, 'ERROR')
+      // Fallback: use timestamp-based number
+      const timestamp = now.getTime().toString().slice(-3)
+      return `${datePrefix}-${timestamp}`
+    }
+  },
+
+  /**
    * Save contact form message (PUBLIC - No auth required)
    */
   handleSaveMessage: function (e) {
@@ -20,16 +63,31 @@ const Messages = {
     }
 
     try {
+      // Generate ticket number
+      const ticketNumber = this.generateTicketNumber()
+      Utils.log('Generated ticket number: ' + ticketNumber, 'INFO')
+
       const sheet = Utils.getSheet(Config.MESSAGES_SHEET_NAME)
       const timestamp = new Date()
-      const lastRow = sheet.getLastRow()
-      const rowIndex = lastRow + 1
 
-      sheet.appendRow([timestamp, name, email, service || 'General Inquiry', message, 'New', rowIndex])
+      // Save to sheet with ticket number
+      sheet.appendRow([
+        ticketNumber, // A: Ticket Number
+        timestamp, // B: Timestamp
+        name, // C: Name
+        email, // D: Email
+        service || 'General Inquiry', // E: Service
+        message, // F: Message
+        'New' // G: Status
+      ])
 
-      Utils.log(`New message from ${name} (${email})`, 'INFO')
+      Utils.log(`Message saved: ${ticketNumber} from ${name} (${email})`, 'INFO')
 
-      return Utils.createResponse({ success: true, message: 'Message sent successfully' })
+      return Utils.createResponse({
+        success: true,
+        message: 'Message sent successfully',
+        ticketNumber: ticketNumber
+      })
     } catch (error) {
       Utils.log(`Save message error: ${error.toString()}`, 'ERROR')
       return Utils.createResponse({ error: 'Failed to save message' }, 500)
@@ -59,13 +117,14 @@ const Messages = {
       for (let i = 1; i < data.length; i++) {
         const row = data[i]
         messages.push({
-          rowIndex: row[6] || i + 1,
-          timestamp: row[0],
-          name: row[1],
-          email: row[2],
-          service: row[3],
-          message: row[4],
-          status: row[5] || 'New'
+          ticketNumber: row[0], // Column A
+          timestamp: row[1], // Column B
+          name: row[2], // Column C
+          email: row[3], // Column D
+          service: row[4], // Column E
+          message: row[5], // Column F
+          status: row[6] || 'New', // Column G
+          rowIndex: i + 1 // Actual row index
         })
       }
 
@@ -100,7 +159,8 @@ const Messages = {
 
     try {
       const sheet = Utils.getSheet(Config.MESSAGES_SHEET_NAME)
-      sheet.getRange(rowIndex, 6).setValue(status)
+      // Column G = Status (was column 6, now column 7 with ticket number)
+      sheet.getRange(rowIndex, 7).setValue(status)
 
       return Utils.createResponse({ success: true, message: 'Status updated successfully' })
     } catch (error) {

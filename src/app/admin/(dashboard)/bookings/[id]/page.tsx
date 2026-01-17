@@ -2,15 +2,26 @@
 
 import { notFound } from 'next/navigation'
 import { useParams } from 'next/navigation'
+import useSWR from 'swr'
 
-import { useBookings } from '@/hooks/useBookings'
+import { fetcher } from '@/services/fetcher'
+
+import type { Booking } from '@/hooks/useBookings'
 
 import { BookingDetailContent } from '@/components/organisms/admin/booking-detail-content'
 
 export default function BookingDetailPage() {
   const params = useParams()
   const id = params.id as string
-  const { bookings, isLoading, isError } = useBookings()
+
+  const {
+    data: booking,
+    isLoading,
+    error
+  } = useSWR<Booking>(`/api/bookings/${id}`, fetcher, {
+    revalidateOnFocus: false,
+    revalidateOnReconnect: true
+  })
 
   if (isLoading) {
     return (
@@ -30,13 +41,7 @@ export default function BookingDetailPage() {
     )
   }
 
-  if (isError || !bookings) {
-    return notFound()
-  }
-
-  const booking = bookings.find((b) => b.rowIndex.toString() === id)
-
-  if (!booking) {
+  if (error || !booking) {
     return notFound()
   }
 

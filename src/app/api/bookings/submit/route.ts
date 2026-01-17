@@ -14,7 +14,7 @@ export async function POST(request: NextRequest) {
     formData.append('action', 'saveBooking')
     formData.append('name', name)
     formData.append('email', email)
-    formData.append('phone', phone)
+    formData.append('phone', `'${phone}`)
     formData.append('company', company || '')
     formData.append('service', service)
     formData.append('budget', budget)

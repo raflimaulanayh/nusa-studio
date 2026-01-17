@@ -19,11 +19,48 @@ import { Card } from '@/components/atoms/ui/card'
 import { StatusCard } from '@/components/organisms/admin/status-card'
 
 export function BookingDetailContent({ booking }: { booking: Booking }) {
-  const waNumber = booking.phone?.replace(/\D/g, '') || ''
+  const cleanPhone = booking.phone?.replace(/\D/g, '') || ''
+  const waNumber = cleanPhone.startsWith('0') ? '62' + cleanPhone.slice(1) : cleanPhone
+
   const waMessage = encodeURIComponent(
-    `Hi ${booking.name}, thank you for contacting Nusa Creative Studio regarding your interest in ${booking.service}.`
+    `Halo ${booking.name},
+
+Terima kasih telah menghubungi Nusa Creative Studio!
+
+*Detail Booking Anda:*
+ - Order Number: *${booking.order_number || 'N/A'}*
+ - Tanggal Order: ${new Date(booking.timestamp || '').toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}
+ - Layanan: ${booking.service}
+ - Budget: ${booking.budget || 'To be discussed'}
+
+Kami telah menerima permintaan Anda dan tim kami akan segera menghubungi Anda untuk membahas detail project lebih lanjut.
+
+Apakah ada yang bisa kami bantu?`
   )
   const waLink = `https://wa.me/${waNumber}?text=${waMessage}`
+
+  // Email with pre-filled subject and body
+  const emailSubject = encodeURIComponent(`Follow Up - Booking ${booking.order_number || 'Order'} - ${booking.service}`)
+  const emailBody = encodeURIComponent(
+    `Halo ${booking.name},
+
+Terima kasih telah menghubungi Nusa Creative Studio!
+
+Detail Booking Anda:
+━━━━━━━━━━━━━━━━━━━━
+Order Number: ${booking.order_number || 'N/A'}
+Tanggal Order: ${new Date(booking.timestamp || '').toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}
+Layanan: ${booking.service}
+Budget: ${booking.budget || 'To be discussed'}
+
+━━━━━━━━━━━━━━━━━━━━
+
+Kami telah menerima permintaan Anda dan tim kami akan segera menghubungi Anda untuk membahas detail project lebih lanjut.
+
+Salam,
+Nusa Creative Studio Team`
+  )
+  const emailLink = `mailto:${booking.email}?subject=${emailSubject}&body=${emailBody}`
 
   return (
     <div className="space-y-6">
@@ -82,7 +119,7 @@ export function BookingDetailContent({ booking }: { booking: Booking }) {
               No Phone
             </Button>
           )}
-          <a href={`mailto:${booking.email}`}>
+          <a href={emailLink}>
             <Button variant="outline">
               <EnvelopeSimple className="size-5" weight="duotone" />
               Email

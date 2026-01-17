@@ -132,6 +132,71 @@ const Bookings = {
   },
 
   /**
+   * Get single booking by ID (requires valid JWT)
+   */
+  handleGetBookingById: function (e) {
+    const token = e.parameter.token
+    const rowIndex = parseInt(e.parameter.rowIndex)
+    const orderNumber = e.parameter.orderNumber
+
+    const auth = Auth.authorizeRequest(token)
+    if (!auth.authorized) {
+      return Utils.createResponse({ error: auth.error }, 401)
+    }
+
+    if (!rowIndex && !orderNumber) {
+      return Utils.createResponse({ error: 'rowIndex or orderNumber required' }, 400)
+    }
+
+    try {
+      const sheet = Utils.getSheet(Config.BOOKINGS_SHEET_NAME)
+      const data = sheet.getDataRange().getValues()
+
+      if (data.length <= 1) {
+        return Utils.createResponse({ error: 'Booking not found' }, 404)
+      }
+
+      let foundRow = null
+      let foundRowIndex = null
+
+      // Search by rowIndex or orderNumber
+      for (let i = 1; i < data.length; i++) {
+        const currentOrderNumber = data[i][0] // Column A
+        const currentRowIndex = i + 1
+
+        if ((rowIndex && currentRowIndex === rowIndex) || (orderNumber && currentOrderNumber === orderNumber)) {
+          foundRow = data[i]
+          foundRowIndex = currentRowIndex
+          break
+        }
+      }
+
+      if (!foundRow) {
+        return Utils.createResponse({ error: 'Booking not found' }, 404)
+      }
+
+      const booking = {
+        rowIndex: foundRowIndex,
+        order_number: foundRow[0],
+        timestamp: foundRow[1],
+        name: foundRow[2],
+        email: foundRow[3],
+        phone: foundRow[4],
+        company: foundRow[5],
+        service: foundRow[6],
+        budget: foundRow[7],
+        message: foundRow[8],
+        status: foundRow[9] || 'New'
+      }
+
+      return Utils.createResponse({ success: true, booking: booking })
+    } catch (error) {
+      Utils.log(`Get booking by ID error: ${error.toString()}`, 'ERROR')
+      return Utils.createResponse({ error: 'Failed to fetch booking' }, 500)
+    }
+  },
+
+  /**
    * Get all bookings (requires valid JWT)
    */
   handleGetBookings: function (e) {

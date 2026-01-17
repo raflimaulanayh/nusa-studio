@@ -1,5 +1,5 @@
 // ========================================================================
-// CODE.GS - Main Router & Entry Point  
+// CODE.GS - Main Router & Entry Point
 // ========================================================================
 
 function doPost(e) {
@@ -21,6 +21,9 @@ function doPost(e) {
 
       case 'getBookings':
         return Bookings.handleGetBookings(e)
+
+      case 'getBookingById':
+        return Bookings.handleGetBookingById(e)
 
       case 'updateBookingStatus':
         return Bookings.handleUpdateBookingStatus(e)
@@ -58,7 +61,7 @@ function doGet(e) {
     modules: ['auth', 'bookings', 'messages'],
     endpoints: {
       public: ['saveBooking', 'saveMessage'],
-      protected: ['login', 'verify', 'getBookings', 'updateBookingStatus', 'getMessages', 'updateMessageStatus']
+      protected: ['login', 'verify', 'getBookings', 'getBookingById', 'updateBookingStatus', 'getMessages', 'updateMessageStatus']
     }
   })
 }
