@@ -1,8 +1,13 @@
-import { PROJECTS } from '@/data/projects'
+import { PROJECTS_DATA } from '@/constants/project-data'
 import { notFound } from 'next/navigation'
-import React from 'react'
 
-import { ProjectDetailView } from '@/components/templates/project-detail-view'
+import { WorkDetail } from '@/components/organisms/work'
+
+export const metadata = {
+  title: 'Detail Work'
+}
+
+const PROJECTS = PROJECTS_DATA
 
 export default async function ProjectDetailPage({ params }: { params: Promise<{ slug: string }> }) {
   const resolvedParams = await params
@@ -15,7 +20,7 @@ export default async function ProjectDetailPage({ params }: { params: Promise<{ 
   const currentIndex = PROJECTS.findIndex((p) => p.id === project.id)
   const nextProject = PROJECTS[(currentIndex + 1) % PROJECTS.length]
 
-  return <ProjectDetailView project={project} nextProject={nextProject} />
+  return <WorkDetail project={project} nextProject={nextProject} />
 }
 
 export async function generateStaticParams() {

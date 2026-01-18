@@ -27,6 +27,7 @@ export const Footer = () => {
 
   return (
     <footer className="relative overflow-hidden bg-slate-50 text-primary">
+      <h2 className="sr-only">Footer Section</h2>
       <div className="relative container mx-auto px-4 pt-16 pb-8 lg:px-8">
         <div className="mb-16 grid grid-cols-1 gap-10 md:grid-cols-2 lg:grid-cols-4">
           <div className="lg:col-span-1">
@@ -56,7 +57,7 @@ export const Footer = () => {
           </div>
 
           <div>
-            <h4 className="mb-4 font-semibold text-foreground">Navigation</h4>
+            <h3 className="mb-4 font-semibold text-foreground">Navigation</h3>
             <ul className="space-y-3">
               {MENU.map((item, index) => (
                 <li key={index}>
@@ -72,7 +73,7 @@ export const Footer = () => {
           </div>
 
           <div>
-            <h4 className="mb-4 font-semibold text-foreground">Services</h4>
+            <h3 className="mb-4 font-semibold text-foreground">Services</h3>
             <ul className="space-y-3">
               {SERVICES.map((item, index) => (
                 <li key={index}>
@@ -88,7 +89,7 @@ export const Footer = () => {
           </div>
 
           <div>
-            <h4 className="mb-4 font-semibold text-foreground">Contact Us</h4>
+            <h3 className="mb-4 font-semibold text-foreground">Contact Us</h3>
             <address className="not-italic">
               <ul className="space-y-4">
                 <li className="flex items-start gap-3">

@@ -40,7 +40,7 @@ export const ProjectCard = ({
         <div
           className={cn(
             'relative mb-4 overflow-hidden rounded-xl bg-gray-100',
-            featured ? 'aspect-[16/9] md:aspect-[2/1]' : 'aspect-[4/3]'
+            featured ? 'aspect-video md:aspect-2/1' : 'aspect-4/3'
           )}
         >
           <div className="absolute inset-0 animate-pulse bg-gray-200" />

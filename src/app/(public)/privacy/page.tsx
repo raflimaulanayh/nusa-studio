@@ -7,7 +7,7 @@ export default function PrivacyPolicyPage() {
       <Container className="py-28">
         <h1 className="mb-8 text-4xl font-semibold text-primary">Privacy Policy</h1>
 
-        <div className="prose prose-slate max-w-none text-gray-600">
+        <article className="prose prose-slate max-w-none text-gray-600">
           <p className="mb-4">Last updated: {new Date().toLocaleDateString()}</p>
 
           <p>
@@ -57,7 +57,7 @@ export default function PrivacyPolicyPage() {
             <br />
             Phone: +62 812 345 678
           </p>
-        </div>
+        </article>
       </Container>
     </GeneralLayout>
   )

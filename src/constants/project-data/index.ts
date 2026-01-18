@@ -1,20 +1,4 @@
-export interface Project {
-  id: number
-  title: string
-  category: string
-  image: string
-  slug: string
-  description: string
-  challenge: string
-  solution: string
-  client: string
-  year: string
-  tags: string[]
-  gallery: string[]
-  featured?: boolean
-}
-
-export const PROJECTS: Project[] = [
+export const PROJECTS_DATA: Project[] = [
   {
     id: 1,
     title: 'Nusa Coffee Rebrand',

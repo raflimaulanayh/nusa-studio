@@ -7,7 +7,7 @@ export default function TermsPage() {
       <Container className="py-28">
         <h1 className="mb-8 text-4xl font-semibold text-primary">Terms of Service</h1>
 
-        <div className="prose prose-slate max-w-none text-gray-600">
+        <article className="prose prose-slate max-w-none text-gray-600">
           <p className="mb-4">Last updated: {new Date().toLocaleDateString()}</p>
 
           <p>Please read these terms and conditions carefully before using Our Service.</p>
@@ -64,7 +64,7 @@ export default function TermsPage() {
             <br />
             Email: hello@nusacaraka.com
           </p>
-        </div>
+        </article>
       </Container>
     </GeneralLayout>
   )

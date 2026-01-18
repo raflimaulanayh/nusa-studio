@@ -1,6 +1,5 @@
 'use client'
 
-import { Project } from '@/data/projects'
 import { motion } from 'framer-motion'
 import { ArrowLeft, ArrowUpRight } from 'lucide-react'
 import Image from 'next/image'
@@ -15,12 +14,12 @@ const fadeIn = {
   transition: { duration: 0.6, ease: [0.22, 1, 0.36, 1] }
 }
 
-interface ProjectDetailViewProps {
+interface WorkDetailProps {
   project: Project
   nextProject: Project
 }
 
-export const ProjectDetailView = ({ project, nextProject }: ProjectDetailViewProps) => {
+export const WorkDetail = ({ project, nextProject }: WorkDetailProps) => {
   return (
     <article className="min-h-screen bg-background">
       <header className="relative h-[60vh] w-full overflow-hidden md:h-[80vh]">

@@ -1,6 +1,6 @@
 'use client'
 
-import { PROJECTS } from '@/data/projects'
+import { PROJECTS_DATA } from '@/constants/project-data'
 import { motion } from 'framer-motion'
 import { ArrowRight } from 'lucide-react'
 
@@ -34,7 +34,7 @@ const itemVariants = {
 }
 
 export const FeaturedWorks = () => {
-  const displayedProjects = PROJECTS.filter((p) => p.featured).slice(0, 3)
+  const displayedProjects = PROJECTS_DATA.filter((p) => p.featured).slice(0, 3)
 
   return (
     <section className="bg-slate-50/50 py-20 lg:py-32">
