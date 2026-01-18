@@ -21,7 +21,7 @@ export const CtaSection = () => {
           <div className="absolute top-0 right-0 -mt-20 -mr-20 h-[500px] w-[500px] rounded-full bg-secondary/20 blur-[100px]" />
           <div className="absolute bottom-0 left-0 -mb-20 -ml-20 h-[400px] w-[400px] rounded-full bg-secondary/10 blur-[80px]" />
 
-          <div className="relative z-10 mx-auto max-w-3xl space-y-8">
+          <article className="relative z-10 mx-auto max-w-3xl space-y-8">
             <Heading as="h2" variant="white" className="text-3xl leading-tight font-semibold md:text-4xl">
               Ready to Transform Your Digital Presence?
             </Heading>
@@ -46,7 +46,7 @@ export const CtaSection = () => {
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
             </div>
-          </div>
+          </article>
         </motion.div>
       </Container>
     </section>

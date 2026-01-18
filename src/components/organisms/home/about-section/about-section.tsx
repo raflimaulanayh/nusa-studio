@@ -7,7 +7,6 @@ import { Heading, Text } from '@/components/atoms/typography'
 import { Button } from '@/components/atoms/ui/button'
 import { Container } from '@/components/templates/container'
 
-// Stats data
 const STATS = [
   { value: 150, suffix: '+', label: 'Projects Completed' },
   { value: 50, suffix: '+', label: 'Happy Clients' },
@@ -15,7 +14,6 @@ const STATS = [
   { value: 15, suffix: '', label: 'Team Members' }
 ]
 
-// Animated counter component
 const Counter = ({ value, suffix }: { value: number; suffix: string }) => {
   const [count, setCount] = useState(0)
   const ref = useRef<HTMLSpanElement>(null)
@@ -71,7 +69,6 @@ export const AboutSection = () => {
     <section className="overflow-hidden bg-white py-20 lg:py-32">
       <Container>
         <div className="grid items-center gap-12 lg:grid-cols-2 lg:gap-20">
-          {/* Left - Content */}
           <motion.div
             variants={containerVariants}
             initial="hidden"
@@ -112,7 +109,6 @@ export const AboutSection = () => {
             </motion.div>
           </motion.div>
 
-          {/* Right - Stats Grid */}
           <motion.div
             initial={{ opacity: 0, x: 50 }}
             whileInView={{ opacity: 1, x: 0 }}
@@ -120,7 +116,6 @@ export const AboutSection = () => {
             transition={{ duration: 0.8, ease: 'easeOut' }}
             className="relative"
           >
-            {/* Decorative gradient */}
             <div className="absolute -top-10 -right-10 h-64 w-64 rounded-full bg-secondary/10 blur-3xl" />
 
             <div className="relative grid grid-cols-2 gap-6">

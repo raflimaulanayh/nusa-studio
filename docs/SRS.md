@@ -211,11 +211,14 @@ src/components/
 
 #### External Integrations
 
-- **Google Sheets**: Penyimpanan data utama via Apps Script API
-- **Google Gemini AI**: Mendukung respons chatbot cerdas
-- **Email Services**: Link mailto untuk komunikasi langsung
-- **WhatsApp API**: Integrasi pesan langsung
-- **Vercel**: Hosting dan deployment platform
+| Service              | Purpose       | Description                                                               |
+| -------------------- | ------------- | ------------------------------------------------------------------------- |
+| **Google Sheets**    | Database      | Penyimpanan data utama (Bookings, Messages, CMS data) via Apps Script API |
+| **Google Drive**     | Media Storage | Penyimpanan gambar, video, dan asset files lainnya                        |
+| **Google Gemini AI** | AI Chatbot    | Mendukung respons chatbot cerdas                                          |
+| **Email Services**   | Communication | Link mailto untuk komunikasi langsung                                     |
+| **WhatsApp API**     | Communication | Integrasi pesan langsung                                                  |
+| **Vercel**           | Hosting       | Hosting dan deployment platform                                           |
 
 ### 2.2 Product Functions
 
@@ -777,6 +780,7 @@ Sistem harus accessible untuk semua pengguna, termasuk yang memiliki disabilitas
 | Service                | Description                                     | Link                                                                                                                                                |
 | ---------------------- | ----------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **Google Sheets**      | Database untuk Bookings, Messages, dan CMS data | [View Spreadsheet](https://docs.google.com/spreadsheets/d/1HizlG1xpSUnoSSihHzaFxXwklKzQUOlOZOqJKMRSBQI/edit?usp=sharing)                            |
+| **Google Drive**       | Penyimpanan gambar, video, dan asset files      | Media storage untuk portfolio dan artikel                                                                                                           |
 | **Google Apps Script** | Backend API untuk CRUD operations               | [View Apps Script](https://docs.google.com/spreadsheets/d/1HizlG1xpSUnoSSihHzaFxXwklKzQUOlOZOqJKMRSBQI/edit?usp=sharing) (Extensions > Apps Script) |
 | **Google Gemini AI**   | AI API untuk chatbot                            | Configured via environment variable                                                                                                                 |
 | **Vercel**             | Hosting platform                                | Auto-deployed from GitHub                                                                                                                           |
@@ -808,18 +812,18 @@ Semua UML diagram tersedia dalam format PlantUML di folder `docs/uml/`. Gunakan 
 
 **File References:**
 
-| Diagram Type                 | File Location                                                                            | Description                                                               |
-| ---------------------------- | ---------------------------------------------------------------------------------------- | ------------------------------------------------------------------------- |
-| Use Case Diagram             | [`docs/uml/use-case-diagram.puml`](docs/uml/use-case-diagram.puml)                       | Diagram use case untuk semua actors (Public User, Admin, Content Manager) |
-| Activity: Booking Submission | [`docs/uml/activity-booking-submission.puml`](docs/uml/activity-booking-submission.puml) | Alur proses pengajuan booking oleh client                                 |
-| Activity: Booking Management | [`docs/uml/activity-booking-management.puml`](docs/uml/activity-booking-management.puml) | Alur manajemen booking oleh admin                                         |
-| Activity: Chatbot            | [`docs/uml/activity-chatbot.puml`](docs/uml/activity-chatbot.puml)                       | Alur interaksi AI chatbot                                                 |
-| Class Diagram                | [`docs/uml/class-diagram.puml`](docs/uml/class-diagram.puml)                             | Struktur class, entities, enums, dan relationships                        |
-| Sequence: Booking Submission | [`docs/uml/sequence-booking-submission.puml`](docs/uml/sequence-booking-submission.puml) | Sequence pengajuan booking client → API → Sheets                          |
-| Sequence: Auto Status Update | [`docs/uml/sequence-auto-status-update.puml`](docs/uml/sequence-auto-status-update.puml) | Sequence optimistic update saat klik contact                              |
-| Sequence: Chatbot            | [`docs/uml/sequence-chatbot.puml`](docs/uml/sequence-chatbot.puml)                       | Sequence interaksi chatbot dengan Gemini AI                               |
-| Sequence: Authentication     | [`docs/uml/sequence-authentication.puml`](docs/uml/sequence-authentication.puml)         | Sequence login, session, dan logout                                       |
-| Multilayer Architecture      | [`docs/uml/multilayer-architecture.puml`](docs/uml/multilayer-architecture.puml)         | Arsitektur sistem (Presentation, Application, Business, Data)             |
+| Diagram Type                 | File Location                                                                             | Description                                                               |
+| ---------------------------- | ----------------------------------------------------------------------------------------- | ------------------------------------------------------------------------- |
+| Use Case Diagram             | [`docs/uml/use-case-diagram.puml`](/docs/uml/use-case-diagram.puml)                       | Diagram use case untuk semua actors (Public User, Admin, Content Manager) |
+| Activity: Booking Submission | [`docs/uml/activity-booking-submission.puml`](/docs/uml/activity-booking-submission.puml) | Alur proses pengajuan booking oleh client                                 |
+| Activity: Booking Management | [`docs/uml/activity-booking-management.puml`](/docs/uml/activity-booking-management.puml) | Alur manajemen booking oleh admin                                         |
+| Activity: Chatbot            | [`docs/uml/activity-chatbot.puml`](/docs/uml/activity-chatbot.puml)                       | Alur interaksi AI chatbot                                                 |
+| Class Diagram                | [`docs/uml/class-diagram.puml`](/docs/uml/class-diagram.puml)                             | Struktur class, entities, enums, dan relationships                        |
+| Sequence: Booking Submission | [`docs/uml/sequence-booking-submission.puml`](/docs/uml/sequence-booking-submission.puml) | Sequence pengajuan booking client → API → Sheets                          |
+| Sequence: Auto Status Update | [`docs/uml/sequence-auto-status-update.puml`](/docs/uml/sequence-auto-status-update.puml) | Sequence optimistic update saat klik contact                              |
+| Sequence: Chatbot            | [`docs/uml/sequence-chatbot.puml`](/docs/uml/sequence-chatbot.puml)                       | Sequence interaksi chatbot dengan Gemini AI                               |
+| Sequence: Authentication     | [`docs/uml/sequence-authentication.puml`](/docs/uml/sequence-authentication.puml)         | Sequence login, session, dan logout                                       |
+| Multilayer Architecture      | [`docs/uml/multilayer-architecture.puml`](/docs/uml/multilayer-architecture.puml)         | Arsitektur sistem (Presentation, Application, Business, Data)             |
 
 ### Use Case Diagram: Administrator
 

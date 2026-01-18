@@ -1,38 +1,12 @@
 'use client'
 
+import { SERVICES_DATA } from '@/constants/service-data'
 import { motion } from 'framer-motion'
-import { Camera, Palette, Globe, Megaphone, ArrowUpRight } from 'lucide-react'
+import { ArrowUpRight } from 'lucide-react'
 
 import { Text } from '@/components/atoms/typography'
 import { Button } from '@/components/atoms/ui/button'
 import { Container } from '@/components/templates/container'
-
-const SERVICES = [
-  {
-    icon: Camera,
-    title: 'Product Photography',
-    description: 'Stunning product visuals that captivate your audience and drive conversions.',
-    index: '01'
-  },
-  {
-    icon: Palette,
-    title: 'Brand Identity',
-    description: 'Complete branding solutions from logo design to brand guidelines.',
-    index: '02'
-  },
-  {
-    icon: Globe,
-    title: 'Web Development',
-    description: 'Modern, responsive websites built with cutting-edge technologies.',
-    index: '03'
-  },
-  {
-    icon: Megaphone,
-    title: 'Digital Marketing',
-    description: 'Strategic campaigns that amplify your brand reach and engage effectively.',
-    index: '04'
-  }
-]
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -90,7 +64,7 @@ export const ServicesSection = () => {
           viewport={{ once: true, margin: '-50px' }}
           className="mb-16 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4"
         >
-          {SERVICES.map((service) => (
+          {SERVICES_DATA.map((service) => (
             <motion.div key={service.title} variants={itemVariants} className="group h-full">
               <article className="relative flex h-full flex-col justify-between overflow-hidden rounded-3xl border border-slate-100 bg-white p-8 transition-all duration-500 group-hover:shadow-2xl group-hover:shadow-primary/20 hover:border-primary hover:bg-primary">
                 <div className="absolute top-0 right-0 translate-x-4 transform p-8 opacity-0 transition-opacity duration-500 group-hover:translate-x-0 group-hover:opacity-100">

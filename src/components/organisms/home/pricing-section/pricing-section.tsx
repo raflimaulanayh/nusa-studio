@@ -33,9 +33,6 @@ export const PricingSection = ({
 
   const activePackage = SERVICE_PACKAGES.find((pkg) => pkg.id === activeTab) || SERVICE_PACKAGES[0]
 
-  // If filterId is provided but invalid, we might want to default or hide.
-  // currently defaults to [0].
-
   const showTabs = !filterId
 
   return (
@@ -125,7 +122,7 @@ export const PricingSection = ({
 
                   <div className="mb-6 h-px w-full bg-primary/10" />
 
-                  <div className="mb-8 flex flex-grow flex-col gap-3">
+                  <div className="mb-8 flex grow flex-col gap-3">
                     {tier.features.map((feature, i) => (
                       <div key={i} className="flex items-start gap-3 text-sm">
                         <Check

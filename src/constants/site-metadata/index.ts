@@ -1,7 +1,8 @@
 export const siteMetadata = {
-  name: 'Nusa Studio',
+  name: 'Nusa Creative Studio',
   description:
-    'Nusa Studio hadir untuk mengubah tantangan ini menjadi peluang ekonomi baru. Kami membangun ekosistem digital yang memungkinkan seluruh industri kuliner melakukan revenue recovery (pemulihan pendapatan).',
+    'Transform your digital presence with creative solutions that captivate, engage, and convert. We craft experiences that leave lasting impressions.',
   url: process.env.APP_URL ?? 'http://localhost:3000',
+  keywords: ['creative agency', 'digital marketing', 'branding', 'web development', 'UI/UX design'],
   defaultTimezone: 'Asia/Jakarta'
 }

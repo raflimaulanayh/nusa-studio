@@ -1,3 +1,4 @@
+import { siteMetadata } from '@/constants/site-metadata'
 import { Metadata } from 'next'
 
 import {
@@ -13,13 +14,12 @@ import {
 import { GeneralLayout } from '@/components/templates/general-layout'
 
 export const metadata: Metadata = {
-  title: 'Nusacaraka Studio | Digital Experience Platform',
-  description:
-    'Transform your digital presence with creative solutions that captivate, engage, and convert. We craft experiences that leave lasting impressions.',
-  keywords: ['creative agency', 'digital marketing', 'branding', 'web development', 'UI/UX design'],
+  title: siteMetadata.name,
+  description: siteMetadata.description,
+  keywords: siteMetadata.keywords,
   openGraph: {
-    title: 'Nusacaraka Studio | Digital Experience Platform',
-    description: 'Transform your digital presence with creative solutions that captivate, engage, and convert.',
+    title: siteMetadata.name,
+    description: siteMetadata.description,
     type: 'website'
   }
 }
