@@ -3,7 +3,7 @@ import { WorkSection } from '@/components/organisms/work'
 import { GeneralLayout } from '@/components/templates/general-layout'
 
 export const metadata = {
-  title: 'Work'
+  title: 'Our Work'
 }
 
 export default function WorkPage() {
