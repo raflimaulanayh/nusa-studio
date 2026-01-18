@@ -1,0 +1,151 @@
+@startuml use-case-diagram
+
+' ========================================
+' USE CASE DIAGRAM - Nusa Creative Studio
+' ========================================
+
+skinparam actorStyle awesome
+skinparam packageStyle rectangle
+skinparam usecase {
+    BackgroundColor #f8fafc
+    BorderColor #64748b
+    ArrowColor #475569
+}
+
+' Actors
+actor "Public Visitor" as Visitor #e0f2fe
+actor "Prospective Client" as Client #dbeafe
+actor "Administrator" as Admin #fef3c7
+actor "Content Manager" as CMgr #d1fae5
+
+' External Systems
+actor "Google Sheets" as Sheets <<System>> #e2e8f0
+actor "Google Gemini AI" as Gemini <<System>> #e2e8f0
+actor "Email Client" as Email <<System>> #e2e8f0
+actor "WhatsApp" as WA <<System>> #e2e8f0
+
+' ========================================
+' PUBLIC WEBSITE USE CASES
+' ========================================
+rectangle "Public Website" as PW #f1f5f9 {
+    usecase "Browse Portfolio" as UC1
+    usecase "View Project Detail" as UC2
+    usecase "View Services" as UC3
+    usecase "View Service Detail" as UC4
+    usecase "Read Articles" as UC5
+    usecase "Submit Booking" as UC6
+    usecase "Send Contact Message" as UC7
+    usecase "Chat with AI Bot" as UC8
+    usecase "View FAQ/Knowledge" as UC9
+}
+
+' ========================================
+' ADMIN PANEL USE CASES
+' ========================================
+rectangle "Admin Panel" as AP #fef9c3 {
+    usecase "Login to Admin" as UC10
+    usecase "View Dashboard" as UC11
+    usecase "View Analytics" as UC12
+    
+    rectangle "Booking Management" as BM #fff7ed {
+        usecase "View Booking List" as UC13
+        usecase "Search/Filter Bookings" as UC14
+        usecase "View Booking Detail" as UC15
+        usecase "Update Booking Status" as UC16
+        usecase "Contact Client via WA" as UC17
+        usecase "Contact Client via Email" as UC18
+        usecase "Export Bookings CSV" as UC19
+    }
+    
+    rectangle "Message Management" as MM #f0fdf4 {
+        usecase "View Message Inbox" as UC20
+        usecase "Search/Filter Messages" as UC21
+        usecase "View Message Detail" as UC22
+        usecase "Reply to Message" as UC23
+        usecase "Update Message Status" as UC24
+    }
+    
+    rectangle "Content Management" as CM #faf5ff {
+        usecase "Manage Services" as UC25
+        usecase "Manage Articles" as UC26
+        usecase "Manage Knowledge Base" as UC27
+        usecase "Upload Media" as UC28
+    }
+    
+    usecase "View Notifications" as UC29
+    usecase "Logout" as UC30
+}
+
+' ========================================
+' RELATIONSHIPS - Public Users
+' ========================================
+Visitor --> UC1
+Visitor --> UC3
+Visitor --> UC5
+Visitor --> UC8
+Visitor --> UC9
+
+Client --> UC1
+Client --> UC2 : <<extend>>
+Client --> UC3
+Client --> UC4 : <<extend>>
+Client --> UC6
+Client --> UC7
+Client --> UC8
+
+' ========================================
+' RELATIONSHIPS - Admin Users
+' ========================================
+Admin --> UC10
+Admin --> UC11
+Admin --> UC12
+Admin --> UC13
+Admin --> UC14
+Admin --> UC15
+Admin --> UC16
+Admin --> UC17
+Admin --> UC18
+Admin --> UC19
+Admin --> UC20
+Admin --> UC21
+Admin --> UC22
+Admin --> UC23
+Admin --> UC24
+Admin --> UC29
+Admin --> UC30
+
+CMgr --> UC10
+CMgr --> UC25
+CMgr --> UC26
+CMgr --> UC27
+CMgr --> UC28
+CMgr --> UC30
+
+' ========================================
+' RELATIONSHIPS - External Systems
+' ========================================
+UC6 ..> Sheets : <<uses>>
+UC7 ..> Sheets : <<uses>>
+UC8 ..> Gemini : <<uses>>
+UC17 ..> WA : <<uses>>
+UC18 ..> Email : <<uses>>
+UC23 ..> Email : <<uses>>
+
+' ========================================
+' INCLUDE/EXTEND RELATIONSHIPS
+' ========================================
+UC11 ..> UC12 : <<include>>
+UC15 ..> UC16 : <<extend>>
+UC15 ..> UC17 : <<extend>>
+UC15 ..> UC18 : <<extend>>
+UC22 ..> UC23 : <<extend>>
+UC22 ..> UC24 : <<extend>>
+
+' Auto-mark behaviors
+UC15 ..> UC16 : <<auto: mark as Read>>
+UC22 ..> UC24 : <<auto: mark as Read>>
+UC17 ..> UC16 : <<auto: mark as Contacted>>
+UC18 ..> UC16 : <<auto: mark as Contacted>>
+UC23 ..> UC24 : <<auto: mark as Replied>>
+
+@enduml

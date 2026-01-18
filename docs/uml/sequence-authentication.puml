@@ -1,0 +1,99 @@
+@startuml sequence-authentication
+
+' ========================================================
+' SEQUENCE DIAGRAM - Admin Authentication
+' ========================================================
+
+skinparam sequence {
+    ArrowColor #475569
+    ActorBorderColor #64748b
+    LifeLineBorderColor #94a3b8
+    ParticipantBackgroundColor #f8fafc
+    ParticipantBorderColor #64748b
+}
+
+title Sequence Diagram: Admin Authentication Flow
+
+actor Admin as A #fef3c7
+participant "Login Page\n/auth/login" as Login #e0f2fe
+participant "NextAuth.js\nCredentialsProvider" as Auth #d1fae5
+participant "Middleware\n(proxy.ts)" as MW #fce7f3
+participant "Admin Pages\n/admin/*" as AdminPage #f0abfc
+
+== Login Flow ==
+
+A -> Login : Akses /auth/login
+activate Login
+Login --> A : Tampilkan form login
+
+A -> Login : Submit credentials\n(email, password)
+Login -> Auth : signIn("credentials", {email, password})
+activate Auth
+
+Auth -> Auth : Validate credentials
+Auth -> Auth : Hash & compare password
+
+alt Credentials Valid
+    Auth -> Auth : Generate JWT token
+    Auth -> Auth : Set HTTP-only cookie
+    Auth --> Login : Success callback
+    deactivate Auth
+    
+    Login --> A : Redirect ke /admin/dashboard
+    deactivate Login
+    
+else Credentials Invalid
+    Auth --> Login : Error: Invalid credentials
+    Login --> A : Tampilkan error message
+end
+
+== Access Protected Route ==
+
+A -> MW : Request /admin/bookings
+activate MW
+
+MW -> MW : Check session token
+MW -> Auth : getToken(req)
+activate Auth
+Auth --> MW : JWT token atau null
+deactivate Auth
+
+alt Token Valid
+    MW -> MW : Validate token expiry
+    MW --> AdminPage : Forward request
+    activate AdminPage
+    AdminPage --> A : Render admin page
+    deactivate AdminPage
+    
+else Token Invalid/Missing
+    MW --> A : Redirect to /auth/login
+    Note right of MW: returnUrl saved\nfor post-login redirect
+end
+
+deactivate MW
+
+== Session Check (Client-side) ==
+
+AdminPage -> Auth : useSession()
+activate Auth
+Auth -> Auth : Check cookie
+Auth --> AdminPage : {session, status}
+deactivate Auth
+
+alt status == "authenticated"
+    AdminPage --> A : Render protected content
+else status == "unauthenticated"
+    AdminPage --> A : Redirect to login
+end
+
+== Logout Flow ==
+
+A -> AdminPage : Klik Logout
+AdminPage -> Auth : signOut({callbackUrl: "/auth/login"})
+activate Auth
+Auth -> Auth : Clear JWT cookie
+Auth --> AdminPage : Callback
+deactivate Auth
+AdminPage --> A : Redirect ke /auth/login
+
+@enduml

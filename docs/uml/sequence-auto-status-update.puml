@@ -1,0 +1,88 @@
+@startuml sequence-auto-status-update
+
+' ========================================================
+' SEQUENCE DIAGRAM - Auto Status Update (Optimistic)
+' ========================================================
+
+skinparam sequence {
+    ArrowColor #475569
+    ActorBorderColor #64748b
+    LifeLineBorderColor #94a3b8
+    ParticipantBackgroundColor #f8fafc
+    ParticipantBorderColor #64748b
+}
+
+title Sequence Diagram: Auto Status Update (Optimistic UI)
+
+actor Admin as A #fef3c7
+participant "Booking Detail\n(React Component)" as Detail #e0f2fe
+participant "StatusCard\n(React Component)" as Status #d1fae5
+participant "Next.js API\n/api/bookings" as API #fce7f3
+participant "Google Apps Script" as GAS #f0abfc
+database "Google Sheets" as DB #e2e8f0
+
+== View Booking Detail (Auto-mark as Read) ==
+
+A -> Detail : Navigate to /bookings/[id]
+activate Detail
+
+Detail -> API : GET /api/bookings/[id]
+activate API
+
+API -> GAS : getBookingById(id)
+activate GAS
+
+GAS -> DB : Get booking data
+DB --> GAS : Booking data
+GAS -> GAS : Check if status == "New"
+
+alt Status is "New"
+    GAS -> DB : Update status = "Read"
+    DB --> GAS : Updated
+end
+
+GAS --> API : Booking with updated status
+deactivate GAS
+
+API --> Detail : Booking data
+deactivate API
+
+Detail -> Status : Render StatusCard\n(key={currentStatus})
+Detail --> A : Tampilkan detail booking
+
+== Click Contact Button (Optimistic Update) ==
+
+A -> Detail : Klik tombol WhatsApp/Email
+activate Detail
+
+Detail -> Detail : setCurrentStatus("Contacted")\n(Optimistic update)
+Note right of Detail: UI updates INSTANTLY\nbefore API call
+
+Detail -> Status : Re-render dengan key baru\n(key="Contacted")
+activate Status
+Status --> A : Badge berubah ke "Contacted"
+deactivate Status
+
+Detail ->> API : PATCH /api/bookings\n{rowIndex, status: "Contacted"}
+Note right of Detail: Fire-and-forget\n(async, no await)
+
+activate API
+API -> GAS : handleUpdateBookingStatus
+activate GAS
+GAS -> DB : Update status column
+DB --> GAS : Success
+GAS --> API : {success: true}
+deactivate GAS
+API --> Detail : 200 OK
+deactivate API
+
+Detail -> Detail : Open WhatsApp/Email client
+
+alt API Failed
+    Detail -> Detail : setCurrentStatus(originalStatus)\n(Revert on error)
+    Detail -> Status : Re-render dengan status asli
+end
+
+deactivate Detail
+
+@enduml

@@ -1,0 +1,324 @@
+@startuml class-diagram
+
+' ========================================================
+' CLASS DIAGRAM - Nusa Creative Studio
+' ========================================================
+
+skinparam class {
+    BackgroundColor #f8fafc
+    BorderColor #64748b
+    ArrowColor #475569
+}
+
+skinparam stereotypeCBackgroundColor #fef3c7
+
+title Class Diagram: Nusa Creative Studio System
+
+' ========================================================
+' ENTITIES / MODELS
+' ========================================================
+
+package "Domain Models" #f1f5f9 {
+    
+    class Booking <<Entity>> {
+        - id: string
+        - orderNumber: string
+        - name: string
+        - email: string
+        - phone: string
+        - company: string
+        - service: string
+        - budget: string
+        - message: string
+        - status: BookingStatus
+        - timestamp: Date
+        - rowIndex: number
+        --
+        + getDisplayDate(): string
+        + getWhatsAppLink(): string
+        + getEmailLink(): string
+    }
+    
+    class Message <<Entity>> {
+        - id: string
+        - ticketNumber: string
+        - name: string
+        - email: string
+        - service: string
+        - message: string
+        - status: MessageStatus
+        - timestamp: Date
+        - rowIndex: number
+        --
+        + getDisplayDate(): string
+        + getEmailReplyLink(): string
+    }
+    
+    class Service <<Entity>> {
+        - id: string
+        - name: string
+        - slug: string
+        - shortDescription: string
+        - fullDescription: string
+        - icon: string
+        - priceRange: string
+        - imageUrl: string
+        - isPublished: boolean
+        - createdAt: Date
+        - updatedAt: Date
+    }
+    
+    class Article <<Entity>> {
+        - id: string
+        - title: string
+        - slug: string
+        - author: string
+        - content: string
+        - featuredImage: string
+        - categories: string[]
+        - tags: string[]
+        - status: ArticleStatus
+        - publishedAt: Date
+        - createdAt: Date
+        - updatedAt: Date
+    }
+    
+    class KnowledgeBase <<Entity>> {
+        - id: string
+        - question: string
+        - answer: string
+        - category: string
+        - keywords: string[]
+        - createdAt: Date
+        - updatedAt: Date
+    }
+    
+    class User <<Entity>> {
+        - id: string
+        - email: string
+        - password: string
+        - name: string
+        - role: UserRole
+        --
+        + validatePassword(input: string): boolean
+    }
+    
+}
+
+' ========================================================
+' ENUMS
+' ========================================================
+
+package "Enumerations" #fef3c7 {
+    
+    enum BookingStatus <<Enum>> {
+        NEW
+        READ
+        CONTACTED
+        COMPLETED
+        CANCELLED
+    }
+    
+    enum MessageStatus <<Enum>> {
+        NEW
+        READ
+        REPLIED
+    }
+    
+    enum ArticleStatus <<Enum>> {
+        DRAFT
+        PUBLISHED
+    }
+    
+    enum UserRole <<Enum>> {
+        ADMIN
+        CONTENT_MANAGER
+    }
+    
+}
+
+' ========================================================
+' API ROUTES / CONTROLLERS
+' ========================================================
+
+package "API Routes" #e0f2fe {
+    
+    class BookingAPI <<Controller>> {
+        + GET /api/bookings: Booking[]
+        + GET /api/bookings/{id}: Booking
+        + POST /api/bookings/submit: Booking
+        + PATCH /api/bookings: Booking
+    }
+    
+    class MessageAPI <<Controller>> {
+        + GET /api/messages: Message[]
+        + GET /api/messages/{id}: Message
+        + POST /api/messages/send: Message
+        + PATCH /api/messages: Message
+    }
+    
+    class ChatAPI <<Controller>> {
+        + POST /api/chat: ChatResponse
+    }
+    
+    class AuthAPI <<Controller>> {
+        + POST /api/auth/login: Session
+        + GET /api/auth/session: Session
+        + POST /api/auth/signout: void
+    }
+    
+    class StatsAPI <<Controller>> {
+        + GET /api/bookings/stats: BookingStats
+        + GET /api/messages/stats: MessageStats
+    }
+    
+}
+
+' ========================================================
+' SERVICES / HOOKS
+' ========================================================
+
+package "Frontend Hooks" #d1fae5 {
+    
+    class useBookings <<Hook>> {
+        + bookings: Booking[]
+        + isLoading: boolean
+        + error: Error
+        + mutate(): void
+    }
+    
+    class useMessages <<Hook>> {
+        + messages: Message[]
+        + isLoading: boolean
+        + error: Error
+        + mutate(): void
+    }
+    
+    class useAuth <<Hook>> {
+        + session: Session
+        + isAuthenticated: boolean
+        + login(credentials): void
+        + logout(): void
+    }
+    
+}
+
+' ========================================================
+' COMPONENTS
+' ========================================================
+
+package "UI Components" #fce7f3 {
+    
+    class BookingDetailContent <<Component>> {
+        - booking: Booking
+        - currentStatus: BookingStatus
+        - onUpdate: Function
+        --
+        + handleContact(): void
+        + render(): JSX
+    }
+    
+    class MessageDetailContent <<Component>> {
+        - message: Message
+        - currentStatus: MessageStatus
+        - onUpdate: Function
+        --
+        + handleReply(): void
+        + render(): JSX
+    }
+    
+    class StatusCard <<Component>> {
+        - initialStatus: BookingStatus
+        - rowIndex: number
+        --
+        + handleStatusChange(status): void
+        + render(): JSX
+    }
+    
+    class MessageStatusCard <<Component>> {
+        - initialStatus: MessageStatus
+        - rowIndex: number
+        --
+        + handleStatusChange(status): void
+        + render(): JSX
+    }
+    
+    class NotificationBell <<Component>> {
+        - newBookingsCount: number
+        - newMessagesCount: number
+        --
+        + render(): JSX
+    }
+    
+    class OverviewChart <<Component>> {
+        - bookings: Booking[]
+        - isLoading: boolean
+        --
+        + render(): JSX
+    }
+    
+}
+
+' ========================================================
+' EXTERNAL SERVICES
+' ========================================================
+
+package "External Services" #e2e8f0 {
+    
+    class GoogleSheetsAPI <<External>> {
+        + getBookings(): Booking[]
+        + getBookingById(id): Booking
+        + createBooking(data): Booking
+        + updateBookingStatus(rowIndex, status): void
+        + getMessages(): Message[]
+        + getMessageById(id): Message
+        + createMessage(data): Message
+        + updateMessageStatus(rowIndex, status): void
+    }
+    
+    class GoogleGeminiAI <<External>> {
+        + generateResponse(prompt, context): string
+    }
+    
+}
+
+' ========================================================
+' RELATIONSHIPS
+' ========================================================
+
+' Entities to Enums
+Booking --> BookingStatus
+Message --> MessageStatus
+Article --> ArticleStatus
+User --> UserRole
+
+' API to Entities
+BookingAPI ..> Booking : manages
+MessageAPI ..> Message : manages
+AuthAPI ..> User : authenticates
+
+' Hooks to API
+useBookings ..> BookingAPI : fetches from
+useMessages ..> MessageAPI : fetches from
+useAuth ..> AuthAPI : uses
+
+' Components to Hooks
+BookingDetailContent ..> useBookings : uses
+MessageDetailContent ..> useMessages : uses
+NotificationBell ..> useBookings : uses
+NotificationBell ..> useMessages : uses
+OverviewChart ..> useBookings : uses
+
+' Components to Entities
+BookingDetailContent --> Booking
+MessageDetailContent --> Message
+StatusCard --> BookingStatus
+MessageStatusCard --> MessageStatus
+
+' API to External
+BookingAPI ..> GoogleSheetsAPI : calls
+MessageAPI ..> GoogleSheetsAPI : calls
+ChatAPI ..> GoogleGeminiAI : calls
+ChatAPI ..> KnowledgeBase : uses context
+
+@enduml

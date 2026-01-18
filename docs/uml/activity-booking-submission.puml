@@ -1,0 +1,75 @@
+@startuml activity-booking-submission
+
+' ========================================================
+' ACTIVITY DIAGRAM - Booking Submission Flow
+' ========================================================
+
+skinparam activity {
+    BackgroundColor #f8fafc
+    BorderColor #64748b
+    DiamondBackgroundColor #fef3c7
+    DiamondBorderColor #f59e0b
+}
+
+title Activity Diagram: Booking Submission Flow
+
+|#e0f2fe|Client|
+|#fef3c7|System|
+|#d1fae5|Google Sheets|
+
+|Client|
+start
+:Mengakses halaman /book;
+:Mengisi form booking;
+note right
+  - Nama (required)
+  - Email (required)
+  - Phone
+  - Company
+  - Service (required)
+  - Budget
+  - Message (required)
+end note
+
+|System|
+:Validasi form (client-side);
+
+if (Form valid?) then (yes)
+    :Submit form ke API;
+    :Validasi data (server-side);
+    
+    if (Data valid?) then (yes)
+        :Generate Order Number\n(ORD-YYYYMMDD-XXX);
+        
+        |Google Sheets|
+        :Simpan data ke spreadsheet;
+        :Set status = "New";
+        :Return success response;
+        
+        |System|
+        :Tampilkan konfirmasi;
+        :Kirim email notifikasi\nke admin;
+        
+        |Client|
+        :Melihat pesan sukses\ndengan Order Number;
+        :Redirect ke halaman utama;
+        
+    else (no)
+        |System|
+        :Return validation error;
+        
+        |Client|
+        :Tampilkan pesan error;
+        :Perbaiki data;
+    endif
+    
+else (no)
+    |Client|
+    :Tampilkan inline\nvalidation errors;
+    :Perbaiki data;
+    
+endif
+
+stop
+
+@enduml

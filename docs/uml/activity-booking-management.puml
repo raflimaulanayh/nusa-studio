@@ -1,0 +1,138 @@
+@startuml activity-booking-management
+
+' ========================================================
+' ACTIVITY DIAGRAM - Booking Management Flow (Admin)
+' ========================================================
+
+skinparam activity {
+    BackgroundColor #f8fafc
+    BorderColor #64748b
+    DiamondBackgroundColor #fef3c7
+    DiamondBorderColor #f59e0b
+}
+
+title Activity Diagram: Booking Management Flow
+
+|#fef3c7|Admin|
+|#e0f2fe|Frontend|
+|#d1fae5|API|
+|#fce7f3|Google Sheets|
+
+|Admin|
+start
+:Login ke Admin Panel;
+
+|Frontend|
+:Verifikasi session JWT;
+
+if (Session valid?) then (yes)
+    :Redirect ke Dashboard;
+    
+    |Admin|
+    :Klik menu "Bookings";
+    
+    |Frontend|
+    :Request GET /api/bookings;
+    
+    |API|
+    :Fetch data dari Sheets;
+    
+    |Google Sheets|
+    :Return semua bookings;
+    
+    |Frontend|
+    :Tampilkan daftar booking\n(10 item awal);
+    
+    |Admin|
+    :Lihat notifikasi bell\n(count New items);
+    
+    if (Ada filter/search?) then (yes)
+        :Input search atau\npilih status tab;
+        
+        |Frontend|
+        :Filter data lokal;
+        :Reset pagination;
+        :Tampilkan hasil filter;
+    else (no)
+    endif
+    
+    :Klik booking untuk\nlihat detail;
+    
+    |Frontend|
+    :Navigate ke /bookings/[id];
+    :Request GET /api/bookings/[id];
+    
+    |API|
+    if (Status == "New"?) then (yes)
+        :Update status ke "Read";
+        
+        |Google Sheets|
+        :Save status = "Read";
+    else (no)
+    endif
+    
+    |Frontend|
+    :Tampilkan detail booking;
+    
+    |Admin|
+    fork
+        :Klik WhatsApp button;
+        
+        |Frontend|
+        :Optimistic update\nstatus ke "Contacted";
+        :Buka WhatsApp\ndengan pre-filled message;
+        
+        |API|
+        :PATCH status = "Contacted";
+        
+        |Google Sheets|
+        :Save status;
+        
+    fork again
+        :Klik Email button;
+        
+        |Frontend|
+        :Optimistic update\nstatus ke "Contacted";
+        :Buka email client\ndengan pre-filled template;
+        
+        |API|
+        :PATCH status = "Contacted";
+        
+        |Google Sheets|
+        :Save status;
+        
+    fork again
+        :Ubah status manual\nvia dropdown;
+        
+        |Frontend|
+        :Tampilkan dropdown options;
+        
+        |Admin|
+        :Pilih status baru;
+        
+        |API|
+        :PATCH status baru;
+        
+        |Google Sheets|
+        :Save status;
+        
+        |Frontend|
+        :Update badge status;
+        
+    end fork
+    
+    |Admin|
+    :Kembali ke daftar\natau lihat booking lain;
+    
+else (no)
+    |Frontend|
+    :Redirect ke /auth/login;
+    
+    |Admin|
+    :Masukkan credentials;
+    
+endif
+
+stop
+
+@enduml

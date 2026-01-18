@@ -28,6 +28,9 @@ function doPost(e) {
       case 'updateBookingStatus':
         return Bookings.handleUpdateBookingStatus(e)
 
+      case 'deleteBooking':
+        return Bookings.handleDeleteBooking(e)
+
       // Messages endpoints
       case 'saveMessage':
         return Messages.handleSaveMessage(e)
@@ -40,6 +43,9 @@ function doPost(e) {
 
       case 'updateMessageStatus':
         return Messages.handleUpdateMessageStatus(e)
+
+      case 'deleteMessage':
+        return Messages.handleDeleteMessage(e)
 
       default:
         return Utils.createResponse({ error: 'Invalid action: ' + action }, 400)

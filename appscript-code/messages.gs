@@ -95,7 +95,7 @@ const Messages = {
   },
 
   /**
-   * Get all messages (PROTECTED - Admin only)
+   * Get all messages (PROTECTED - Admin only) - filters out deleted items
    */
   handleGetMessages: function (e) {
     const token = e.parameter.token
@@ -116,6 +116,13 @@ const Messages = {
       const messages = []
       for (let i = 1; i < data.length; i++) {
         const row = data[i]
+        const isDeleted = row[7] // Column H (isDeleted)
+
+        // Skip deleted messages
+        if (isDeleted === 'true') {
+          continue
+        }
+
         messages.push({
           ticketNumber: row[0], // Column A
           timestamp: row[1], // Column B
@@ -235,6 +242,49 @@ const Messages = {
     } catch (error) {
       Utils.log(`Update message status error: ${error.toString()}`, 'ERROR')
       return Utils.createResponse({ error: 'Failed to update status' }, 500)
+    }
+  },
+
+  /**
+   * Soft delete message (PROTECTED - Admin only)
+   */
+  handleDeleteMessage: function (e) {
+    const token = e.parameter.token
+    const rowIndex = parseInt(e.parameter.rowIndex)
+
+    const auth = Auth.authorizeRequest(token)
+    if (!auth.authorized) {
+      return Utils.createResponse({ error: auth.error }, 401)
+    }
+
+    if (!Auth.hasRole(auth.user, 'admin')) {
+      return Utils.createResponse({ error: 'Admin role required' }, 403)
+    }
+
+    if (!rowIndex) {
+      return Utils.createResponse({ error: 'Row index required' }, 400)
+    }
+
+    try {
+      const sheet = Utils.getSheet(Config.MESSAGES_SHEET_NAME)
+      const headers = sheet.getRange(1, 1, 1, sheet.getLastColumn()).getValues()[0]
+
+      // Find or create isDeleted column (Column H = 8)
+      let deletedCol = headers.indexOf('isDeleted') + 1
+      if (deletedCol === 0) {
+        deletedCol = sheet.getLastColumn() + 1
+        sheet.getRange(1, deletedCol).setValue('isDeleted')
+        sheet.getRange(1, deletedCol).setFontWeight('bold')
+      }
+
+      // Mark as deleted (soft delete)
+      sheet.getRange(rowIndex, deletedCol).setValue('true')
+
+      Utils.log(`Message at row ${rowIndex} soft deleted`, 'INFO')
+      return Utils.createResponse({ success: true, message: 'Message deleted successfully' })
+    } catch (error) {
+      Utils.log(`Delete message error: ${error.toString()}`, 'ERROR')
+      return Utils.createResponse({ error: 'Failed to delete message' }, 500)
     }
   }
 }

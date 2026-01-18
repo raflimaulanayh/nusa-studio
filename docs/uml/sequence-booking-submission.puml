@@ -1,0 +1,65 @@
+@startuml sequence-booking-submission
+
+' ========================================================
+' SEQUENCE DIAGRAM - Booking Submission
+' ========================================================
+
+skinparam sequence {
+    ArrowColor #475569
+    ActorBorderColor #64748b
+    LifeLineBorderColor #94a3b8
+    ParticipantBackgroundColor #f8fafc
+    ParticipantBorderColor #64748b
+}
+
+title Sequence Diagram: Booking Submission
+
+actor Client as C #e0f2fe
+participant "Booking Form\n(React Component)" as Form #fef3c7
+participant "Next.js API\n/api/bookings/submit" as API #d1fae5
+participant "Google Apps Script" as GAS #fce7f3
+database "Google Sheets\n(Bookings)" as DB #e2e8f0
+
+== Form Submission ==
+
+C -> Form : Isi form booking
+activate Form
+
+Form -> Form : Validate input (client-side)
+alt Validation Failed
+    Form --> C : Tampilkan error message
+else Validation Passed
+    Form -> API : POST /api/bookings/submit\n{name, email, phone, service, message...}
+    activate API
+    
+    API -> API : Validate data (server-side)
+    API -> API : Generate Order Number\n(ORD-YYYYMMDD-XXX)
+    
+    API -> GAS : POST handleSubmitBooking(data)
+    activate GAS
+    
+    GAS -> GAS : Format data for sheet
+    GAS -> GAS : Set status = "New"
+    GAS -> GAS : Set timestamp
+    
+    GAS -> DB : Append row to sheet
+    activate DB
+    DB --> GAS : Row inserted (rowIndex)
+    deactivate DB
+    
+    GAS --> API : {success: true, orderNumber}
+    deactivate GAS
+    
+    API --> Form : 200 OK\n{success: true, orderNumber}
+    deactivate API
+    
+    Form -> Form : Show success toast
+    Form --> C : Tampilkan konfirmasi\ndengan Order Number
+    
+    Form -> Form : Reset form
+    Form -> Form : Optional: Redirect to home
+end
+
+deactivate Form
+
+@enduml

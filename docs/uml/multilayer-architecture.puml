@@ -1,0 +1,190 @@
+@startuml multilayer-architecture
+
+' ========================================================
+' MULTILAYER/ARCHITECTURE DIAGRAM - System Layers
+' ========================================================
+
+skinparam component {
+    BackgroundColor #f8fafc
+    BorderColor #64748b
+}
+
+skinparam package {
+    BackgroundColor #f1f5f9
+    BorderColor #94a3b8
+}
+
+title Multilayer Architecture Diagram: Nusa Creative Studio
+
+' ========================================================
+' PRESENTATION LAYER (Frontend)
+' ========================================================
+
+package "Presentation Layer" as PL #e0f2fe {
+    
+    package "Public Pages" as PP {
+        [Home Page] as Home
+        [Portfolio Page] as Portfolio
+        [Services Page] as Services
+        [Booking Form] as BookForm
+        [Contact Form] as ContactForm
+        [Chatbot UI] as ChatUI
+    }
+    
+    package "Admin Pages" as AP {
+        [Login Page] as LoginPage
+        [Dashboard] as Dashboard
+        [Bookings List] as BookingsList
+        [Booking Detail] as BookingDetail
+        [Messages Inbox] as MessagesInbox
+        [Message Detail] as MessageDetail
+        [CMS Pages] as CMS
+    }
+    
+    package "Shared Components" as SC {
+        [Navbar] as Navbar
+        [Footer] as Footer
+        [Sidebar] as Sidebar
+        [NotificationBell] as Bell
+        [StatusCard] as StatusCard
+        [OverviewChart] as Chart
+    }
+    
+}
+
+' ========================================================
+' APPLICATION LAYER (Hooks & State)
+' ========================================================
+
+package "Application Layer" as AL #fef3c7 {
+    
+    package "React Hooks (SWR)" as Hooks {
+        [useBookings] as HookBookings
+        [useMessages] as HookMessages
+        [useAuth] as HookAuth
+    }
+    
+    package "State Management" as SM {
+        [React useState] as LocalState
+        [SWR Cache] as SWRCache
+        [localStorage] as LocalStorage
+    }
+    
+    package "Utilities" as Utils {
+        [Form Validation] as Validation
+        [Date Formatting] as DateFormat
+        [Status Mapping] as StatusMap
+    }
+    
+}
+
+' ========================================================
+' BUSINESS LOGIC LAYER (API Routes)
+' ========================================================
+
+package "Business Logic Layer" as BL #d1fae5 {
+    
+    package "API Routes" as Routes {
+        [/api/bookings] as APIBookings
+        [/api/bookings/[id]] as APIBookingById
+        [/api/bookings/submit] as APIBookingSubmit
+        [/api/bookings/stats] as APIBookingStats
+        [/api/messages] as APIMessages
+        [/api/messages/[id]] as APIMessageById
+        [/api/messages/send] as APIMessageSend
+        [/api/chat] as APIChat
+        [/api/auth/*] as APIAuth
+    }
+    
+    package "Middleware" as MW {
+        [Authentication Check] as AuthCheck
+        [Session Validation] as SessionVal
+        [Error Handler] as ErrorHandler
+    }
+    
+    package "Services" as Svc {
+        [Auth Service] as AuthSvc
+        [Fetcher Service] as FetcherSvc
+    }
+    
+}
+
+' ========================================================
+' DATA ACCESS LAYER (External APIs)
+' ========================================================
+
+package "Data Access Layer" as DL #fce7f3 {
+    
+    package "Google Apps Script" as GAS {
+        [bookings.gs] as BookingsGS
+        [messages.gs] as MessagesGS
+        [code.gs (Router)] as CodeGS
+        [utils.gs] as UtilsGS
+    }
+    
+    package "External APIs" as Ext {
+        [NextAuth.js] as NextAuth
+        [Google Gemini AI] as Gemini
+    }
+    
+}
+
+' ========================================================
+' DATA STORAGE LAYER
+' ========================================================
+
+package "Data Storage Layer" as DS #e2e8f0 {
+    
+    database "Google Sheets" as Sheets {
+        [Bookings Sheet] as SheetBookings
+        [Messages Sheet] as SheetMessages
+        [Services Sheet] as SheetServices
+        [Articles Sheet] as SheetArticles
+        [Knowledge Base Sheet] as SheetKB
+    }
+    
+    database "Browser Storage" as Browser {
+        [Cookies (JWT)] as Cookies
+        [localStorage (Chat)] as BrowserLS
+    }
+    
+}
+
+' ========================================================
+' RELATIONSHIPS
+' ========================================================
+
+' Presentation -> Application
+PP --> Hooks
+AP --> Hooks
+SC --> Hooks
+PP --> SM
+AP --> SM
+
+' Application -> Business Logic
+Hooks --> Routes
+HookAuth --> APIAuth
+HookBookings --> APIBookings
+HookMessages --> APIMessages
+
+' Business Logic -> Data Access
+APIBookings --> BookingsGS
+APIBookingById --> BookingsGS
+APIBookingSubmit --> BookingsGS
+APIMessages --> MessagesGS
+APIMessageById --> MessagesGS
+APIMessageSend --> MessagesGS
+APIChat --> Gemini
+APIAuth --> NextAuth
+
+' Data Access -> Storage
+BookingsGS --> SheetBookings
+MessagesGS --> SheetMessages
+NextAuth --> Cookies
+ChatUI --> BrowserLS
+
+' Middleware flow
+Routes --> MW
+MW --> GAS
+
+@enduml

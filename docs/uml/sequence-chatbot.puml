@@ -1,0 +1,91 @@
+@startuml sequence-chatbot
+
+' ========================================================
+' SEQUENCE DIAGRAM - AI Chatbot Interaction
+' ========================================================
+
+skinparam sequence {
+    ArrowColor #475569
+    ActorBorderColor #64748b
+    LifeLineBorderColor #94a3b8
+    ParticipantBackgroundColor #f8fafc
+    ParticipantBorderColor #64748b
+}
+
+title Sequence Diagram: AI Chatbot Interaction
+
+actor User as U #e0f2fe
+participant "StickyChatbot\n(React Component)" as Chat #fef3c7
+participant "Next.js API\n/api/chat" as API #d1fae5
+database "Knowledge Base" as KB #f0abfc
+participant "Google Gemini AI" as Gemini #fce7f3
+
+== Open Chat ==
+
+U -> Chat : Klik floating chat button
+activate Chat
+
+Chat -> Chat : Load history dari localStorage
+Chat -> Chat : Tampilkan chat window
+
+alt First Visit
+    Chat --> U : Tampilkan welcome message\n+ suggested questions
+else Returning User
+    Chat --> U : Tampilkan previous conversation
+end
+
+== Send Message ==
+
+U -> Chat : Ketik pertanyaan
+U -> Chat : Tekan Enter / klik Send
+activate Chat
+
+Chat -> Chat : Tambah message ke state
+Chat --> U : Tampilkan user message
+Chat --> U : Tampilkan typing indicator
+
+Chat -> API : POST /api/chat\n{message: "pertanyaan user"}
+activate API
+
+API -> KB : Fetch knowledge base entries
+KB --> API : Knowledge articles
+
+API -> API : Build context prompt
+Note right of API
+  Context includes:
+  - System instructions
+  - Knowledge base content
+  - Conversation history
+  - User's question
+end note
+
+API -> Gemini : POST generateContent\n{prompt, context}
+activate Gemini
+
+Gemini -> Gemini : Process with AI
+Gemini --> API : Generated response
+deactivate Gemini
+
+API -> API : Format response (Markdown)
+API --> Chat : {response: "AI answer"}
+deactivate API
+
+Chat -> Chat : Sembunyikan typing indicator
+Chat -> Chat : Tambah AI response ke state
+Chat --> U : Tampilkan AI response\n(rendered Markdown)
+
+Chat -> Chat : Simpan ke localStorage
+deactivate Chat
+
+== Continue Conversation ==
+
+U -> Chat : Ketik pertanyaan lanjutan
+Note right of U: Loop repeats with\nconversation history
+
+== Escalate to Human ==
+
+U -> Chat : Klik "Hubungi Kami"
+Chat --> U : Redirect ke /contact
+Chat -> Chat : Pre-fill form dengan context
+
+@enduml

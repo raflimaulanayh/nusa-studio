@@ -127,3 +127,64 @@ export async function PATCH(request: NextRequest) {
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }
+
+export async function DELETE(request: NextRequest) {
+  try {
+    const session = await getServerSession(authOptions)
+
+    if (!session?.jwt) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
+    const { rowIndex } = await request.json()
+
+    if (!rowIndex) {
+      return NextResponse.json({ error: 'rowIndex required' }, { status: 400 })
+    }
+
+    const formData = new URLSearchParams()
+    formData.append('action', 'deleteMessage')
+    formData.append('token', session.jwt)
+    formData.append('rowIndex', rowIndex.toString())
+
+    const controller = new AbortController()
+    const timeoutId = setTimeout(() => controller.abort(), 15000)
+
+    try {
+      const response = await fetch(APPSCRIPT_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        body: formData,
+        signal: controller.signal
+      })
+
+      clearTimeout(timeoutId)
+
+      if (!response.ok) {
+        return NextResponse.json({ error: 'AppScript error' }, { status: response.status })
+      }
+
+      const data = await response.json()
+
+      if (data.success) {
+        return NextResponse.json({ success: true, message: 'Message deleted' })
+      }
+
+      return NextResponse.json({ error: data.error || 'Failed to delete message' }, { status: 400 })
+    } catch (fetchError: unknown) {
+      clearTimeout(timeoutId)
+
+      if (fetchError instanceof Error && fetchError.name === 'AbortError') {
+        return NextResponse.json({ error: 'Request timeout' }, { status: 504 })
+      }
+
+      throw fetchError
+    }
+  } catch (error) {
+    console.error('Delete message error:', error)
+
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+  }
+}

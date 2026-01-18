@@ -1,0 +1,84 @@
+@startuml activity-chatbot
+
+' ========================================================
+' ACTIVITY DIAGRAM - AI Chatbot Flow
+' ========================================================
+
+skinparam activity {
+    BackgroundColor #f8fafc
+    BorderColor #64748b
+    DiamondBackgroundColor #fef3c7
+    DiamondBorderColor #f59e0b
+}
+
+title Activity Diagram: AI Chatbot Interaction
+
+|#e0f2fe|User|
+|#fef3c7|Frontend|
+|#d1fae5|API|
+|#fce7f3|Google Gemini AI|
+
+|User|
+start
+:Klik floating chat button;
+
+|Frontend|
+:Buka chat window;
+:Load conversation history\ndari localStorage;
+
+if (First time?) then (yes)
+    :Tampilkan welcome message;
+    :Tampilkan suggested questions;
+else (no)
+    :Tampilkan previous messages;
+endif
+
+|User|
+:Ketik pertanyaan;
+:Tekan Enter / klik Send;
+
+|Frontend|
+:Tampilkan user message;
+:Tampilkan typing indicator;
+:POST /api/chat dengan message;
+
+|API|
+:Load knowledge base\ndari database;
+:Build context prompt;
+:Kirim ke Gemini API;
+
+|Google Gemini AI|
+:Generate response\nberdasarkan context;
+:Return AI response;
+
+|API|
+:Format response (Markdown);
+:Return ke frontend;
+
+|Frontend|
+:Sembunyikan typing indicator;
+:Tampilkan AI response;
+:Simpan ke localStorage;
+
+|User|
+if (Butuh bantuan lebih?) then (yes)
+    :Ketik pertanyaan lanjutan;
+    note right: Loop back to input
+else (no)
+    if (Ingin bicara dengan manusia?) then (yes)
+        :Klik "Hubungi Kami";
+        
+        |Frontend|
+        :Redirect ke /contact;
+        :Pre-fill form dengan\nchat context;
+    else (no)
+        :Tutup chat window;
+        
+        |Frontend|
+        :Simpan conversation\nke localStorage;
+    endif
+endif
+
+stop
+
+@enduml

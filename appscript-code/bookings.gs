@@ -204,7 +204,7 @@ const Bookings = {
   },
 
   /**
-   * Get all bookings (requires valid JWT)
+   * Get all bookings (requires valid JWT) - filters out deleted items
    */
   handleGetBookings: function (e) {
     const token = e.parameter.token
@@ -218,7 +218,9 @@ const Bookings = {
       const sheet = Utils.getSheet(Config.BOOKINGS_SHEET_NAME)
       const bookings = Utils.sheetToJson(sheet)
 
+      // Filter out deleted bookings
       const enrichedBookings = bookings
+        .filter((booking) => !booking.isDeleted || booking.isDeleted !== 'true')
         .map((booking, index) => ({
           ...booking,
           id: index + 1,
@@ -280,6 +282,49 @@ const Bookings = {
     } catch (error) {
       Utils.log(`Update status error: ${error.toString()}`, 'ERROR')
       return Utils.createResponse({ error: 'Failed to update status' }, 500)
+    }
+  },
+
+  /**
+   * Soft delete booking (requires admin JWT)
+   */
+  handleDeleteBooking: function (e) {
+    const token = e.parameter.token
+    const rowIndex = parseInt(e.parameter.rowIndex)
+
+    const auth = Auth.authorizeRequest(token)
+    if (!auth.authorized) {
+      return Utils.createResponse({ error: auth.error }, 401)
+    }
+
+    if (!Auth.hasRole(auth.user, 'admin')) {
+      return Utils.createResponse({ error: 'Admin role required' }, 403)
+    }
+
+    if (!rowIndex) {
+      return Utils.createResponse({ error: 'Row index required' }, 400)
+    }
+
+    try {
+      const sheet = Utils.getSheet(Config.BOOKINGS_SHEET_NAME)
+      const headers = sheet.getRange(1, 1, 1, sheet.getLastColumn()).getValues()[0]
+
+      // Find or create isDeleted column
+      let deletedCol = headers.indexOf('isDeleted') + 1
+      if (deletedCol === 0) {
+        deletedCol = sheet.getLastColumn() + 1
+        sheet.getRange(1, deletedCol).setValue('isDeleted')
+        sheet.getRange(1, deletedCol).setFontWeight('bold')
+      }
+
+      // Mark as deleted (soft delete)
+      sheet.getRange(rowIndex, deletedCol).setValue('true')
+
+      Utils.log(`Booking at row ${rowIndex} soft deleted`, 'INFO')
+      return Utils.createResponse({ success: true, message: 'Booking deleted successfully' })
+    } catch (error) {
+      Utils.log(`Delete booking error: ${error.toString()}`, 'ERROR')
+      return Utils.createResponse({ error: 'Failed to delete booking' }, 500)
     }
   }
 }
