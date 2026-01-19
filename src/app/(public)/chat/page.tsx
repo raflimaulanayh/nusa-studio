@@ -9,7 +9,7 @@ import ReactMarkdown from 'react-markdown'
 
 import { Button } from '@/components/atoms/ui/button'
 import { MarkdownComponents } from '@/components/atoms/ui/markdown'
-import { ServiceRecommendationCards } from '@/components/molecules/service-recommendation-cards'
+import { RecommendationCard } from '@/components/molecules/card/recommendation-card'
 import { Container } from '@/components/templates/container'
 
 import { cn } from '@/utils/cn'
@@ -72,7 +72,6 @@ export default function ChatPage() {
 
   return (
     <div className="flex h-screen flex-col overflow-hidden bg-slate-50">
-      {/* Header with glassmorphism */}
       <motion.div
         initial={{ y: -20, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
@@ -106,7 +105,6 @@ export default function ChatPage() {
         </Container>
       </motion.div>
 
-      {/* Chat Area with custom scrollbar */}
       <div
         data-lenis-prevent
         className="scrollbar-custom flex-1 overflow-y-auto py-8"
@@ -177,11 +175,10 @@ export default function ChatPage() {
                           )
                         }
 
-                        // Handle tool calls - recommendServices
                         if (part.type === 'tool-recommendServices') {
                           if (part.state === 'output-available' && part.output) {
                             return (
-                              <ServiceRecommendationCards
+                              <RecommendationCard
                                 key={partIdx}
                                 serviceIds={part.output.serviceIds}
                                 reasoning={part.output.reasoning}
@@ -201,14 +198,12 @@ export default function ChatPage() {
                     </div>
                   </motion.div>
 
-                  {/* Timestamp */}
                   <span className="mt-1 px-2 text-xs text-gray-400">{message.role === 'user' ? 'You' : 'AI Assistant'}</span>
                 </div>
               </motion.div>
             ))}
           </AnimatePresence>
 
-          {/* Typing Indicator */}
           <AnimatePresence>
             {isLoading && (
               <motion.div
@@ -259,14 +254,12 @@ export default function ChatPage() {
         </Container>
       </div>
 
-      {/* Input Area with glassmorphism */}
       <motion.div
         initial={{ y: 20, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         className="relative z-10 border-t border-white/50 bg-white/50 shadow-lg backdrop-blur-sm"
       >
         <Container className="max-w-5xl! py-4 md:py-6">
-          {/* Suggested Questions */}
           <AnimatePresence>
             {messages.length === 0 && (
               <motion.div
@@ -294,7 +287,6 @@ export default function ChatPage() {
             )}
           </AnimatePresence>
 
-          {/* Input Form */}
           <form onSubmit={handleSubmit} className="relative">
             <div className="relative flex items-center gap-3">
               <div className="relative flex-1">
@@ -324,7 +316,6 @@ export default function ChatPage() {
             </div>
           </form>
 
-          {/* Footer Note */}
           <p className="mt-3 text-center text-xs text-gray-500">
             AI can make mistakes. Consider checking important information.
           </p>

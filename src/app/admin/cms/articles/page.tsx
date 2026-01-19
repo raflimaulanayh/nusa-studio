@@ -1,7 +1,6 @@
 'use client'
 
-import type { Article } from '@/data/articles'
-import { ARTICLES } from '@/data/articles'
+import { ARTICLES_DATA } from '@/constants/article-data'
 import { Eye, FileEdit, MoreVertical, Plus, Search, Trash2 } from 'lucide-react'
 import Image from 'next/image'
 import { useState } from 'react'
@@ -22,7 +21,7 @@ import { DeleteArticleDialog } from '@/components/organisms/admin/dialogs/delete
 import { cn } from '@/utils/cn'
 
 export default function ArticlesPage() {
-  const [articles, setArticles] = useState<Article[]>(ARTICLES)
+  const [articles, setArticles] = useState<Article[]>(ARTICLES_DATA)
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null)
 

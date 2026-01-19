@@ -1,6 +1,5 @@
 'use client'
 
-import type { Article } from '@/data/articles'
 import { useState } from 'react'
 
 import { Button } from '@/components/atoms/ui/button'

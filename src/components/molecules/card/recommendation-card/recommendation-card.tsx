@@ -1,43 +1,41 @@
 'use client'
 
-import { SERVICES_DATA } from '@/data/services'
+import { SERVICES_MORE_DATA } from '@/constants/service-data'
 import { motion } from 'framer-motion'
 import { ArrowRight, CheckCircle2, Sparkles } from 'lucide-react'
 import Link from 'next/link'
 
 import { Button } from '@/components/atoms/ui/button'
 
-// Helper to convert service slug to booking form title
 const getBookingServiceTitle = (slug: string): string => {
   const mapping: Record<string, string> = {
     'product-photography': 'Product Photography',
     'brand-identity': 'Brand Identity',
     'web-development': 'Web Development',
     'digital-marketing': 'Digital Marketing',
-    'ui-ux-design': 'Content Creation' // UI/UX maps to Content Creation in booking form
+    'ui-ux-design': 'Content Creation'
   }
 
   return mapping[slug] || 'Other'
 }
 
-interface ServiceRecommendationCardsProps {
+interface Props {
   serviceIds: string[]
   reasoning: string
 }
 
-export function ServiceRecommendationCards({ serviceIds, reasoning }: ServiceRecommendationCardsProps) {
-  const recommendedServices = SERVICES_DATA.filter((service) => serviceIds.includes(service.slug))
+export function RecommendationCard({ serviceIds, reasoning }: Props) {
+  const recommendedServices = SERVICES_MORE_DATA.filter((service) => serviceIds.includes(service.slug))
 
   if (recommendedServices.length === 0) return null
 
   return (
     <div className="my-4 space-y-3 sm:my-6 sm:space-y-4">
-      {/* Reasoning Badge */}
       {reasoning && (
         <motion.div
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
-          className="flex items-start gap-2 rounded-xl border border-primary/20 bg-gradient-to-r from-primary/5 to-purple-50/30 p-3 sm:p-4"
+          className="flex items-start gap-2 rounded-xl border border-primary/20 bg-linear-to-r from-primary/5 to-purple-50/30 p-3 sm:p-4"
         >
           <Sparkles className="mt-0.5 h-4 w-4 shrink-0 text-primary sm:h-5 sm:w-5" />
           <div>
@@ -47,7 +45,6 @@ export function ServiceRecommendationCards({ serviceIds, reasoning }: ServiceRec
         </motion.div>
       )}
 
-      {/* Service Cards Grid */}
       <div className="grid gap-3 sm:gap-4 md:grid-cols-2">
         {recommendedServices.map((service, idx) => {
           const Icon = service.icon
@@ -60,19 +57,16 @@ export function ServiceRecommendationCards({ serviceIds, reasoning }: ServiceRec
               transition={{ delay: idx * 0.1 }}
               className="group relative overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-md"
             >
-              {/* Gradient Background Accent */}
-              <div className="absolute inset-0 -z-10 bg-gradient-to-br from-primary/5 via-transparent to-secondary/5 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+              <div className="absolute inset-0 -z-10 bg-linear-to-br from-primary/5 via-transparent to-secondary/5 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
 
-              {/* Decorative Corner */}
-              <div className="absolute top-0 right-0 h-16 w-16 bg-gradient-to-br from-primary/10 to-transparent blur-2xl sm:h-20 sm:w-20" />
+              <div className="absolute top-0 right-0 h-16 w-16 bg-linear-to-br from-primary/10 to-transparent blur-2xl sm:h-20 sm:w-20" />
 
               <div className="relative p-4 sm:p-6">
-                {/* Icon & Title */}
                 <div className="mb-3 flex items-start justify-between sm:mb-4">
                   <div className="flex items-start gap-3 sm:gap-4">
                     <motion.div
                       whileHover={{ rotate: 5, scale: 1.05 }}
-                      className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-primary/80 text-white transition-all sm:h-14 sm:w-14"
+                      className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-linear-to-br from-primary to-primary/80 text-white transition-all sm:h-14 sm:w-14"
                     >
                       <Icon size={24} className="sm:hidden" />
                       <Icon size={28} className="hidden sm:block" />
@@ -84,10 +78,8 @@ export function ServiceRecommendationCards({ serviceIds, reasoning }: ServiceRec
                   </div>
                 </div>
 
-                {/* Description */}
                 <p className="mb-3 line-clamp-2 text-sm leading-relaxed text-gray-600 sm:mb-4">{service.shortDescription}</p>
 
-                {/* Key Features */}
                 <div className="mb-4 space-y-1.5 sm:mb-5 sm:space-y-2">
                   {service.features.slice(0, 3).map((feature, featureIdx) => (
                     <motion.div
@@ -103,7 +95,6 @@ export function ServiceRecommendationCards({ serviceIds, reasoning }: ServiceRec
                   ))}
                 </div>
 
-                {/* Tags */}
                 <div className="mb-3 flex flex-wrap gap-1.5 sm:mb-4">
                   {service.tags.slice(0, 3).map((tag, tagIdx) => (
                     <span
@@ -115,10 +106,8 @@ export function ServiceRecommendationCards({ serviceIds, reasoning }: ServiceRec
                   ))}
                 </div>
 
-                {/* Divider */}
-                <div className="my-3 h-px bg-gradient-to-r from-transparent via-slate-200 to-transparent sm:my-4" />
+                <div className="my-3 h-px bg-linear-to-r from-transparent via-slate-200 to-transparent sm:my-4" />
 
-                {/* CTA Buttons - Stack on mobile, side by side on sm+ */}
                 <div className="flex flex-col gap-2 sm:flex-row">
                   <Link href={`/services/${service.slug}`} className="flex-1">
                     <Button
@@ -133,7 +122,7 @@ export function ServiceRecommendationCards({ serviceIds, reasoning }: ServiceRec
                     href={`/book?service=${encodeURIComponent(getBookingServiceTitle(service.slug))}`}
                     className="flex-1"
                   >
-                    <Button className="w-full bg-gradient-to-r from-primary to-primary/90 text-xs transition-all sm:text-sm">
+                    <Button className="w-full bg-linear-to-r from-primary to-primary/90 text-xs transition-all sm:text-sm">
                       Book a Call
                     </Button>
                   </Link>

@@ -1,6 +1,5 @@
 'use client'
 
-import type { Article } from '@/data/articles'
 import Image from 'next/image'
 
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/atoms/ui/dialog'
