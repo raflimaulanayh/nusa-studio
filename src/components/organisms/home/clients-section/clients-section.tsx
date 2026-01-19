@@ -11,7 +11,7 @@ export const ClientsSection = () => {
   const CLIENTS_DOUBLED = [...CLIENTS_DATA, ...CLIENTS_DATA, ...CLIENTS_DATA]
 
   return (
-    <section className="overflow-hidden bg-gray-50 py-24">
+    <section className="overflow-hidden bg-gray-50 py-16 lg:py-24">
       <Container>
         <header className="mb-16 text-center">
           <motion.div
@@ -45,7 +45,7 @@ export const ClientsSection = () => {
                 ease: 'linear'
               }
             }}
-            className="flex shrink-0 gap-6 px-3 py-2"
+            className="flex shrink-0 items-center px-3 py-2 lg:gap-6"
           >
             {CLIENTS_DOUBLED.slice(0, 10).map((client, index) => (
               <figure

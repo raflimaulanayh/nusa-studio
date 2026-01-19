@@ -36,7 +36,7 @@ export const PricingSection = ({
   const showTabs = !filterId
 
   return (
-    <section className="relative overflow-hidden bg-background py-24" id="pricing">
+    <section className="relative overflow-hidden bg-background py-16 lg:py-24" id="pricing">
       <div className="pointer-events-none absolute top-0 left-0 h-full w-full overflow-hidden">
         <div className="absolute -top-[20%] -right-[10%] h-[50%] w-[50%] rounded-full bg-primary/5 opacity-50 blur-3xl" />
         <div className="absolute top-[60%] -left-[10%] h-[40%] w-[40%] rounded-full bg-secondary/5 opacity-50 blur-3xl" />

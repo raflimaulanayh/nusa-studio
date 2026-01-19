@@ -27,7 +27,7 @@ const itemVariants = {
 
 export const ServicesSection = () => {
   return (
-    <section className="relative overflow-hidden bg-background py-24 lg:py-32">
+    <section className="relative overflow-hidden bg-background py-16 lg:py-24">
       <div className="absolute top-0 left-0 h-[500px] w-[500px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-secondary/5 blur-[100px]" />
       <div className="absolute right-0 bottom-0 h-[500px] w-[500px] translate-x-1/2 translate-y-1/2 rounded-full bg-primary/5 blur-[100px]" />
 
@@ -45,7 +45,7 @@ export const ServicesSection = () => {
               </Text>
             </motion.div>
             <motion.div variants={itemVariants}>
-              <h2 className="mb-6 font-serif text-5xl font-medium tracking-tight text-primary md:text-6xl">
+              <h2 className="mb-6 font-serif text-3xl font-semibold tracking-tight text-primary md:text-5xl">
                 What We Do Best
               </h2>
             </motion.div>

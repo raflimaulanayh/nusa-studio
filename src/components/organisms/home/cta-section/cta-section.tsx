@@ -22,11 +22,11 @@ export const CtaSection = () => {
           <div className="absolute bottom-0 left-0 -mb-20 -ml-20 h-[400px] w-[400px] rounded-full bg-secondary/10 blur-[80px]" />
 
           <article className="relative z-10 mx-auto max-w-3xl space-y-8">
-            <Heading as="h2" variant="white" className="text-3xl leading-tight font-semibold md:text-4xl">
+            <Heading as="h2" variant="white" className="text-2xl leading-tight font-semibold md:text-4xl">
               Ready to Transform Your Digital Presence?
             </Heading>
 
-            <Text variant="white" className="text-lg leading-relaxed opacity-80 md:text-xl">
+            <Text variant="white" className="leading-relaxed opacity-80 md:text-xl">
               Let&apos;s collaborate to build something extraordinary. Our team is ready to bring your vision to life with
               precision and creativity.
             </Text>

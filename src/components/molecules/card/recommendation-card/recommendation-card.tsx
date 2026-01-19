@@ -1,13 +1,35 @@
 'use client'
 
 import { SERVICES_MORE_DATA } from '@/constants/service-data'
+import { SERVICE_PACKAGES } from '@/data/pricing'
 import { motion } from 'framer-motion'
 import { ArrowRight, CheckCircle2, Sparkles } from 'lucide-react'
 import Link from 'next/link'
 
 import { Button } from '@/components/atoms/ui/button'
+import type { ServiceRecommendation } from '@/components/organisms/chabot/chunk/types'
 
-const getBookingServiceTitle = (slug: string): string => {
+/**
+ * Map service IDs to pricing package titles (for finding plans)
+ * Must match SERVICE_PACKAGES titles in pricing.ts
+ */
+const getPricingPackageTitle = (slug: string): string | null => {
+  const mapping: Record<string, string | null> = {
+    'product-photography': 'Content Production',
+    'digital-marketing': 'Social Media Management',
+    'brand-identity': 'Visual Branding',
+    'web-development': 'Website & SEO',
+    'ui-ux-design': null // No direct pricing package
+  }
+
+  return mapping[slug] ?? null
+}
+
+/**
+ * Map service IDs to booking form service categories
+ * Must match SERVICES array in book/page.tsx
+ */
+const getBookingServiceCategory = (slug: string): string => {
   const mapping: Record<string, string> = {
     'product-photography': 'Product Photography',
     'brand-identity': 'Brand Identity',
@@ -20,12 +42,12 @@ const getBookingServiceTitle = (slug: string): string => {
 }
 
 interface Props {
-  serviceIds: string[]
+  services: ServiceRecommendation[]
   reasoning: string
 }
 
-export function RecommendationCard({ serviceIds, reasoning }: Props) {
-  const recommendedServices = SERVICES_MORE_DATA.filter((service) => serviceIds.includes(service.slug))
+export function RecommendationCard({ services, reasoning }: Props) {
+  const recommendedServices = SERVICES_MORE_DATA.filter((service) => services.some((s) => s.serviceId === service.slug))
 
   if (recommendedServices.length === 0) return null
 
@@ -48,6 +70,35 @@ export function RecommendationCard({ serviceIds, reasoning }: Props) {
       <div className="grid gap-3 sm:gap-4 md:grid-cols-2">
         {recommendedServices.map((service, idx) => {
           const Icon = service.icon
+          const serviceRecommendation = services.find((s) => s.serviceId === service.slug)
+          let recommendedPlan = serviceRecommendation?.planName
+
+          // Validate recommended plan exists in pricing data
+          const pricingPackageTitle = getPricingPackageTitle(service.slug)
+          if (recommendedPlan && pricingPackageTitle) {
+            // Validate plan exists in SERVICE_PACKAGES
+            const servicePackage = SERVICE_PACKAGES.find((pkg) => pkg.title === pricingPackageTitle)
+            const planExists = servicePackage?.tiers.some((tier) => tier.name === recommendedPlan)
+
+            // If plan doesn't exist in pricing data, don't use it
+            if (!planExists) {
+              console.warn(
+                `Plan "${recommendedPlan}" not found in pricing for "${pricingPackageTitle}". Available plans:`,
+                servicePackage?.tiers.map((t) => t.name)
+              )
+              recommendedPlan = undefined
+            }
+          } else {
+            // No pricing package for this service, can't have plans
+            recommendedPlan = undefined
+          }
+
+          // Build booking URL with service category (not pricing title) and  validated plan
+          const serviceCategory = getBookingServiceCategory(service.slug)
+          const bookingUrl =
+            recommendedPlan && pricingPackageTitle
+              ? `/book?service=${encodeURIComponent(pricingPackageTitle)}&plan=${encodeURIComponent(recommendedPlan)}`
+              : `/book?service=${encodeURIComponent(serviceCategory)}`
 
           return (
             <motion.div
@@ -74,6 +125,11 @@ export function RecommendationCard({ serviceIds, reasoning }: Props) {
                     <div className="min-w-0 flex-1">
                       <h3 className="text-base font-semibold text-gray-900 sm:text-lg">{service.title}</h3>
                       <p className="mt-0.5 text-xs font-medium text-primary">Service #{service.id}</p>
+                      {recommendedPlan && (
+                        <p className="mt-1 inline-block rounded-full bg-secondary/10 px-2 py-0.5 text-xs font-semibold text-secondary">
+                          {recommendedPlan}
+                        </p>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -118,10 +174,7 @@ export function RecommendationCard({ serviceIds, reasoning }: Props) {
                       <ArrowRight className="ml-2 h-3 w-3 transition-transform group-hover/btn:translate-x-1 sm:h-3.5 sm:w-3.5" />
                     </Button>
                   </Link>
-                  <Link
-                    href={`/book?service=${encodeURIComponent(getBookingServiceTitle(service.slug))}`}
-                    className="flex-1"
-                  >
+                  <Link href={bookingUrl} className="flex-1">
                     <Button className="w-full bg-linear-to-r from-primary to-primary/90 text-xs transition-all sm:text-sm">
                       Book a Call
                     </Button>

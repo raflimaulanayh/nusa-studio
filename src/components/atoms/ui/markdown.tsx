@@ -1,3 +1,4 @@
+import Link from 'next/link'
 import { Components } from 'react-markdown'
 
 export const MarkdownComponents: Components = {
@@ -8,14 +9,36 @@ export const MarkdownComponents: Components = {
   ),
   li: ({ children }) => <li className="pl-1 text-slate-700">{children}</li>,
   strong: ({ children }) => <span className="font-semibold text-slate-900">{children}</span>,
-  a: ({ href, children }) => (
-    <a
-      href={href}
-      target="_blank"
-      rel="noopener noreferrer"
-      className="font-medium text-accent-orange decoration-accent-orange/30 underline-offset-2 transition-colors hover:underline"
-    >
-      {children}
-    </a>
-  )
+  a: ({ href, children }) => {
+    // Handle missing href
+    if (!href) {
+      return <span className="font-semibold text-slate-900">{children}</span>
+    }
+
+    // Check if it's an internal link (starts with /)
+    const isInternal = href.startsWith('/')
+
+    if (isInternal) {
+      return (
+        <Link
+          href={href}
+          className="font-semibold text-primary underline decoration-primary/30 underline-offset-2 transition-colors hover:decoration-primary"
+        >
+          {children}
+        </Link>
+      )
+    }
+
+    // External link
+    return (
+      <a
+        href={href}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="font-medium text-accent-orange underline decoration-accent-orange/30 underline-offset-2 transition-colors hover:decoration-accent-orange"
+      >
+        {children}
+      </a>
+    )
+  }
 }

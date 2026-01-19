@@ -85,7 +85,7 @@ export const HeroSection = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.6, duration: 0.8 }}
-            className="flex flex-col items-center justify-center gap-4 sm:flex-row"
+            className="flex items-center justify-center gap-3 lg:gap-4"
           >
             <Button size="lg" variant="default" rounded="full">
               Start Project

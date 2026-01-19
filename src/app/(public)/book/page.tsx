@@ -323,7 +323,7 @@ export default function BookPage() {
               <Text size="sm" weight="semibold" className="mb-6 tracking-widest text-secondary uppercase">
                 Start a Project
               </Text>
-              <h1 className="mb-6 font-serif text-5xl leading-[1.1] font-medium tracking-tight text-primary md:text-7xl lg:text-8xl">
+              <h1 className="mb-6 font-serif text-4xl leading-[1.1] font-medium tracking-tight text-primary md:text-6xl lg:text-7xl">
                 Let&apos;s build your <br />
                 <span className="text-secondary italic">vision</span> together.
               </h1>

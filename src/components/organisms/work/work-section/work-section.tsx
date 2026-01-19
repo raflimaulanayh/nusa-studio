@@ -63,7 +63,7 @@ export const WorkSection = () => {
                 Portfolio
               </Text>
             </h1>
-            <h2 className="mb-6 text-5xl font-semibold tracking-tight text-primary md:text-7xl">Selected Work</h2>
+            <h2 className="mb-6 text-4xl font-semibold tracking-tight text-primary md:text-6xl">Selected Work</h2>
             <Text size="lg" className="mx-auto max-w-2xl text-foreground opacity-70">
               A collection of projects where strategy meets creativity. We build brands that stand out in the digital
               landscape.

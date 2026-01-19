@@ -38,7 +38,7 @@ export const TestimonialSection = () => {
   }, [api])
 
   return (
-    <section className="overflow-hidden bg-transparent py-24">
+    <section className="overflow-hidden bg-transparent py-16 lg:py-24">
       <Container>
         <div className="relative px-4 md:px-0">
           <Carousel
