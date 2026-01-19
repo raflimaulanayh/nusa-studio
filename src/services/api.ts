@@ -1,4 +1,3 @@
-// api.js
 import Axios from 'axios'
 
 const api = Axios.create({

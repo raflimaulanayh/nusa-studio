@@ -1,22 +1,25 @@
-import { ARTICLES } from '@/data/articles'
+import { ARTICLES_DATA } from '@/constants/article-data'
 import { notFound } from 'next/navigation'
-import React from 'react'
 
-import { ArticleDetailView } from '@/components/templates/article-detail-view'
+import { ArticleDetail } from '@/components/organisms/article'
+
+export const metadata = {
+  title: 'Detail Article'
+}
 
 export default async function ArticleDetailPage({ params }: { params: Promise<{ slug: string }> }) {
   const resolvedParams = await params
-  const article = ARTICLES.find((a) => a.slug === resolvedParams.slug)
+  const article = ARTICLES_DATA.find((a) => a.slug === resolvedParams.slug)
 
   if (!article) {
     notFound()
   }
 
-  return <ArticleDetailView article={article} />
+  return <ArticleDetail article={article} />
 }
 
 export async function generateStaticParams() {
-  return ARTICLES.map((article) => ({
+  return ARTICLES_DATA.map((article) => ({
     slug: article.slug
   }))
 }

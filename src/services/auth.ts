@@ -16,7 +16,6 @@ export const authOptions: NextAuthOptions = {
         }
 
         try {
-          // Call internal Next.js API route (better for server-side)
           const baseUrl = process.env.NEXTAUTH_URL || 'http://localhost:3000'
           const response = await fetch(`${baseUrl}/api/auth/login`, {
             method: 'POST',

@@ -1,21 +1,4 @@
-export interface Article {
-  id: string
-  slug: string
-  title: string
-  excerpt: string
-  content: string
-  date: string
-  author: {
-    name: string
-    role: string
-    image: string
-  }
-  image: string
-  category: string
-  readTime: string
-}
-
-export const ARTICLES: Article[] = [
+export const ARTICLES_DATA: Article[] = [
   {
     id: '1',
     slug: 'the-future-of-digital-design-2025',

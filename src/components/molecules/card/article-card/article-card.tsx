@@ -1,6 +1,5 @@
 'use client'
 
-import { type Article } from '@/data/articles'
 import { motion } from 'framer-motion'
 import { ArrowUpRight, Calendar } from 'lucide-react'
 import Image from 'next/image'
@@ -15,16 +14,15 @@ interface ArticleCardProps {
 
 export const ArticleCard = ({ article, index }: ArticleCardProps) => {
   return (
-    <motion.div
+    <motion.figure
       initial={{ opacity: 0, y: 30 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
       transition={{ duration: 0.5, delay: index * 0.1 }}
       className="group flex h-full flex-col"
     >
-      {/* Image */}
       <Link href={`/articles/${article.slug}`} className="mb-6 block overflow-hidden rounded-2xl">
-        <div className="relative aspect-[4/3] overflow-hidden">
+        <div className="relative aspect-4/3 overflow-hidden">
           <Image
             src={article.image}
             alt={article.title}
@@ -37,8 +35,7 @@ export const ArticleCard = ({ article, index }: ArticleCardProps) => {
         </div>
       </Link>
 
-      {/* Content */}
-      <div className="flex flex-grow flex-col">
+      <figcaption className="flex grow flex-col">
         <div className="mb-4 flex items-center gap-4 text-xs text-muted-foreground">
           <span className="flex items-center gap-1">
             <Calendar className="h-3 w-3" />
@@ -54,7 +51,7 @@ export const ArticleCard = ({ article, index }: ArticleCardProps) => {
           </h3>
         </Link>
 
-        <Text className="mb-6 line-clamp-3 flex-grow text-muted-foreground">{article.excerpt}</Text>
+        <Text className="mb-6 line-clamp-3 grow text-muted-foreground">{article.excerpt}</Text>
 
         <div className="mt-auto flex items-center justify-between border-t border-primary/10 pt-6">
           <div className="flex items-center gap-2">
@@ -78,7 +75,7 @@ export const ArticleCard = ({ article, index }: ArticleCardProps) => {
             Read <ArrowUpRight className="h-4 w-4" />
           </Link>
         </div>
-      </div>
-    </motion.div>
+      </figcaption>
+    </motion.figure>
   )
 }

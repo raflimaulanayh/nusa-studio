@@ -8,7 +8,7 @@ import { useRef, useEffect, useState } from 'react'
 
 import { Text } from '@/components/atoms/typography'
 import { Button } from '@/components/atoms/ui/button'
-import { ProjectCard } from '@/components/molecules/project-card'
+import { ProjectCard } from '@/components/molecules/card/project-card'
 import { Container } from '@/components/templates/container'
 
 if (typeof window !== 'undefined') {

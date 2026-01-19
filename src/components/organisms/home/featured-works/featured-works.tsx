@@ -7,7 +7,7 @@ import { ArrowRight } from 'lucide-react'
 import { Heading } from '@/components/atoms/typography'
 import { Text } from '@/components/atoms/typography'
 import { Button } from '@/components/atoms/ui/button'
-import { ProjectCard } from '@/components/molecules/project-card'
+import { ProjectCard } from '@/components/molecules/card/project-card'
 import { Container } from '@/components/templates/container'
 
 const sectionVariants = {
