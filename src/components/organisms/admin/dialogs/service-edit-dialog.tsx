@@ -1,6 +1,5 @@
 'use client'
 
-import type { PricingTier, ServicePackage } from '@/data/pricing'
 import { Plus, Trash2, X } from 'lucide-react'
 import { useEffect, useState } from 'react'
 

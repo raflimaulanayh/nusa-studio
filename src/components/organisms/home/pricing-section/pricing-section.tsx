@@ -1,6 +1,6 @@
 'use client'
 
-import { SERVICE_PACKAGES } from '@/data/pricing'
+import { SERVICE_PACKAGES } from '@/constants/service-data'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Check, Camera, Smartphone, PenTool, Monitor } from 'lucide-react'
 import { useState } from 'react'

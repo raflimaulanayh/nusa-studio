@@ -202,7 +202,7 @@ export default function ContactPage() {
                     </Heading>
 
                     {ticketNumber && (
-                      <div className="mb-6 w-full max-w-md rounded-xl bg-gradient-to-r from-blue-50 to-purple-50 p-6">
+                      <div className="mb-6 w-full max-w-md rounded-xl bg-linear-to-r from-blue-50 to-purple-50 p-6">
                         <Text variant="muted" className="mb-2 text-sm font-medium tracking-wide uppercase">
                           Your Ticket Number
                         </Text>

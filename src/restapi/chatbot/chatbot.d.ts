@@ -9,3 +9,15 @@ interface ChatMessage {
   content?: string
   parts?: ChatMessagePart[]
 }
+
+interface KnowledgeDocument {
+  id: string
+  title: string
+  content: string
+  category: string
+  tags: string[]
+  status: 'active' | 'inactive'
+  createdAt: string
+  updatedAt: string
+  views: number
+}

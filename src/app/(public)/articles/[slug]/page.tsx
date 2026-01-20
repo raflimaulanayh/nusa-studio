@@ -4,7 +4,8 @@ import { notFound } from 'next/navigation'
 import { ArticleDetail } from '@/components/organisms/article'
 
 export const metadata = {
-  title: 'Detail Article'
+  title: 'Detail Article',
+  description: 'Detail Article'
 }
 
 export default async function ArticleDetailPage({ params }: { params: Promise<{ slug: string }> }) {

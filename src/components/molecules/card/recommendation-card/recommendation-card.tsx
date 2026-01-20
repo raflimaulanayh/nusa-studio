@@ -1,7 +1,7 @@
 'use client'
 
 import { SERVICES_MORE_DATA } from '@/constants/service-data'
-import { SERVICE_PACKAGES } from '@/data/pricing'
+import { SERVICE_PACKAGES } from '@/constants/service-data'
 import { motion } from 'framer-motion'
 import { ArrowRight, CheckCircle2, Sparkles } from 'lucide-react'
 import Link from 'next/link'

@@ -1,7 +1,5 @@
 'use client'
 
-import type { KnowledgeDocument } from '@/data/knowledge-base'
-
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/atoms/ui/dialog'
 
 interface KnowledgeDetailDialogProps {

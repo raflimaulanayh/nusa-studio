@@ -3,7 +3,8 @@ import { CtaSection } from '@/components/organisms/home'
 import { GeneralLayout } from '@/components/templates/general-layout'
 
 export const metadata = {
-  title: 'Article'
+  title: 'Article',
+  description: 'Read the latest articles from Nusa Studio'
 }
 
 export default function ArticlesPage() {

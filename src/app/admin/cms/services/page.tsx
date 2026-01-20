@@ -1,6 +1,6 @@
 'use client'
 
-import { SERVICE_PACKAGES, type ServicePackage } from '@/data/pricing'
+import { SERVICE_PACKAGES } from '@/constants/service-data'
 import { Eye, FileEdit, MoreVertical, Plus, Trash2 } from 'lucide-react'
 import { useState } from 'react'
 import { toast } from 'sonner'

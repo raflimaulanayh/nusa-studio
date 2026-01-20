@@ -1,6 +1,5 @@
 'use client'
 
-import type { KnowledgeDocument } from '@/data/knowledge-base'
 import { X } from 'lucide-react'
 import { useState } from 'react'
 

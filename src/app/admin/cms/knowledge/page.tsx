@@ -1,7 +1,6 @@
 'use client'
 
-import type { KnowledgeDocument } from '@/data/knowledge-base'
-import { KNOWLEDGE_DOCUMENTS } from '@/data/knowledge-base'
+import { KNOWLEDGE_DOCUMENTS } from '@/constants/chatbot-data'
 import { Eye, FileEdit, MoreVertical, Plus, Search, Trash2 } from 'lucide-react'
 import { useState } from 'react'
 import { toast } from 'sonner'

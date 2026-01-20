@@ -1,6 +1,6 @@
 'use client'
 
-import { SERVICE_PACKAGES } from '@/data/pricing'
+import { SERVICE_PACKAGES } from '@/constants/service-data'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { motion } from 'framer-motion'
 import { ArrowRight, CheckCircle2 } from 'lucide-react'
@@ -38,14 +38,11 @@ const formSchema = z.object({
 
 type FormData = z.infer<typeof formSchema>
 
-// ... existing imports
-
 function BookForm() {
   const searchParams = useSearchParams()
   const initialService = searchParams.get('service')
   const initialPlan = searchParams.get('plan')
 
-  // Find the specific plan details if they exist
   const selectedPackageInfo =
     initialService && initialPlan
       ? SERVICE_PACKAGES.find((s) => s.title === initialService)?.tiers.find((t) => t.name === initialPlan)
@@ -135,7 +132,7 @@ function BookForm() {
         </Heading>
 
         {orderNumber && (
-          <div className="mb-6 rounded-xl bg-gradient-to-r from-blue-50 to-purple-50 p-6">
+          <div className="mb-6 rounded-xl bg-linear-to-r from-blue-50 to-purple-50 p-6">
             <Text variant="muted" className="mb-2 text-sm font-medium tracking-wide uppercase">
               Your Order Number
             </Text>
@@ -176,7 +173,6 @@ function BookForm() {
       transition={{ duration: 0.8, delay: 0.2 }}
       className="mx-auto max-w-4xl rounded-lg border border-slate-100 bg-white px-5 py-8 shadow-md shadow-slate-200/50 sm:p-12 lg:p-16"
     >
-      {/* Selected Plan Summary Card */}
       {initialPlan && selectedPackageInfo && (
         <div className="mb-10 flex items-center justify-between rounded-2xl border border-secondary/20 bg-slate-50 p-6">
           <div>
